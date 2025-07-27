@@ -275,3 +275,46 @@ export function normalizeJapanese(text: string): string {
   // Remove extra whitespace and normalize
   return normalized.replace(/\s+/g, ' ');
 }
+
+export function kanjiToNumber(kanji: string): number {
+  if (!kanji) return 0;
+
+  const map = {
+    〇: 0,
+    一: 1,
+    二: 2,
+    三: 3,
+    四: 4,
+    五: 5,
+    六: 6,
+    七: 7,
+    八: 8,
+    九: 9,
+  } as const;
+
+  const units = {
+    千: 1000,
+    百: 100,
+    十: 10,
+  } as const;
+
+  let result = 0;
+  let current = kanji;
+
+  for (const [unitChar, unitValue] of Object.entries(units)) {
+    const index = current.indexOf(unitChar);
+    if (index !== -1) {
+      const prefix = current.slice(0, index);
+      const num = prefix ? map[prefix as keyof typeof map] || 0 : 1;
+      result += num * unitValue;
+      current = current.slice(index + 1);
+    }
+  }
+
+  // Handle remaining ones place
+  if (current) {
+    result += map[current as keyof typeof map] || 0;
+  }
+
+  return result;
+}

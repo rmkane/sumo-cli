@@ -18,13 +18,36 @@ A Node.js application for downloading Rikishi names in Kanji and Hiragana, with 
   - Jonidan（序二段） – V（五）
   - Jonokuchi（序ノ口） – VI（六）
 
+## Rikishi structure
+
+A `.box` element contains name in Kaji and Hiragana, as well as the profile ID (link) and record.
+
+```html
+<div class="box">
+  <div>
+    <div>
+      <img src="/img/sumo_data/rikishi/60x60/20170096.jpg">
+    </div>
+    <div>
+      <a href="/ResultRikishiData/profile/3842/">
+        <span style="font-size: large; margin: auto 10px">豊昇龍</span>
+      </a>
+      <span class="hoshi_br">(ほうしょうりゅう)</span>
+    </div>
+  </div>
+  <p style="text-align: center">
+    <span onclick="smKimaritePop(3842,'E','豊昇龍',0)">1勝4敗10休</span>
+  </p>
+</div>
+```
+
 ## Resources
 
 ### Official
 
 - English Matches: <https://www.sumo.or.jp/EnHonbashoMain/torikumi/1/15/>
-- Japanese Matches: <https://sumo.or.jp/ResultData/hoshitori/1/1/>
-- Japanese Standings: <https://www.sumo.or.jp/ResultData/torikumi/1/15/>
+- Japanese Matches: <https://www.sumo.or.jp/ResultData/torikumi/1/15/>
+- Japanese Standings: <https://sumo.or.jp/ResultData/hoshitori/1/1/>
 - Rikishi Search (EN): <https://www.sumo.or.jp/EnSumoDataRikishi/search/>
 
 ### APIs and Databases
