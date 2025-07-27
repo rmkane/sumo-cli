@@ -70,7 +70,7 @@ async function saveResults(
   division: DivisionType,
 ): Promise<void> {
   const divisionName = getKeyByValue(Division, division)
-  const filename = `./data/json/${divisionName.toLowerCase()}_rikishi.json`
+  const filename = `./data/json/${division}_${divisionName.toLowerCase()}_rikishi.json`
 
   const data = {
     division: divisionName,
