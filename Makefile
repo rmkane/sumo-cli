@@ -7,6 +7,7 @@
 # Phony targets
 # =============================================================================
 .PHONY: dev build clean clean-all format help install refresh format-check
+.PHONY: test test-run test-ui test-coverage
 
 # =============================================================================
 # Help
@@ -40,6 +41,21 @@ format: # Format code with Prettier
 
 format-check: # Check formatting without changing files
 	pnpm format:check
+
+# =============================================================================
+# Testing
+# =============================================================================
+test: # Run tests in watch mode
+	pnpm test
+
+test-run: # Run tests once
+	pnpm test:run
+
+test-ui: # Run tests with UI
+	pnpm test:ui
+
+test-coverage: # Run tests with coverage report
+	pnpm test:coverage
 
 # =============================================================================
 # Data Management
