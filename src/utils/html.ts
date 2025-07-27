@@ -1,21 +1,21 @@
-import puppeteer, { Browser, Page } from 'puppeteer';
+import puppeteer, { Browser, Page } from 'puppeteer'
 
 /**
  * Configuration options for HTML fetching operations.
  */
 export interface FetchOptions {
   /** Timeout in milliseconds for page load operations */
-  timeout?: number;
+  timeout?: number
   /** Whether to wait for network to be idle */
-  waitForNetworkIdle?: boolean;
+  waitForNetworkIdle?: boolean
   /** Custom user agent string */
-  userAgent?: string;
+  userAgent?: string
   /** Additional headers to send with requests */
-  headers?: Record<string, string>;
+  headers?: Record<string, string>
   /** Whether to enable JavaScript execution */
-  enableJavaScript?: boolean;
+  enableJavaScript?: boolean
   /** Viewport dimensions */
-  viewport?: { width: number; height: number };
+  viewport?: { width: number; height: number }
 }
 
 /**
@@ -29,7 +29,7 @@ const DEFAULT_FETCH_OPTIONS: Required<FetchOptions> = {
   headers: {},
   enableJavaScript: true,
   viewport: { width: 1920, height: 1080 },
-};
+}
 
 /**
  * Fetches HTML content from a URL using Puppeteer with comprehensive error handling.
@@ -60,14 +60,14 @@ const DEFAULT_FETCH_OPTIONS: Required<FetchOptions> = {
  */
 async function fetchFromUrl(
   url: string,
-  options: FetchOptions = {}
+  options: FetchOptions = {},
 ): Promise<string> {
-  const config = { ...DEFAULT_FETCH_OPTIONS, ...options };
+  const config = { ...DEFAULT_FETCH_OPTIONS, ...options }
 
-  console.log(`Fetching ${url} with Puppeteer...`);
+  console.log(`Fetching ${url} with Puppeteer...`)
 
-  let browser: Browser | null = null;
-  let page: Page | null = null;
+  let browser: Browser | null = null
+  let page: Page | null = null
 
   try {
     // Launch browser with optimized settings
@@ -82,56 +82,56 @@ async function fetchFromUrl(
         '--no-zygote',
         '--disable-gpu',
       ],
-    };
+    }
 
-    browser = await puppeteer.launch(launchOptions);
-    page = await browser.newPage();
+    browser = await puppeteer.launch(launchOptions)
+    page = await browser.newPage()
 
     // Set viewport and user agent
-    await page.setViewport(config.viewport);
-    await page.setUserAgent(config.userAgent);
+    await page.setViewport(config.viewport)
+    await page.setUserAgent(config.userAgent)
 
     // Set additional headers if provided
     if (Object.keys(config.headers).length > 0) {
-      await page.setExtraHTTPHeaders(config.headers);
+      await page.setExtraHTTPHeaders(config.headers)
     }
 
     // Disable JavaScript if not needed (faster for static content)
     if (!config.enableJavaScript) {
-      await page.setJavaScriptEnabled(false);
+      await page.setJavaScriptEnabled(false)
     }
 
     // Navigate to URL with appropriate wait strategy
     const waitUntil = config.waitForNetworkIdle
       ? 'networkidle0'
-      : 'domcontentloaded';
+      : 'domcontentloaded'
     await page.goto(url, {
       waitUntil,
       timeout: config.timeout,
-    });
+    })
 
     // Get the rendered HTML content
-    const html = await page.content();
-    return html;
+    const html = await page.content()
+    return html
   } catch (error) {
     const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error';
-    console.error(`Error fetching ${url}:`, errorMessage);
-    throw new Error(`Failed to fetch HTML from ${url}: ${errorMessage}`);
+      error instanceof Error ? error.message : 'Unknown error'
+    console.error(`Error fetching ${url}:`, errorMessage)
+    throw new Error(`Failed to fetch HTML from ${url}: ${errorMessage}`)
   } finally {
     // Ensure proper cleanup
     if (page) {
       try {
-        await page.close();
+        await page.close()
       } catch (error) {
-        console.warn('Error closing page:', error);
+        console.warn('Error closing page:', error)
       }
     }
     if (browser) {
       try {
-        await browser.close();
+        await browser.close()
       } catch (error) {
-        console.warn('Error closing browser:', error);
+        console.warn('Error closing browser:', error)
       }
     }
   }
@@ -155,7 +155,7 @@ async function fetchFromUrl(
  * @since 1.0.0
  */
 export async function fetchHTML(url: string): Promise<string> {
-  return fetchFromUrl(url);
+  return fetchFromUrl(url)
 }
 
 /**
@@ -183,9 +183,9 @@ export async function fetchHTML(url: string): Promise<string> {
  */
 export async function fetchHTMLWithOptions(
   url: string,
-  options: FetchOptions
+  options: FetchOptions,
 ): Promise<string> {
-  return fetchFromUrl(url, options);
+  return fetchFromUrl(url, options)
 }
 
 /**
@@ -208,13 +208,13 @@ export async function fetchHTMLWithOptions(
  * @since 1.0.0
  */
 export function isValidUrl(url: string): boolean {
-  if (url.length === 0) return false;
+  if (url.length === 0) return false
 
   try {
-    new URL(url);
-    return true;
+    new URL(url)
+    return true
   } catch {
-    return false;
+    return false
   }
 }
 
@@ -237,30 +237,30 @@ export function isValidUrl(url: string): boolean {
  * @since 1.0.0
  */
 export function extractLinks(html: string, baseUrl?: string): string[] {
-  if (html.length === 0) return [];
+  if (html.length === 0) return []
 
-  const linkRegex = /<a[^>]+href=["']([^"']+)["'][^>]*>/gi;
-  const links: string[] = [];
-  let match;
+  const linkRegex = /<a[^>]+href=["']([^"']+)["'][^>]*>/gi
+  const links: string[] = []
+  let match
 
   while ((match = linkRegex.exec(html)) !== null) {
-    const href = match[1];
+    const href = match[1]
 
     if (baseUrl && !href.startsWith('http')) {
       // Resolve relative URLs
       try {
-        const absoluteUrl = new URL(href, baseUrl).href;
-        links.push(absoluteUrl);
+        const absoluteUrl = new URL(href, baseUrl).href
+        links.push(absoluteUrl)
       } catch {
         // Skip invalid URLs
-        continue;
+        continue
       }
     } else if (href.startsWith('http')) {
-      links.push(href);
+      links.push(href)
     }
   }
 
-  return [...new Set(links)]; // Remove duplicates
+  return [...new Set(links)] // Remove duplicates
 }
 
 /**
@@ -281,7 +281,7 @@ export function extractLinks(html: string, baseUrl?: string): string[] {
  * @since 1.0.0
  */
 export function extractText(html: string): string {
-  if (html.length === 0) return '';
+  if (html.length === 0) return ''
 
   // Simple HTML tag removal (for basic cases)
   return html
@@ -289,7 +289,7 @@ export function extractText(html: string): string {
     .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '') // Remove style tags
     .replace(/<[^>]+>/g, '') // Remove all other HTML tags
     .replace(/\s+/g, ' ') // Normalize whitespace
-    .trim();
+    .trim()
 }
 
 /**
@@ -314,12 +314,12 @@ export function extractText(html: string): string {
 export function containsText(
   html: string,
   searchText: string,
-  caseSensitive: boolean = false
+  caseSensitive: boolean = false,
 ): boolean {
-  if (html.length === 0 || searchText.length === 0) return false;
+  if (html.length === 0 || searchText.length === 0) return false
 
-  const content = caseSensitive ? html : html.toLowerCase();
-  const search = caseSensitive ? searchText : searchText.toLowerCase();
+  const content = caseSensitive ? html : html.toLowerCase()
+  const search = caseSensitive ? searchText : searchText.toLowerCase()
 
-  return content.includes(search);
+  return content.includes(search)
 }

@@ -21,8 +21,8 @@
  * @since 1.0.0
  */
 export function capitalize(str: string): string {
-  if (str.length === 0) return str;
-  return str.charAt(0).toUpperCase() + str.slice(1);
+  if (str.length === 0) return str
+  return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
 /**
@@ -50,21 +50,21 @@ export function capitalize(str: string): string {
  * @since 1.0.0
  */
 export function unwrapText(str: string): string {
-  if (str.length === 0) return str;
+  if (str.length === 0) return str
 
-  let result = str.trim();
+  let result = str.trim()
 
   // Remove opening parenthesis if present
   if (result.startsWith('(')) {
-    result = result.slice(1);
+    result = result.slice(1)
   }
 
   // Remove closing parenthesis if present
   if (result.endsWith(')')) {
-    result = result.slice(0, -1);
+    result = result.slice(0, -1)
   }
 
-  return result.trim();
+  return result.trim()
 }
 
 /**
@@ -87,13 +87,13 @@ export function unwrapText(str: string): string {
  * @since 1.0.0
  */
 export function normalizeJapaneseText(text: string): string {
-  if (text.length === 0) return text;
+  if (text.length === 0) return text
 
   return text
     .replace(/\s+/g, ' ') // Replace multiple whitespace with single space
     .replace(/[\u3000]/g, ' ') // Replace full-width space with regular space
     .replace(/\n+/g, ' ') // Replace line breaks with spaces
-    .trim(); // Remove leading/trailing whitespace
+    .trim() // Remove leading/trailing whitespace
 }
 
 /**
@@ -117,10 +117,10 @@ export function normalizeJapaneseText(text: string): string {
  * @since 1.0.0
  */
 export function extractNumber(text: string): string {
-  if (text.length === 0) return '';
+  if (text.length === 0) return ''
 
-  const match = text.match(/\d+/);
-  return match ? match[0] : '';
+  const match = text.match(/\d+/)
+  return match ? match[0] : ''
 }
 
 /**
@@ -144,9 +144,9 @@ export function extractNumber(text: string): string {
  * @since 1.0.0
  */
 export function isJapaneseOnly(text: string): boolean {
-  if (text.length === 0) return true;
+  if (text.length === 0) return true
 
   // Regex for hiragana, katakana, and kanji
-  const japaneseRegex = /^[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]+$/;
-  return japaneseRegex.test(text);
+  const japaneseRegex = /^[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]+$/
+  return japaneseRegex.test(text)
 }

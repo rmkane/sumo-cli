@@ -5,7 +5,7 @@ export const Division = {
   SANDANME: 4,
   JONIDAN: 5,
   JONOKUCHI: 6,
-} as const;
+} as const
 
 export const RankMapping = [
   { kanji: '横綱', english: 'Yokozuna' },
@@ -18,4 +18,4 @@ export const RankMapping = [
   { kanji: '三段目', english: 'Sandanme' },
   { kanji: '序二段', english: 'Jonidan' },
   { kanji: '序ノ口', english: 'Jonokuchi' },
-];
+]

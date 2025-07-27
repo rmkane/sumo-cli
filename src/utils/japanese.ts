@@ -1,4 +1,4 @@
-import { toRomaji, toHiragana, toKatakana } from 'wanakana';
+import { toRomaji, toHiragana, toKatakana } from 'wanakana'
 
 /**
  * Converts Japanese text to romaji with proper macron notation for long vowels.
@@ -28,9 +28,9 @@ import { toRomaji, toHiragana, toKatakana } from 'wanakana';
  * @since 1.0.0
  */
 export function toRomajiWithMacrons(text: string): string {
-  if (text.length === 0) return text;
+  if (text.length === 0) return text
 
-  const romaji = toRomaji(text);
+  const romaji = toRomaji(text)
 
   return (
     romaji
@@ -71,7 +71,7 @@ export function toRomajiWithMacrons(text: string): string {
       .replace(/jyou/g, 'jō')
       .replace(/byou/g, 'byō')
       .replace(/pyou/g, 'pyō')
-  );
+  )
 }
 
 /**
@@ -96,13 +96,13 @@ export function toRomajiWithMacrons(text: string): string {
  * @since 1.0.0
  */
 export function convertDiacriticsToAscii(inputString: string): string {
-  if (inputString.length === 0) return inputString;
+  if (inputString.length === 0) return inputString
 
   // Normalize to NFD (Normalization Form D) to separate base characters from diacritical marks
-  const normalizedString = inputString.normalize('NFD');
+  const normalizedString = inputString.normalize('NFD')
 
   // Remove combining diacritical marks (Unicode range U+0300 to U+036F)
-  return normalizedString.replace(/[\u0300-\u036f]/g, '');
+  return normalizedString.replace(/[\u0300-\u036f]/g, '')
 }
 
 /**
@@ -126,13 +126,13 @@ export function convertDiacriticsToAscii(inputString: string): string {
  * @since 1.0.0
  */
 export function toHiraganaSafe(text: string): string {
-  if (text.length === 0) return text;
+  if (text.length === 0) return text
 
   try {
-    return toHiragana(text);
+    return toHiragana(text)
   } catch (error) {
     // Return original text if conversion fails
-    return text;
+    return text
   }
 }
 
@@ -157,13 +157,13 @@ export function toHiraganaSafe(text: string): string {
  * @since 1.0.0
  */
 export function toKatakanaSafe(text: string): string {
-  if (text.length === 0) return text;
+  if (text.length === 0) return text
 
   try {
-    return toKatakana(text);
+    return toKatakana(text)
   } catch (error) {
     // Return original text if conversion fails
-    return text;
+    return text
   }
 }
 
@@ -188,11 +188,11 @@ export function toKatakanaSafe(text: string): string {
  * @since 1.0.0
  */
 export function extractFirstKanji(text: string): string {
-  if (text.length === 0) return '';
+  if (text.length === 0) return ''
 
   // Regex for kanji characters (Unicode range U+4E00 to U+9FAF)
-  const kanjiMatch = text.match(/[\u4E00-\u9FAF]/);
-  return kanjiMatch ? kanjiMatch[0] : '';
+  const kanjiMatch = text.match(/[\u4E00-\u9FAF]/)
+  return kanjiMatch ? kanjiMatch[0] : ''
 }
 
 /**
@@ -216,11 +216,11 @@ export function extractFirstKanji(text: string): string {
  * @since 1.0.0
  */
 export function countKanji(text: string): number {
-  if (text.length === 0) return 0;
+  if (text.length === 0) return 0
 
   // Regex for kanji characters (Unicode range U+4E00 to U+9FAF)
-  const kanjiMatches = text.match(/[\u4E00-\u9FAF]/g);
-  return kanjiMatches ? kanjiMatches.length : 0;
+  const kanjiMatches = text.match(/[\u4E00-\u9FAF]/g)
+  return kanjiMatches ? kanjiMatches.length : 0
 }
 
 /**
@@ -243,7 +243,7 @@ export function countKanji(text: string): number {
  * @since 1.0.0
  */
 export function hasKanji(text: string): boolean {
-  return countKanji(text) > 0;
+  return countKanji(text) > 0
 }
 
 /**
@@ -267,17 +267,17 @@ export function hasKanji(text: string): boolean {
  * @since 1.0.0
  */
 export function normalizeJapanese(text: string): string {
-  if (text.length === 0) return text;
+  if (text.length === 0) return text
 
   // Convert to hiragana and trim whitespace
-  const normalized = toHiraganaSafe(text).trim();
+  const normalized = toHiraganaSafe(text).trim()
 
   // Remove extra whitespace and normalize
-  return normalized.replace(/\s+/g, ' ');
+  return normalized.replace(/\s+/g, ' ')
 }
 
 export function kanjiToNumber(kanji: string): number {
-  if (!kanji) return 0;
+  if (!kanji) return 0
 
   const map = {
     〇: 0,
@@ -290,31 +290,31 @@ export function kanjiToNumber(kanji: string): number {
     七: 7,
     八: 8,
     九: 9,
-  } as const;
+  } as const
 
   const units = {
     千: 1000,
     百: 100,
     十: 10,
-  } as const;
+  } as const
 
-  let result = 0;
-  let current = kanji;
+  let result = 0
+  let current = kanji
 
   for (const [unitChar, unitValue] of Object.entries(units)) {
-    const index = current.indexOf(unitChar);
+    const index = current.indexOf(unitChar)
     if (index !== -1) {
-      const prefix = current.slice(0, index);
-      const num = prefix ? map[prefix as keyof typeof map] || 0 : 1;
-      result += num * unitValue;
-      current = current.slice(index + 1);
+      const prefix = current.slice(0, index)
+      const num = prefix ? map[prefix as keyof typeof map] || 0 : 1
+      result += num * unitValue
+      current = current.slice(index + 1)
     }
   }
 
   // Handle remaining ones place
   if (current) {
-    result += map[current as keyof typeof map] || 0;
+    result += map[current as keyof typeof map] || 0
   }
 
-  return result;
+  return result
 }

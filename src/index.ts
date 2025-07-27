@@ -1,15 +1,15 @@
-import type { DivisionType, Rikishi } from './types';
-import { Division } from './constants';
+import type { DivisionType, Rikishi } from './types'
+import { Division } from './constants'
 
-import { saveJSON } from './utils/file';
-import { getKeyByValue } from './utils/object';
-import { fetchResults } from './services/fetcher';
+import { saveJSON } from './utils/file'
+import { getKeyByValue } from './utils/object'
+import { fetchResults } from './services/fetcher'
 
 /**
  * Main entry point for the application.
  * Processes all sumo divisions and extracts rikishi data.
  */
-main();
+main()
 
 /**
  * Orchestrates the processing of all sumo divisions in parallel.
@@ -17,24 +17,22 @@ main();
  */
 async function main(): Promise<void> {
   try {
-    const forceRefresh = process.argv.includes('--refresh');
-    console.log(
-      `Starting App${forceRefresh ? ' (force refresh enabled)' : ''}`
-    );
+    const forceRefresh = process.argv.includes('--refresh')
+    console.log(`Starting App${forceRefresh ? ' (force refresh enabled)' : ''}`)
 
     // Process all divisions in parallel
     const divisionPromises = Object.entries(Division).map(
       ([divisionName, divisionId]) =>
-        processDivision(divisionName, divisionId, forceRefresh)
-    );
+        processDivision(divisionName, divisionId, forceRefresh),
+    )
 
     // Wait for all divisions to complete
-    await Promise.all(divisionPromises);
+    await Promise.all(divisionPromises)
 
-    console.log('\n=== All divisions processed successfully ===');
+    console.log('\n=== All divisions processed successfully ===')
   } catch (error) {
-    console.error('Fatal error in main:', error);
-    process.exit(1);
+    console.error('Fatal error in main:', error)
+    process.exit(1)
   }
 }
 
@@ -49,16 +47,16 @@ async function main(): Promise<void> {
 async function processDivision(
   divisionName: string,
   divisionId: DivisionType,
-  forceRefresh: boolean
+  forceRefresh: boolean,
 ): Promise<void> {
-  console.log(`\n=== Processing ${divisionName} (${divisionId}) ===`);
+  console.log(`\n=== Processing ${divisionName} (${divisionId}) ===`)
 
-  const wasFetched = await fetchResults(divisionId, forceRefresh);
-  await saveResults(wasFetched.results, divisionId);
+  const wasFetched = await fetchResults(divisionId, forceRefresh)
+  await saveResults(wasFetched.results, divisionId)
 
   console.log(
-    `Fetched ${wasFetched.results.length} rikishi for ${divisionName}`
-  );
+    `Fetched ${wasFetched.results.length} rikishi for ${divisionName}`,
+  )
 }
 
 /**
@@ -69,10 +67,10 @@ async function processDivision(
  */
 async function saveResults(
   results: Rikishi[],
-  division: DivisionType
+  division: DivisionType,
 ): Promise<void> {
-  const divisionName = getKeyByValue(Division, division);
-  const filename = `./data/json/${divisionName.toLowerCase()}_rikishi.json`;
+  const divisionName = getKeyByValue(Division, division)
+  const filename = `./data/json/${divisionName.toLowerCase()}_rikishi.json`
 
   const data = {
     division: divisionName,
@@ -80,7 +78,7 @@ async function saveResults(
     timestamp: new Date().toISOString(),
     count: results.length,
     rikishi: results,
-  };
+  }
 
-  await saveJSON(filename, data, 'rikishi');
+  await saveJSON(filename, data, 'rikishi')
 }

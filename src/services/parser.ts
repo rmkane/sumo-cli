@@ -1,13 +1,13 @@
-import { load } from 'cheerio';
+import { load } from 'cheerio'
 
-import type { Rank, Rikishi } from '../types';
-import { RankMapping } from '../constants';
-import { capitalize, unwrapText } from '../utils/string';
+import type { Rank, Rikishi } from '../types'
+import { RankMapping } from '../constants'
+import { capitalize, unwrapText } from '../utils/string'
 import {
   convertDiacriticsToAscii,
   kanjiToNumber,
   toRomajiWithMacrons,
-} from '../utils/japanese';
+} from '../utils/japanese'
 
 /**
  * Parses HTML content to extract rikishi data.
@@ -16,14 +16,14 @@ import {
  * @returns Array of parsed Rikishi objects
  */
 export function parseRikishiFromHTML(html: string): Rikishi[] {
-  const $ = load(html);
-  const records: Rikishi[] = [];
+  const $ = load(html)
+  const records: Rikishi[] = []
 
   $('#ew_table_sm tbody .box').each((_, box) => {
-    records.push(parseRecord($(box)));
-  });
+    records.push(parseRecord($(box)))
+  })
 
-  return records;
+  return records
 }
 
 /**
@@ -33,15 +33,15 @@ export function parseRikishiFromHTML(html: string): Rikishi[] {
  * @returns Parsed Rikishi object
  */
 function parseRecord($box: any): Rikishi {
-  const href = $box.find('a').attr('href') || '';
-  const id = +(href.match(/\d+/)?.[0] || '0');
+  const href = $box.find('a').attr('href') || ''
+  const id = +(href.match(/\d+/)?.[0] || '0')
 
-  const rank = parseRank($box.find('.rank').text().trim());
+  const rank = parseRank($box.find('.rank').text().trim())
 
-  const kanji = $box.find('a').text().trim();
-  const hiragana = unwrapText($box.find('.hoshi_br').text());
-  const romaji = capitalize(toRomajiWithMacrons(hiragana));
-  const english = convertDiacriticsToAscii(romaji);
+  const kanji = $box.find('a').text().trim()
+  const hiragana = unwrapText($box.find('.hoshi_br').text())
+  const romaji = capitalize(toRomajiWithMacrons(hiragana))
+  const english = convertDiacriticsToAscii(romaji)
 
   return {
     id,
@@ -50,7 +50,7 @@ function parseRecord($box: any): Rikishi {
     romaji,
     english,
     rank,
-  };
+  }
 }
 
 /**
@@ -61,32 +61,32 @@ function parseRecord($box: any): Rikishi {
  */
 function parseRank(rankText: string): Rank | undefined {
   // Clean the rank text
-  const cleanRank = rankText.trim();
+  const cleanRank = rankText.trim()
 
   // Find the matching rank in our mapping
   for (const rankEntry of RankMapping) {
     if (cleanRank.startsWith(rankEntry.kanji)) {
-      const division = rankEntry.english;
-      let position = 0;
+      const division = rankEntry.english
+      let position = 0
 
       // Extract position from remaining text (e.g., "六枚目" -> 6)
-      const remainingText = cleanRank.replace(rankEntry.kanji, '').trim();
+      const remainingText = cleanRank.replace(rankEntry.kanji, '').trim()
 
       if (remainingText) {
         // Remove "枚目" suffix if present
-        const positionText = remainingText.replace('枚目', '');
+        const positionText = remainingText.replace('枚目', '')
         if (positionText) {
-          position = kanjiToNumber(positionText);
+          position = kanjiToNumber(positionText)
         }
       }
 
       return {
         division,
         position,
-      };
+      }
     }
   }
 
   // Fallback for unknown ranks
-  return undefined;
+  return undefined
 }

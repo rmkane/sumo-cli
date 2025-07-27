@@ -1,18 +1,18 @@
-import fs from 'node:fs/promises';
-import path from 'node:path';
+import fs from 'node:fs/promises'
+import path from 'node:path'
 
 /**
  * Configuration options for file operations.
  */
 export interface FileOptions {
   /** Whether to create parent directories if they don't exist */
-  createDirectories?: boolean;
+  createDirectories?: boolean
   /** Encoding to use for text files (default: 'utf-8') */
-  encoding?: BufferEncoding;
+  encoding?: BufferEncoding
   /** Whether to overwrite existing files */
-  overwrite?: boolean;
+  overwrite?: boolean
   /** Custom error message for file operations */
-  errorMessage?: string;
+  errorMessage?: string
 }
 
 /**
@@ -23,7 +23,7 @@ const DEFAULT_FILE_OPTIONS: Required<FileOptions> = {
   encoding: 'utf-8',
   overwrite: true,
   errorMessage: 'File operation failed',
-};
+}
 
 /**
  * Saves data to a JSON file with pretty formatting and comprehensive error handling.
@@ -59,43 +59,43 @@ export async function saveJSON(
   filename: string,
   data: any,
   itemName: string = 'items',
-  options: FileOptions = {}
+  options: FileOptions = {},
 ): Promise<void> {
-  const config = { ...DEFAULT_FILE_OPTIONS, ...options };
+  const config = { ...DEFAULT_FILE_OPTIONS, ...options }
 
   try {
     // Ensure the directory exists before writing the file
     if (config.createDirectories) {
-      const dir = path.dirname(filename);
-      await fs.mkdir(dir, { recursive: true });
+      const dir = path.dirname(filename)
+      await fs.mkdir(dir, { recursive: true })
     }
 
     // Check if file exists and overwrite is disabled
     if (!config.overwrite) {
       try {
-        await fs.access(filename);
+        await fs.access(filename)
         throw new Error(
-          `File ${filename} already exists and overwrite is disabled`
-        );
+          `File ${filename} already exists and overwrite is disabled`,
+        )
       } catch (error) {
         if (
           error instanceof Error &&
           error.message.includes('already exists')
         ) {
-          throw error;
+          throw error
         }
         // File doesn't exist, continue
       }
     }
 
-    const jsonContent = JSON.stringify(data, null, 2);
-    await fs.writeFile(filename, jsonContent, config.encoding);
+    const jsonContent = JSON.stringify(data, null, 2)
+    await fs.writeFile(filename, jsonContent, config.encoding)
 
-    const count = Array.isArray(data) ? data.length : 'data';
-    console.log(`Saved ${count} ${itemName} to ${filename}`);
+    const count = Array.isArray(data) ? data.length : 'data'
+    console.log(`Saved ${count} ${itemName} to ${filename}`)
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    throw new Error(`${config.errorMessage}: ${message}`);
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    throw new Error(`${config.errorMessage}: ${message}`)
   }
 }
 
@@ -127,18 +127,18 @@ export async function saveJSON(
  */
 export async function readJSON<T = any>(
   filename: string,
-  options: FileOptions = {}
+  options: FileOptions = {},
 ): Promise<T> {
-  const config = { ...DEFAULT_FILE_OPTIONS, ...options };
+  const config = { ...DEFAULT_FILE_OPTIONS, ...options }
 
   try {
-    const content = await fs.readFile(filename, config.encoding);
-    const data = JSON.parse(content);
-    console.log(`Loaded data from ${filename}`);
-    return data;
+    const content = await fs.readFile(filename, config.encoding)
+    const data = JSON.parse(content)
+    console.log(`Loaded data from ${filename}`)
+    return data
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    throw new Error(`${config.errorMessage}: ${message}`);
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    throw new Error(`${config.errorMessage}: ${message}`)
   }
 }
 
@@ -163,16 +163,16 @@ export async function readJSON<T = any>(
  * @since 1.0.0
  */
 export function validateFilePath(filePath: string): {
-  isValid: boolean;
-  error?: string;
+  isValid: boolean
+  error?: string
 } {
   if (filePath.length === 0) {
-    return { isValid: false, error: 'File path cannot be empty' };
+    return { isValid: false, error: 'File path cannot be empty' }
   }
 
   // Check for path traversal attempts
   if (filePath.includes('..') || filePath.includes('//')) {
-    return { isValid: false, error: 'Path traversal detected' };
+    return { isValid: false, error: 'Path traversal detected' }
   }
 
   // Check for absolute paths (optional security measure)
@@ -180,16 +180,16 @@ export function validateFilePath(filePath: string): {
     return {
       isValid: false,
       error: 'Absolute paths outside current directory are not allowed',
-    };
+    }
   }
 
   // Check for invalid characters
-  const invalidChars = /[<>:"|?*]/;
+  const invalidChars = /[<>:"|?*]/
   if (invalidChars.test(filePath)) {
-    return { isValid: false, error: 'File path contains invalid characters' };
+    return { isValid: false, error: 'File path contains invalid characters' }
   }
 
-  return { isValid: true };
+  return { isValid: true }
 }
 
 /**
@@ -213,16 +213,16 @@ export function validateFilePath(filePath: string): {
  */
 export async function ensureDirectory(
   dirPath: string,
-  options: FileOptions = {}
+  options: FileOptions = {},
 ): Promise<void> {
-  const config = { ...DEFAULT_FILE_OPTIONS, ...options };
+  const config = { ...DEFAULT_FILE_OPTIONS, ...options }
 
   try {
-    await fs.mkdir(dirPath, { recursive: true });
-    console.log(`Ensured directory exists: ${dirPath}`);
+    await fs.mkdir(dirPath, { recursive: true })
+    console.log(`Ensured directory exists: ${dirPath}`)
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    throw new Error(`${config.errorMessage}: ${message}`);
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    throw new Error(`${config.errorMessage}: ${message}`)
   }
 }
 
@@ -246,10 +246,10 @@ export async function ensureDirectory(
  */
 export async function fileExists(filePath: string): Promise<boolean> {
   try {
-    await fs.access(filePath);
-    return true;
+    await fs.access(filePath)
+    return true
   } catch {
-    return false;
+    return false
   }
 }
 
@@ -274,21 +274,21 @@ export async function fileExists(filePath: string): Promise<boolean> {
  * @since 1.0.0
  */
 export async function getFileInfo(filePath: string): Promise<{
-  size: number;
-  modified: Date;
-  isFile: boolean;
-  isDirectory: boolean;
+  size: number
+  modified: Date
+  isFile: boolean
+  isDirectory: boolean
 } | null> {
   try {
-    const stats = await fs.stat(filePath);
+    const stats = await fs.stat(filePath)
     return {
       size: stats.size,
       modified: stats.mtime,
       isFile: stats.isFile(),
       isDirectory: stats.isDirectory(),
-    };
+    }
   } catch {
-    return null;
+    return null
   }
 }
 
@@ -315,20 +315,20 @@ export async function getFileInfo(filePath: string): Promise<{
  */
 export async function deleteFile(
   filePath: string,
-  options: FileOptions = {}
+  options: FileOptions = {},
 ): Promise<boolean> {
-  const config = { ...DEFAULT_FILE_OPTIONS, ...options };
+  const config = { ...DEFAULT_FILE_OPTIONS, ...options }
 
   try {
-    await fs.unlink(filePath);
-    console.log(`Deleted file: ${filePath}`);
-    return true;
+    await fs.unlink(filePath)
+    console.log(`Deleted file: ${filePath}`)
+    return true
   } catch (error) {
     if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
       // File doesn't exist, not an error
-      return false;
+      return false
     }
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    throw new Error(`${config.errorMessage}: ${message}`);
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    throw new Error(`${config.errorMessage}: ${message}`)
   }
 }

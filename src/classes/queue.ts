@@ -3,12 +3,12 @@
  * Ensures operations are executed with a minimum delay between them.
  */
 export class RateLimitedQueue {
-  private queue: Array<() => Promise<any>> = [];
-  private processing = false;
-  private delayMs: number;
+  private queue: Array<() => Promise<any>> = []
+  private processing = false
+  private delayMs: number
 
   constructor(delayMs: number = 2000) {
-    this.delayMs = delayMs;
+    this.delayMs = delayMs
   }
 
   /**
@@ -21,18 +21,18 @@ export class RateLimitedQueue {
     return new Promise((resolve, reject) => {
       this.queue.push(async () => {
         try {
-          const result = await task();
-          resolve(result);
-          return result;
+          const result = await task()
+          resolve(result)
+          return result
         } catch (error) {
-          reject(error);
+          reject(error)
           // Don't re-throw the error to avoid unhandled rejections
-          return;
+          return
         }
-      });
+      })
 
-      this.processQueue();
-    });
+      this.processQueue()
+    })
   }
 
   /**
@@ -40,37 +40,37 @@ export class RateLimitedQueue {
    */
   private async processQueue(): Promise<void> {
     if (this.processing || this.queue.length === 0) {
-      return;
+      return
     }
 
-    this.processing = true;
+    this.processing = true
 
     while (this.queue.length > 0) {
-      const task = this.queue.shift();
+      const task = this.queue.shift()
       if (task) {
-        await task();
+        await task()
 
         // Add delay between tasks (except for the last one)
         if (this.queue.length > 0) {
-          await new Promise((resolve) => setTimeout(resolve, this.delayMs));
+          await new Promise((resolve) => setTimeout(resolve, this.delayMs))
         }
       }
     }
 
-    this.processing = false;
+    this.processing = false
   }
 
   /**
    * Gets the current queue length.
    */
   get length(): number {
-    return this.queue.length;
+    return this.queue.length
   }
 
   /**
    * Checks if the queue is currently processing.
    */
   get isProcessing(): boolean {
-    return this.processing;
+    return this.processing
   }
 }
