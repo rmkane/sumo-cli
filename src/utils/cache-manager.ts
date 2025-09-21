@@ -1,0 +1,177 @@
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import type { DivisionType } from '../types'
+import { getDivisionName } from './division'
+import { fetchHTML } from './html'
+import { RateLimitedQueue } from '../classes/queue'
+import { RATE_LIMITS } from '../config/urls'
+
+// Global queue for rate-limited downloads
+const downloadQueue = new RateLimitedQueue(RATE_LIMITS.DOWNLOAD_DELAY_MS)
+
+/**
+ * Centralized cache manager that handles downloading and caching of data
+ * with automatic subdirectory organization based on file extension.
+ */
+
+/**
+ * Cache configuration for different data types
+ */
+const CACHE_CONFIG = {
+  html: {
+    directory: 'html',
+    extension: '.html'
+  },
+  json: {
+    directory: 'json',
+    extension: '.json'
+  }
+} as const
+
+type CacheType = keyof typeof CACHE_CONFIG
+
+/**
+ * Downloads content from a URL and caches it with automatic subdirectory organization.
+ *
+ * @param url - URL to download from
+ * @param cacheType - Type of cache (determines subdirectory)
+ * @param customFilename - Optional custom filename (without extension)
+ * @param forceRefresh - Whether to bypass cache and force download
+ * @returns Object containing content and whether it was fetched from server
+ */
+export async function downloadAndCache(
+  url: string,
+  cacheType: CacheType,
+  customFilename?: string,
+  forceRefresh: boolean = false
+): Promise<{ content: string; fromServer: boolean }> {
+  const cachePath = getCachePath(url, cacheType, customFilename)
+
+  // Try cache first (unless force refresh)
+  if (!forceRefresh) {
+    const cached = await readFromCache(cachePath)
+    if (cached) {
+      return { content: cached, fromServer: false }
+    }
+  }
+
+  // Download from server
+  const content = await downloadFromServer(url)
+  await writeToCache(cachePath, content)
+
+  return { content, fromServer: true }
+}
+
+/**
+ * Downloads matchup data for a specific division and day with proper naming.
+ *
+ * @param division - Division identifier
+ * @param day - Tournament day
+ * @param forceRefresh - Whether to bypass cache
+ * @returns Object containing HTML content and whether it was fetched from server
+ */
+export async function downloadMatchupData(
+  division: DivisionType,
+  day: number,
+  forceRefresh: boolean = false
+): Promise<{ content: string; fromServer: boolean }> {
+  const url = `https://www.sumo.or.jp/ResultData/torikumi/${division}/${day}/`
+  const paddedDay = day.toString().padStart(2, '0')
+  const customFilename = `day_${paddedDay}_${division}_${getDivisionName(division)}`
+
+  return downloadAndCache(url, 'html', customFilename, forceRefresh)
+}
+
+/**
+ * Downloads stats data for a specific division with proper naming.
+ *
+ * @param division - Division identifier
+ * @param forceRefresh - Whether to bypass cache
+ * @returns Object containing HTML content and whether it was fetched from server
+ */
+export async function downloadStatsData(
+  division: DivisionType,
+  forceRefresh: boolean = false
+): Promise<{ content: string; fromServer: boolean }> {
+  const url = `https://sumo.or.jp/ResultData/hoshitori/${division}/1/`
+  const customFilename = `stats_${division}_${getDivisionName(division)}`
+
+  return downloadAndCache(url, 'html', customFilename, forceRefresh)
+}
+
+/**
+ * Gets the cache path for a URL with automatic subdirectory organization.
+ *
+ * @param url - URL to cache
+ * @param cacheType - Type of cache (determines subdirectory)
+ * @param customFilename - Optional custom filename
+ * @returns Cache file path
+ */
+function getCachePath(url: string, cacheType: CacheType, customFilename?: string): string {
+  const config = CACHE_CONFIG[cacheType]
+
+  if (customFilename) {
+    return `./data/${config.directory}/${customFilename}${config.extension}`
+  }
+
+  // Fallback to URL-based naming
+  const cacheKey = Buffer.from(url)
+    .toString('base64')
+    .replace(/[^a-zA-Z0-9]/g, '')
+
+  return `./data/${config.directory}/${cacheKey}${config.extension}`
+}
+
+/**
+ * Ensures the cache directory exists.
+ *
+ * @param cacheType - Type of cache directory to ensure
+ */
+async function ensureCacheDirectory(cacheType: CacheType): Promise<void> {
+  const config = CACHE_CONFIG[cacheType]
+  await fs.mkdir(`./data/${config.directory}`, { recursive: true })
+}
+
+/**
+ * Reads content from cache.
+ *
+ * @param cachePath - Path to cached file
+ * @returns Cached content or null if not found
+ */
+async function readFromCache(cachePath: string): Promise<string | null> {
+  try {
+    const cached = await fs.readFile(cachePath, 'utf-8')
+    console.log(`Using cached version`)
+    return cached
+  } catch (error) {
+    return null
+  }
+}
+
+/**
+ * Writes content to cache.
+ *
+ * @param cachePath - Path to cache file
+ * @param content - Content to cache
+ */
+async function writeToCache(cachePath: string, content: string): Promise<void> {
+  // Ensure directory exists
+  const dir = path.dirname(cachePath)
+  await fs.mkdir(dir, { recursive: true })
+
+  await fs.writeFile(cachePath, content, 'utf-8')
+  console.log(`Cached to ${cachePath}`)
+}
+
+/**
+ * Downloads content from server with rate limiting.
+ *
+ * @param url - URL to download from
+ * @returns Downloaded content
+ */
+async function downloadFromServer(url: string): Promise<string> {
+  return downloadQueue.add(async () => {
+    console.log(`Downloading ${url}...`)
+    return await fetchHTML(url)
+  })
+}

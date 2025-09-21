@@ -5,6 +5,7 @@ import { saveJSON } from './utils/file'
 import { getKeyByValue } from './utils/object'
 import { fetchResults } from './services/fetcher'
 import { fetchMatchupData, parseMatchupHTML } from './services/matchup'
+import { saveMatchupCSV } from './utils/csv'
 
 /**
  * Main entry point for the application.
@@ -191,72 +192,3 @@ async function saveResults(
   await saveJSON(filename, data, 'rikishi')
 }
 
-/**
- * Saves matchup data to a CSV file.
- *
- * @param matchups - Array of parsed matchup data
- * @param divisionName - Human-readable division name
- * @param divisionId - Division identifier
- * @param day - Tournament day
- */
-async function saveMatchupCSV(
-  matchups: any[],
-  divisionName: string,
-  divisionId: DivisionType,
-  day: number,
-): Promise<void> {
-  const fs = await import('node:fs')
-  const path = await import('node:path')
-
-  // Create CSV directory if it doesn't exist
-  const csvDir = './data/csv'
-  if (!fs.existsSync(csvDir)) {
-    fs.mkdirSync(csvDir, { recursive: true })
-  }
-
-  // Generate CSV content
-  const csvContent = generateMatchupCSV(matchups)
-
-  // Save to file
-  const filename = `day_${day}_${divisionId}_${divisionName.toLowerCase()}.csv`
-  const filepath = path.join(csvDir, filename)
-
-  fs.writeFileSync(filepath, csvContent, 'utf8')
-  console.log(`Saved matchup CSV: ${filepath}`)
-}
-
-/**
- * Generates CSV content from matchup data.
- *
- * @param matchups - Array of parsed matchup data
- * @returns CSV content as string
- */
-function generateMatchupCSV(matchups: any[]): string {
-  const headers = [
-    '', '', 'East', '', '', '', '', '', '', 'West', '', ''
-  ]
-  const subHeaders = [
-    'Rank', 'Record', 'Kanji', 'Hiragana', 'Name', '', '', 'Name', 'Hiragana', 'Kanji', 'Record', 'Rank'
-  ]
-
-  const rows = [
-    headers.join('\t'),
-    subHeaders.join('\t'),
-    ...matchups.map(matchup => [
-      matchup.east.rank || '',
-      matchup.east.record || '',
-      matchup.east.kanji || '',
-      matchup.east.hiragana || '',
-      matchup.east.name || '',
-      '',
-      '',
-      matchup.west.name || '',
-      matchup.west.hiragana || '',
-      matchup.west.kanji || '',
-      matchup.west.record || '',
-      matchup.west.rank || ''
-    ].join('\t'))
-  ]
-
-  return rows.join('\n')
-}
