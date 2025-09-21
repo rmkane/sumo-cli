@@ -1,13 +1,36 @@
 import { load } from 'cheerio'
 
-import type { Rank, Rikishi } from '../types'
-import { RankMapping } from '../constants'
-import { capitalize, unwrapText } from '../utils/string'
+import type { DivisionType, Rank, Rikishi } from '@/types'
+import { RankMapping } from '@/constants'
+import { capitalize, unwrapText } from '@/utils/string'
 import {
   convertDiacriticsToAscii,
   kanjiToNumber,
   toRomajiWithMacrons,
-} from '../utils/japanese'
+} from '@/utils/japanese'
+import { downloadStatsData } from '@/utils/cache-manager'
+
+/**
+ * Fetches rikishi data for a division, using cache when possible.
+ * Downloads are queued with rate limiting to be respectful to the server.
+ *
+ * @param division - Division identifier
+ * @param forceRefresh - Whether to bypass cache
+ * @returns Object containing results and whether data was fetched from server
+ */
+export async function fetchResults(
+  division: DivisionType,
+  forceRefresh: boolean = false,
+): Promise<{ results: Rikishi[]; fromServer: boolean }> {
+  try {
+    const { content: html, fromServer } = await downloadStatsData(division, forceRefresh)
+    const results = parseRikishiFromHTML(html)
+    return { results, fromServer }
+  } catch (error) {
+    console.error(`Error fetching results for division ${division}:`, error)
+    throw error
+  }
+}
 
 /**
  * Parses HTML content to extract rikishi data.
@@ -90,3 +113,4 @@ function parseRank(rankText: string): Rank | undefined {
   // Fallback for unknown ranks
   return undefined
 }
+

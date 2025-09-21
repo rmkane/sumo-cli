@@ -1,6 +1,8 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+
 import {
   saveJSON,
   readJSON,
@@ -9,8 +11,7 @@ import {
   fileExists,
   getFileInfo,
   deleteFile,
-  FileOptions,
-} from './file'
+} from '@/utils/file'
 
 describe('File Utilities', () => {
   const testDir = './test-temp'

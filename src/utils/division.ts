@@ -1,5 +1,5 @@
-import type { DivisionType } from '../types'
-import { Division } from '../constants'
+import type { DivisionType } from '@/types'
+import { Division } from '@/constants'
 
 /**
  * Gets the division name from division ID.

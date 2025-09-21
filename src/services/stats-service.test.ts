@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { parseRikishiFromHTML } from './parser'
 
-describe('Parser Service', () => {
+import { parseRikishiFromHTML } from '@/services/stats-service'
+
+describe('Stats Service', () => {
   describe('parseRank', () => {
     // We need to test the parseRank function indirectly through parseRikishiFromHTML
     // since it's not exported. Let's create a simple test HTML structure.

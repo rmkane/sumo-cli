@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 
-import { getKeyByValue } from './object'
+import { getKeyByValue } from '@/utils/object'
 
 describe('Object Utilities', () => {
   describe('getKeyByValue', () => {

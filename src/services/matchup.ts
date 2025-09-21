@@ -1,9 +1,10 @@
 import { load } from 'cheerio'
-import type { DivisionType } from '../types'
-import { getDivisionByRank } from '../utils/division'
-import { translateRank, translateRecord } from '../utils/translation'
-import { lookupRikishiByKanji } from './rikishi-lookup'
-import { downloadMatchupData } from '../utils/cache-manager'
+
+import type { DivisionType } from '@/types'
+import { getDivisionByRank } from '@/utils/division'
+import { translateRank, translateRecord } from '@/utils/translation'
+import { lookupRikishiByKanji } from '@/services/rikishi-lookup'
+import { downloadMatchupData } from '@/utils/cache-manager'
 
 /**
  * Interface for parsed matchup data

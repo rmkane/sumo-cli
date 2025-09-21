@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { isValidUrl, extractLinks, extractText, containsText } from './html'
+
+import { isValidUrl, extractLinks, extractText, containsText } from '@/utils/html'
 
 describe('HTML Utilities', () => {
   describe('isValidUrl', () => {

@@ -1,7 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import type { DivisionType } from '../types'
-import type { MatchupData } from '../services/matchup'
+
+import type { DivisionType } from '@/types'
+import type { MatchupData } from '@/services/matchup'
 
 /**
  * Saves matchup data to a CSV file.

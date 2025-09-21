@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+
 import {
   toRomajiWithMacrons,
   convertDiacriticsToAscii,
@@ -8,7 +9,7 @@ import {
   countKanji,
   hasKanji,
   normalizeJapanese,
-} from './japanese'
+} from '@/utils/japanese'
 
 describe('Japanese Utilities', () => {
   describe('toRomajiWithMacrons', () => {

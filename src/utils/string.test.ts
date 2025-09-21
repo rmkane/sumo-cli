@@ -1,11 +1,12 @@
 import { describe, it, expect } from 'vitest'
+
 import {
   capitalize,
   unwrapText,
   normalizeJapaneseText,
   extractNumber,
   isJapaneseOnly,
-} from './string'
+} from '@/utils/string'
 
 describe('String Utilities', () => {
   describe('capitalize', () => {

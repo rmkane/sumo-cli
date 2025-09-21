@@ -1,10 +1,11 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import type { DivisionType } from '../types'
-import { getDivisionName } from './division'
-import { fetchHTML } from './html'
-import { RateLimitedQueue } from '../classes/queue'
-import { RATE_LIMITS } from '../config/urls'
+
+import type { DivisionType } from '@/types'
+import { getDivisionName } from '@/utils/division'
+import { fetchHTML } from '@/utils/html'
+import { RateLimitedQueue } from '@/classes/queue'
+import { RATE_LIMITS } from '@/config/urls'
 
 // Global queue for rate-limited downloads
 const downloadQueue = new RateLimitedQueue(RATE_LIMITS.DOWNLOAD_DELAY_MS)

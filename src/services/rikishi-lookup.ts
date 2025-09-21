@@ -1,7 +1,8 @@
 import fs from 'node:fs'
-import type { DivisionType, Rikishi } from '../types'
-import { Division } from '../constants'
-import { getDivisionName } from '../utils/division'
+
+import type { DivisionType, Rikishi } from '@/types'
+import { Division } from '@/constants'
+import { getDivisionName } from '@/utils/division'
 
 // Cache for rikishi data by division
 const rikishiDataCache = new Map<DivisionType, Rikishi[]>()
