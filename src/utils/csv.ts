@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { PATHS } from '@/config/urls'
+import { DATA_PATHS } from '@/config/data'
 import type { DivisionType, MatchupData } from '@/types'
 import { logDebug } from '@/utils/logger'
 
@@ -120,14 +120,16 @@ function generateMatchupFilename(day: number, divisionId: DivisionType, division
  * @param divisionName - Human-readable division name
  * @param divisionId - Division identifier
  * @param day - Tournament day
+ * @param outputDir - Custom output directory (optional, defaults to DATA_PATHS.OUTPUT_DIR)
  */
 export async function saveMatchupCSV(
   matchups: MatchupData[],
   divisionName: string,
   divisionId: DivisionType,
   day: number,
+  outputDir?: string,
 ): Promise<void> {
-  const csvDir = `${PATHS.DATA_DIR}/csv`
+  const csvDir = outputDir || DATA_PATHS.OUTPUT_DIR
   ensureDirectoryExists(csvDir)
 
   const csvContent = matchupDataToCSV(matchups)

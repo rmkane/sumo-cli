@@ -7,13 +7,6 @@ export const URLS = {
 } as const
 
 /**
- * Configuration constants for file paths
- */
-export const PATHS = {
-  DATA_DIR: './data',
-} as const
-
-/**
  * Configuration constants for rate limiting
  */
 export const RATE_LIMITS = {

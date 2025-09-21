@@ -2,7 +2,7 @@ import path from 'node:path'
 
 import winston from 'winston'
 
-import { PATHS } from '@/config/urls'
+import { DATA_DIRS, DATA_PATHS } from '@/config/data'
 
 /**
  * Professional logging configuration using Winston
@@ -45,14 +45,14 @@ const transports = [
 
   // File transport for errors
   new winston.transports.File({
-    filename: path.join(PATHS.DATA_DIR, 'logs', 'error.log'),
+    filename: path.join(DATA_PATHS.USER_DATA_DIR, DATA_DIRS.LOGS, 'error.log'),
     level: 'error',
     format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
   }),
 
   // File transport for all logs
   new winston.transports.File({
-    filename: path.join(PATHS.DATA_DIR, 'logs', 'combined.log'),
+    filename: path.join(DATA_PATHS.USER_DATA_DIR, DATA_DIRS.LOGS, 'combined.log'),
     format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
   }),
 ]

@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import { PATHS } from '@/config/urls'
+import { DATA_DIRS, DATA_PATHS } from '@/config/data'
 import { Division } from '@/constants'
 import type { DivisionType, Rikishi } from '@/types'
 import { getDivisionName } from '@/utils/division'
@@ -25,7 +25,7 @@ function loadRikishiData(division: DivisionType): Rikishi[] {
   }
 
   const divisionName = getDivisionName(division)
-  const filename = `${PATHS.DATA_DIR}/json/${division}_${divisionName}_rikishi.json`
+  const filename = `${DATA_PATHS.USER_DATA_DIR}/${DATA_DIRS.JSON}/${division}_${divisionName}_rikishi.json`
 
   try {
     const data = JSON.parse(fs.readFileSync(filename, 'utf8'))

@@ -1,4 +1,4 @@
-import { PATHS } from '@/config/urls'
+import { DATA_DIRS, DATA_PATHS } from '@/config/data'
 import { Division } from '@/constants'
 import { fetchResults } from '@/services/stats-service'
 import type { DivisionType, Rikishi } from '@/types'
@@ -46,7 +46,7 @@ export async function processAllDivisions(forceRefresh: boolean): Promise<void> 
  */
 async function saveResults(results: Rikishi[], division: DivisionType): Promise<void> {
   const divisionName = getKeyByValue(Division, division)
-  const filename = `${PATHS.DATA_DIR}/json/${division}_${divisionName.toLowerCase()}_rikishi.json`
+  const filename = `${DATA_PATHS.USER_DATA_DIR}/${DATA_DIRS.JSON}/${division}_${divisionName.toLowerCase()}_rikishi.json`
 
   const data = {
     division: divisionName,

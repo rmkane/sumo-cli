@@ -12,12 +12,14 @@ import { logError, logProcessingComplete, logProcessingStart } from '@/utils/log
  * @param divisionId - Division identifier for API calls
  * @param day - Tournament day (1-15)
  * @param forceRefresh - Whether to bypass cache and fetch fresh data
+ * @param outputDir - Custom output directory for CSV files
  */
 export async function processDivisionMatchups(
   divisionName: string,
   divisionId: DivisionType,
   day: number,
   forceRefresh: boolean,
+  outputDir?: string,
 ): Promise<void> {
   logProcessingStart('matchups', `${divisionName} day ${day}`)
 
@@ -26,7 +28,7 @@ export async function processDivisionMatchups(
     const parsedMatchups = parseMatchupHTML(matchupData.html, divisionId)
 
     // Save matchup data as CSV
-    await saveMatchupCSV(parsedMatchups, divisionName, divisionId, day)
+    await saveMatchupCSV(parsedMatchups, divisionName, divisionId, day, outputDir)
 
     logProcessingComplete('matchups', parsedMatchups.length, `${divisionName} day ${day}`)
   } catch (error) {
@@ -40,8 +42,9 @@ export async function processDivisionMatchups(
  *
  * @param day - Tournament day (1-15)
  * @param forceRefresh - Whether to bypass cache and fetch fresh data
+ * @param outputDir - Custom output directory for CSV files
  */
-export async function processDayMatchups(day: number, forceRefresh: boolean): Promise<void> {
+export async function processDayMatchups(day: number, forceRefresh: boolean, outputDir?: string): Promise<void> {
   logProcessingStart('day matchups', `day ${day}`)
 
   // First, ensure we have division info cached
@@ -51,6 +54,6 @@ export async function processDayMatchups(day: number, forceRefresh: boolean): Pr
   // Then fetch and process matchup data for each division
   console.log('Fetching matchup data...')
   await processAllDivisions((divisionName, divisionId) =>
-    processDivisionMatchups(divisionName, divisionId, day, forceRefresh),
+    processDivisionMatchups(divisionName, divisionId, day, forceRefresh, outputDir),
   )
 }

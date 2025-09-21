@@ -1,6 +1,30 @@
+<!-- omit in toc -->
 # Sumo CLI
 
 A professional command-line interface for processing sumo rikishi data.
+
+<!-- omit in toc -->
+## Table of Contents
+
+- [Installation](#installation)
+  - [Local Development Installation (like pip -e)](#local-development-installation-like-pip--e)
+  - [Manual Installation](#manual-installation)
+- [Usage](#usage)
+  - [Basic Commands](#basic-commands)
+  - [Development Mode](#development-mode)
+  - [Options](#options)
+  - [Examples](#examples)
+- [Commands](#commands)
+  - [`process-all`](#process-all)
+  - [`process-day <day>`](#process-day-day)
+  - [`list`](#list)
+- [Data Storage](#data-storage)
+  - [User Data Directory (`~/.sumo-cli/`)](#user-data-directory-sumo-cli)
+  - [Output Directory (`./output/` or custom)](#output-directory-output-or-custom)
+  - [Example Output](#example-output)
+- [Logging](#logging)
+- [Error Handling](#error-handling)
+- [Development](#development)
 
 ## Installation
 
@@ -64,6 +88,7 @@ pnpm cli process-day 1
 
 - `-f, --force-refresh` - Force refresh of cached data
 - `-v, --verbose` - Enable verbose logging
+- `-o, --output-dir <path>` - Custom output directory for CSV files (default: "./output")
 
 ### Examples
 
@@ -74,58 +99,99 @@ sumo-cli process-all --force-refresh
 # Process day 8 with verbose logging
 sumo-cli process-day 8 --verbose
 
-# Process day 15 with force refresh and verbose logging
-sumo-cli process-day 15 --force-refresh --verbose
+# Process day 15 with custom output directory
+sumo-cli process-day 15 --output-dir ./my-csv-files
+
+# Process day 15 with force refresh, verbose logging, and custom output
+sumo-cli process-day 15 --force-refresh --verbose --output-dir ./custom-output
 
 # Development mode examples
 pnpm cli process-all --force-refresh
-pnpm cli process-day 8 --verbose
+pnpm cli process-day 8 --verbose --output-dir ./dev-output
 ```
 
 ## Commands
 
 ### `process-all`
+
 Process all sumo divisions and extract rikishi data.
 
 ```bash
-pnpm cli process-all [options]
+sumo-cli process-all [options]
 ```
 
 **Options:**
+
 - `--force-refresh` - Force refresh of cached data
 - `--verbose` - Enable verbose logging
+- `--output-dir <path>` - Custom output directory for CSV files
 
 ### `process-day <day>`
+
 Process matchup data for a specific tournament day.
 
 ```bash
-pnpm cli process-day <day> [options]
+sumo-cli process-day <day> [options]
 ```
 
 **Arguments:**
+
 - `<day>` - Tournament day number (1-15)
 
 **Options:**
+
 - `--force-refresh` - Force refresh of cached data
 - `--verbose` - Enable verbose logging
+- `--output-dir <path>` - Custom output directory for CSV files
 
 ### `list`
+
 List available data files and directories.
 
 ```bash
-pnpm cli list
+sumo-cli list [options]
 ```
 
-## Data Output
+**Options:**
 
-The CLI processes data into the following structure:
+- `--output-dir <path>` - Show custom output directory in the listing
 
-```
-data/
-├── json/           # Rikishi data by division
-├── csv/            # Matchup data by day and division
-├── html/           # Raw HTML data
+## Data Storage
+
+The CLI uses a modern data storage strategy:
+
+### User Data Directory (`~/.sumo-cli/`)
+
+Persistent data stored in the user's home directory:
+
+```none
+~/.sumo-cli/
+├── json/           # Rikishi data by division (cached)
+├── cache/          # Raw HTML data (cached)
 └── logs/           # Application logs
+```
+
+### Output Directory (`./output/` or custom)
+
+Generated CSV files stored relative to current working directory:
+
+```none
+./output/           # CSV files (default)
+./my-custom-output/ # CSV files (when using --output-dir)
+```
+
+### Example Output
+
+```bash
+$ sumo-cli list
+
+Data storage locations:
+📁 C:\Users\ryan\.sumo-cli\json - Rikishi data by division (cached)
+📁 C:\Users\ryan\.sumo-cli\cache - Raw HTML data (cached)
+📁 C:\Users\ryan\.sumo-cli\logs - Application logs
+
+Output locations:
+📁 C:\Users\ryan\Git\rikishi-data\output - CSV output files (default)
 ```
 
 ## Logging
@@ -133,7 +199,7 @@ data/
 The CLI uses professional logging with Winston:
 
 - **Console**: Colorized output for development
-- **Files**: Structured JSON logs in `data/logs/`
+- **Files**: Structured JSON logs in `~/.sumo-cli/logs/`
   - `error.log` - Error messages only
   - `combined.log` - All log messages
 
