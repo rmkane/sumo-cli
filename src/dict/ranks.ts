@@ -2,16 +2,16 @@ import { invertDict } from '@/dict/base'
 
 // English to Japanese ranks dictionary (sorted alphabetically)
 export const ranksDictionaryEn = {
-  jonidan: '序二段',
-  jonokuchi: '序ノ口',
-  juryo: '十両',
-  komusubi: '小結',
-  makushita: '幕下',
-  maegashira: '前頭',
-  ozeki: '大関',
-  sandanme: '三段目',
-  sekiwake: '関脇',
-  yokozuna: '横綱',
+  yokozuna: '横綱', // Rank 1
+  ozeki: '大関', // Rank 1
+  sekiwake: '関脇', // Rank 1
+  komusubi: '小結', // Rank 1
+  maegashira: '前頭', // Rank 1
+  juryo: '十両', // Rank 2
+  makushita: '幕下', // Rank 3
+  sandanme: '三段目', // Rank 4
+  jonidan: '序二段', // Rank 5
+  jonokuchi: '序ノ口', // Rank 6
 } as const
 
 export const ranksDictionaryJp = invertDict(ranksDictionaryEn)

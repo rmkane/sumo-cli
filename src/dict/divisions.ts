@@ -2,12 +2,12 @@ import { invertDict } from '@/dict/base'
 
 // English to Japanese divisions dictionary (sorted alphabetically)
 export const divisionsDictionaryEn = {
-  jonidan: '序二段',
-  jonokuchi: '序ノ口',
-  juryo: '十両',
-  makushita: '幕下',
-  makuuchi: '幕内',
-  sandanme: '三段目',
+  makuuchi: '幕内', // Rank 1
+  juryo: '十両', // Rank 2
+  sandanme: '三段目', // Rank 3
+  makushita: '幕下', // Rank 4
+  jonidan: '序二段', // Rank 5
+  jonokuchi: '序ノ口', // Rank 6
 } as const
 
 export const divisionsDictionaryJp = invertDict(divisionsDictionaryEn)
