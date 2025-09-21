@@ -30,38 +30,49 @@ const colors = {
 winston.addColors(colors)
 
 // Define log format
-const format = winston.format.combine(
-  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+// Define format for console output - simple format without timestamps
+const consoleFormat = winston.format.combine(
   winston.format.colorize({ all: true }),
-  winston.format.printf((info) => `${info.timestamp} ${info.level}: ${info.message}`),
+  winston.format.printf((info) => `${info.message}`),
+)
+
+// Define format for file output - with timestamps
+const fileFormat = winston.format.combine(
+  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+  winston.format.json(),
 )
 
 // Define transports
+// Determine console log level based on verbose flag
+const isVerbose = process.argv.includes('--verbose') || process.argv.includes('-v')
+const consoleLevel = isVerbose ? 'debug' : 'error' // Only show errors by default, debug when verbose
+
 const transports = [
-  // Console transport
+  // Console transport - only show errors by default, debug when verbose
   new winston.transports.Console({
-    level: process.env.NODE_ENV === 'production' ? 'warn' : 'debug',
+    level: consoleLevel,
+    format: consoleFormat,
   }),
 
   // File transport for errors
   new winston.transports.File({
     filename: path.join(DATA_PATHS.USER_DATA_DIR, DATA_DIRS.LOGS, 'error.log'),
     level: 'error',
-    format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
+    format: fileFormat,
   }),
 
-  // File transport for all logs
+  // File transport for all logs (including debug)
   new winston.transports.File({
     filename: path.join(DATA_PATHS.USER_DATA_DIR, DATA_DIRS.LOGS, 'combined.log'),
-    format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
+    level: 'debug', // Capture all log levels in files
+    format: fileFormat,
   }),
 ]
 
 // Create the logger
 const logger = winston.createLogger({
-  level: process.env.NODE_ENV === 'production' ? 'warn' : 'debug',
+  level: 'debug', // Always capture all levels, console transport controls what's shown
   levels,
-  format,
   transports,
 })
 

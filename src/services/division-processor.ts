@@ -32,10 +32,16 @@ export async function processDivision(
  * Processes all divisions in parallel.
  *
  * @param forceRefresh - Whether to bypass cache and fetch fresh data
+ * @returns Object containing data directory and number of files created
  */
-export async function processAllDivisions(forceRefresh: boolean): Promise<void> {
+export async function processAllDivisions(forceRefresh: boolean): Promise<{ dataDir: string; filesCreated: number }> {
   // Process all divisions in parallel using the utility
   await processAllDivisionsUtil((divisionName, divisionId) => processDivision(divisionName, divisionId, forceRefresh))
+
+  return {
+    dataDir: DATA_PATHS.USER_DATA_DIR,
+    filesCreated: 6, // Always 6 divisions
+  }
 }
 
 /**

@@ -1,6 +1,8 @@
 import fs from 'node:fs/promises'
+import path from 'node:path'
 
 import { DATA_DIRS, DATA_PATHS } from '@/config/data'
+import { logDebug } from '@/utils/logger'
 
 // Cache utilities
 function getCacheKey(url: string): string {
@@ -20,7 +22,7 @@ export async function ensureCacheDirectory(): Promise<void> {
 export async function readFromCache(cachePath: string): Promise<string | null> {
   try {
     const cached = await fs.readFile(cachePath, 'utf-8')
-    console.log(`Using cached version`)
+    logDebug(`Using cached version: ${path.basename(cachePath)}`)
     return cached
   } catch {
     return null
@@ -29,5 +31,5 @@ export async function readFromCache(cachePath: string): Promise<string | null> {
 
 export async function writeToCache(cachePath: string, content: string): Promise<void> {
   await fs.writeFile(cachePath, content, 'utf-8')
-  console.log(`Cached to ${cachePath}`)
+  logDebug(`Cached to: ${path.basename(cachePath)}`)
 }

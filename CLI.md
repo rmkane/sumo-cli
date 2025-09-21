@@ -18,6 +18,9 @@ A professional command-line interface for processing sumo rikishi data.
   - [`process-all`](#process-all)
   - [`process-day <day>`](#process-day-day)
   - [`list`](#list)
+- [Interactive Mode](#interactive-mode)
+  - [Interactive Commands](#interactive-commands)
+  - [Interactive Examples](#interactive-examples)
 - [Data Storage](#data-storage)
   - [User Data Directory (`~/.sumo-cli/`)](#user-data-directory-sumo-cli)
   - [Output Directory (`./output/` or custom)](#output-directory-output-or-custom)
@@ -89,6 +92,7 @@ pnpm cli process-day 1
 - `-f, --force-refresh` - Force refresh of cached data
 - `-v, --verbose` - Enable verbose logging
 - `-o, --output-dir <path>` - Custom output directory for CSV files (default: "./output")
+- `-i, --interactive` - Launch interactive REPL mode
 
 ### Examples
 
@@ -104,6 +108,9 @@ sumo-cli process-day 15 --output-dir ./my-csv-files
 
 # Process day 15 with force refresh, verbose logging, and custom output
 sumo-cli process-day 15 --force-refresh --verbose --output-dir ./custom-output
+
+# Interactive mode
+sumo-cli --interactive
 
 # Development mode examples
 pnpm cli process-all --force-refresh
@@ -155,6 +162,36 @@ sumo-cli list [options]
 **Options:**
 
 - `--output-dir <path>` - Show custom output directory in the listing
+
+## Interactive Mode
+
+Launch an interactive REPL (Read-Eval-Print Loop) for exploring the CLI:
+
+```bash
+sumo-cli --interactive
+```
+
+### Interactive Commands
+
+- `help` - Show interactive help with available commands
+- `clear` - Clear the screen
+- `exit`, `quit` - Exit interactive mode
+- `list` - List data storage locations
+- `process-all` - Process all divisions
+- `process-day <day>` - Process specific tournament day (1-15)
+
+### Interactive Examples
+
+```bash
+sumo-cli> help
+sumo-cli> list
+sumo-cli> process-day 1 --verbose
+sumo-cli> process-all --force-refresh --output-dir ./my-data
+sumo-cli> clear
+sumo-cli> exit
+```
+
+The interactive mode provides a user-friendly way to explore commands and options without having to type the full `sumo-cli` command each time.
 
 ## Data Storage
 

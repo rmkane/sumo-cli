@@ -7,6 +7,7 @@ import { RATE_LIMITS } from '@/config/urls'
 import type { DivisionType } from '@/types'
 import { getDivisionName } from '@/utils/division'
 import { fetchHTML } from '@/utils/html'
+import { logDebug } from '@/utils/logger'
 
 // Global queue for rate-limited downloads
 const downloadQueue = new RateLimitedQueue(RATE_LIMITS.DOWNLOAD_DELAY_MS)
@@ -133,7 +134,7 @@ function getCachePath(url: string, cacheType: CacheType, customFilename?: string
 async function readFromCache(cachePath: string): Promise<string | null> {
   try {
     const cached = await fs.readFile(cachePath, 'utf-8')
-    console.log(`Using cached version`)
+    logDebug(`Using cached version: ${path.basename(cachePath)}`)
     return cached
   } catch {
     return null
@@ -152,7 +153,7 @@ async function writeToCache(cachePath: string, content: string): Promise<void> {
   await fs.mkdir(dir, { recursive: true })
 
   await fs.writeFile(cachePath, content, 'utf-8')
-  console.log(`Cached to ${cachePath}`)
+  logDebug(`Cached to: ${path.basename(cachePath)}`)
 }
 
 /**
@@ -163,7 +164,7 @@ async function writeToCache(cachePath: string, content: string): Promise<void> {
  */
 async function downloadFromServer(url: string): Promise<string> {
   return downloadQueue.add(async () => {
-    console.log(`Downloading ${url}...`)
+    logDebug(`Downloading: ${url}`)
     return await fetchHTML(url)
   })
 }

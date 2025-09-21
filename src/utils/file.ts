@@ -2,6 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import type { FileOptions } from '@/types'
+import { logDebug } from '@/utils/logger'
 
 /**
  * Default configuration for file operations.
@@ -76,7 +77,7 @@ export async function saveJSON<T = unknown>(
     await fs.writeFile(filename, jsonContent, config.encoding)
 
     const count = Array.isArray(data) ? data.length : 'data'
-    console.log(`Saved ${count} ${itemName} to ${filename}`)
+    logDebug(`Saved ${count} ${itemName} to ${path.basename(filename)}`)
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     throw new Error(`${config.errorMessage}: ${message}`)

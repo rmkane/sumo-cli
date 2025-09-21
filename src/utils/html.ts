@@ -1,5 +1,7 @@
 import puppeteer, { Browser, Page } from 'puppeteer'
 
+import { logDebug } from '@/utils/logger'
+
 /**
  * Configuration options for HTML fetching operations.
  */
@@ -61,7 +63,7 @@ const DEFAULT_FETCH_OPTIONS: Required<FetchOptions> = {
 async function fetchFromUrl(url: string, options: FetchOptions = {}): Promise<string> {
   const config = { ...DEFAULT_FETCH_OPTIONS, ...options }
 
-  console.log(`Fetching ${url} with Puppeteer...`)
+  logDebug(`Fetching ${url} with Puppeteer...`)
 
   let browser: Browser | null = null
   let page: Page | null = null
