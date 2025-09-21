@@ -1,6 +1,7 @@
 import { parseArgs } from '@/cli/args'
 import { processAllDivisions } from '@/services/division-processor'
 import { processDayMatchups } from '@/services/matchup-processor'
+import { logError, logSuccess } from '@/utils/logger'
 
 /**
  * Main entry point for the application.
@@ -20,16 +21,16 @@ async function main(): Promise<void> {
     if (day !== undefined) {
       console.log(`Starting CLI for day ${day}${forceRefresh ? ' (force refresh enabled)' : ''}`)
       await processDayMatchups(day, forceRefresh)
-      console.log('\n=== Processing completed successfully ===')
+      logSuccess('Processing completed successfully')
       return
     }
 
     // Handle full app processing
     console.log(`Starting App${forceRefresh ? ' (force refresh enabled)' : ''}`)
     await processAllDivisions(forceRefresh)
-    console.log('\n=== Processing completed successfully ===')
+    logSuccess('Processing completed successfully')
   } catch (error) {
-    console.error('Fatal error in main:', error)
+    logError('main', error)
     process.exit(1)
   }
 }

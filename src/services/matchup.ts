@@ -2,7 +2,7 @@ import { type Cheerio, load } from 'cheerio'
 import { type Element } from 'domhandler'
 
 import { lookupKimarite } from '@/dict'
-import { lookupRikishiByKanji } from '@/services/rikishi-lookup'
+import { findRikishiAcrossDivisions } from '@/services/rikishi-lookup'
 import type { DivisionType, MatchupData } from '@/types'
 import { downloadMatchupData } from '@/utils/cache-manager'
 import { getDivisionByRank } from '@/utils/division'
@@ -180,7 +180,7 @@ function parsePlayer(
     const rankDivision = getDivisionByRank(rank)
 
     // Look up rikishi data to get hiragana and English name
-    const rikishiData = lookupRikishiByKanji(kanji, rankDivision || division)
+    const rikishiData = findRikishiAcrossDivisions(kanji, rankDivision || division)
     const hiragana = rikishiData?.hiragana || kanji
     const name = rikishiData?.english || kanji
 

@@ -1,7 +1,10 @@
+import { PATHS } from '@/config/urls'
 import { Division } from '@/constants'
 import { fetchResults } from '@/services/stats-service'
 import type { DivisionType, Rikishi } from '@/types'
+import { processAllDivisions as processAllDivisionsUtil } from '@/utils/division-iterator'
 import { saveJSON } from '@/utils/file'
+import { logProcessingComplete, logProcessingStart } from '@/utils/logger'
 import { getKeyByValue } from '@/utils/object'
 
 /**
@@ -17,12 +20,12 @@ export async function processDivision(
   divisionId: DivisionType,
   forceRefresh: boolean,
 ): Promise<void> {
-  console.log(`\n=== Processing ${divisionName} (${divisionId}) ===`)
+  logProcessingStart('division processing', `${divisionName} (${divisionId})`)
 
   const wasFetched = await fetchResults(divisionId, forceRefresh)
   await saveResults(wasFetched.results, divisionId)
 
-  console.log(`Fetched ${wasFetched.results.length} rikishi for ${divisionName}`)
+  logProcessingComplete('rikishi', wasFetched.results.length, divisionName)
 }
 
 /**
@@ -31,13 +34,8 @@ export async function processDivision(
  * @param forceRefresh - Whether to bypass cache and fetch fresh data
  */
 export async function processAllDivisions(forceRefresh: boolean): Promise<void> {
-  // Process all divisions in parallel
-  const divisionPromises = Object.entries(Division).map(([divisionName, divisionId]) =>
-    processDivision(divisionName, divisionId, forceRefresh),
-  )
-
-  // Wait for all divisions to complete
-  await Promise.all(divisionPromises)
+  // Process all divisions in parallel using the utility
+  await processAllDivisionsUtil((divisionName, divisionId) => processDivision(divisionName, divisionId, forceRefresh))
 }
 
 /**
@@ -48,7 +46,7 @@ export async function processAllDivisions(forceRefresh: boolean): Promise<void> 
  */
 async function saveResults(results: Rikishi[], division: DivisionType): Promise<void> {
   const divisionName = getKeyByValue(Division, division)
-  const filename = `./data/json/${division}_${divisionName.toLowerCase()}_rikishi.json`
+  const filename = `${PATHS.DATA_DIR}/json/${division}_${divisionName.toLowerCase()}_rikishi.json`
 
   const data = {
     division: divisionName,

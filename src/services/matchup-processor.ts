@@ -1,8 +1,9 @@
-import { Division } from '@/constants'
 import { processDivision } from '@/services/division-processor'
 import { fetchMatchupData, parseMatchupHTML } from '@/services/matchup'
 import type { DivisionType } from '@/types'
 import { saveMatchupCSV } from '@/utils/csv'
+import { processAllDivisions } from '@/utils/division-iterator'
+import { logError, logProcessingComplete, logProcessingStart } from '@/utils/logger'
 
 /**
  * Processes matchup data for a specific division and day.
@@ -18,7 +19,7 @@ export async function processDivisionMatchups(
   day: number,
   forceRefresh: boolean,
 ): Promise<void> {
-  console.log(`\n=== Processing ${divisionName} day ${day} matchups ===`)
+  logProcessingStart('matchups', `${divisionName} day ${day}`)
 
   try {
     const matchupData = await fetchMatchupData(divisionId, day, forceRefresh)
@@ -27,9 +28,9 @@ export async function processDivisionMatchups(
     // Save matchup data as CSV
     await saveMatchupCSV(parsedMatchups, divisionName, divisionId, day)
 
-    console.log(`Processed ${parsedMatchups.length} matchups for ${divisionName} day ${day}`)
+    logProcessingComplete('matchups', parsedMatchups.length, `${divisionName} day ${day}`)
   } catch (error) {
-    console.error(`Error processing ${divisionName} day ${day}:`, error)
+    logError(`${divisionName} day ${day}`, error)
     throw error
   }
 }
@@ -41,19 +42,15 @@ export async function processDivisionMatchups(
  * @param forceRefresh - Whether to bypass cache and fetch fresh data
  */
 export async function processDayMatchups(day: number, forceRefresh: boolean): Promise<void> {
-  console.log(`\n=== Processing day ${day} matchups ===`)
+  logProcessingStart('day matchups', `day ${day}`)
 
   // First, ensure we have division info cached
   console.log('Caching division info...')
-  const divisionPromises = Object.entries(Division).map(([divisionName, divisionId]) =>
-    processDivision(divisionName, divisionId, forceRefresh),
-  )
-  await Promise.all(divisionPromises)
+  await processAllDivisions((divisionName, divisionId) => processDivision(divisionName, divisionId, forceRefresh))
 
   // Then fetch and process matchup data for each division
   console.log('Fetching matchup data...')
-  const matchupPromises = Object.entries(Division).map(([divisionName, divisionId]) =>
+  await processAllDivisions((divisionName, divisionId) =>
     processDivisionMatchups(divisionName, divisionId, day, forceRefresh),
   )
-  await Promise.all(matchupPromises)
 }

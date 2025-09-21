@@ -61,3 +61,9 @@ export interface FileOptions {
   /** Custom error message for file operations */
   errorMessage?: string
 }
+
+/**
+ * Processor function type
+ */
+// eslint-disable-next-line no-unused-vars
+export type ProcessorFn<T> = (divisionName: string, divisionId: DivisionType) => Promise<T>

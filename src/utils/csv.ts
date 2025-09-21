@@ -1,8 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import type { MatchupData } from '@/services/matchup'
-import type { DivisionType } from '@/types'
+import { PATHS } from '@/config/urls'
+import type { DivisionType, MatchupData } from '@/types'
 
 /**
  * CSV column structure - defines the order and names of columns
@@ -126,7 +126,7 @@ export async function saveMatchupCSV(
   divisionId: DivisionType,
   day: number,
 ): Promise<void> {
-  const csvDir = './data/csv'
+  const csvDir = `${PATHS.DATA_DIR}/csv`
   ensureDirectoryExists(csvDir)
 
   const csvContent = matchupDataToCSV(matchups)
