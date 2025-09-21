@@ -16,6 +16,7 @@ export interface MatchupData {
     kanji: string
     hiragana: string
     name: string
+    result: string // 'W' for win, 'L' for loss, '' for no result yet
   }
   west: {
     rank: string
@@ -23,6 +24,7 @@ export interface MatchupData {
     kanji: string
     hiragana: string
     name: string
+    result: string // 'W' for win, 'L' for loss, '' for no result yet
   }
 }
 
@@ -111,9 +113,13 @@ function parseMatchupRow($row: any, division: DivisionType): MatchupData | null 
       return null
     }
 
+    // Determine win/loss results
+    const eastResult = determineResult($eastPlayer)
+    const westResult = determineResult($westPlayer)
+
     return {
-      east: eastPlayer,
-      west: westPlayer,
+      east: { ...eastPlayer, result: eastResult },
+      west: { ...westPlayer, result: westResult },
     }
   } catch (error) {
     console.warn('Error parsing matchup row:', error)
@@ -165,6 +171,37 @@ function parsePlayer($player: any, division: DivisionType): { rank: string; reco
     console.warn('Error parsing player:', error)
     return null
   }
+}
+
+/**
+ * Determines the win/loss result for a player based on CSS classes.
+ *
+ * @param $player - Cheerio object representing the player cell
+ * @returns 'W' for win, 'L' for loss, '' for no result yet
+ */
+function determineResult($player: any): string {
+  // Check if the player cell has the 'win' class (completed match - winner)
+  if ($player.hasClass('win')) {
+    return 'W'
+  }
+
+  // Check if the player cell has the 'player' class but no 'win' class
+  // This indicates they lost (since the winner would have 'win' class)
+  if ($player.hasClass('player') && !$player.hasClass('win')) {
+    // Look for result indicators in the same row to confirm this is a completed match
+    const $row = $player.closest('tr')
+    const $resultCells = $row.find('td.result')
+
+    // Check if there are result images indicating completed match
+    const hasResultImages = $resultCells.find('img[src*="result_ic"]').length > 0
+
+    if (hasResultImages) {
+      return 'L'
+    }
+  }
+
+  // No result yet (incomplete day)
+  return ''
 }
 
 

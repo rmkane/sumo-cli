@@ -43,11 +43,20 @@ export async function saveMatchupCSV(
  * @returns CSV content as string
  */
 function generateMatchupCSV(matchups: MatchupData[]): string {
-  const headers = [
-    '', '', 'East', '', '', '', '', '', '', 'West', '', ''
-  ]
+  const headers = ['', '', '東', '', 'East', '', '', 'West', '', '西', '', '']
   const subHeaders = [
-    'Rank', 'Record', 'Kanji', 'Hiragana', 'Name', '', '', 'Name', 'Hiragana', 'Kanji', 'Record', 'Rank'
+    'Rank',
+    'Record',
+    'Kanji',
+    'Hiragana',
+    'Name',
+    'Result',
+    'Result',
+    'Name',
+    'Hiragana',
+    'Kanji',
+    'Record',
+    'Rank',
   ]
 
   const rows = [
@@ -59,8 +68,8 @@ function generateMatchupCSV(matchups: MatchupData[]): string {
       matchup.east.kanji || '',
       matchup.east.hiragana || '',
       matchup.east.name || '',
-      '',
-      '',
+      matchup.east.result || '',
+      matchup.west.result || '',
       matchup.west.name || '',
       matchup.west.hiragana || '',
       matchup.west.kanji || '',
