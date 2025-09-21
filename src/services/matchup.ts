@@ -6,6 +6,7 @@ import { findRikishiAcrossDivisions } from '@/services/rikishi-lookup'
 import type { DivisionType, MatchupData } from '@/types'
 import { downloadMatchupData } from '@/utils/cache-manager'
 import { getDivisionByRank } from '@/utils/division'
+import { logError, logWarning } from '@/utils/logger'
 import { translateRank, translateRecord } from '@/utils/translation'
 
 const KIMARITE_SUFFIX = '取組解説'
@@ -57,7 +58,7 @@ export async function fetchMatchupData(
     const { content: html, fromServer } = await downloadMatchupData(division, day, forceRefresh)
     return { html, fromServer }
   } catch (error) {
-    console.error(`Error fetching matchup data for division ${division} day ${day}:`, error)
+    logError(`fetching matchup data for division ${division} day ${day}`, error)
     throw error
   }
 }
@@ -76,7 +77,7 @@ export function parseMatchupHTML(html: string, division: DivisionType): MatchupD
   // Find the torikumi table
   const table = $('#torikumi_table')
   if (table.length === 0) {
-    console.warn('No torikumi table found in HTML')
+    logWarning('No torikumi table found in HTML')
     return matchups
   }
 
@@ -89,7 +90,7 @@ export function parseMatchupHTML(html: string, division: DivisionType): MatchupD
       const matchup = parseMatchupRow($row, division)
 
       if (!matchup) {
-        console.warn('Failed to parse matchup row:', row)
+        logWarning('Failed to parse matchup row')
         return
       }
 
@@ -142,7 +143,7 @@ function parseMatchupRow($row: Cheerio<Element>, division: DivisionType): Matchu
       west: { ...westPlayer, result: westResult, technique: westTechnique },
     }
   } catch (error) {
-    console.warn('Error parsing matchup row:', error)
+    logWarning(`Error parsing matchup row: ${error instanceof Error ? error.message : String(error)}`)
     return null
   }
 }
@@ -186,7 +187,7 @@ function parsePlayer(
 
     // Only warn for non-empty names that weren't found
     if (!rikishiData && kanji.trim()) {
-      console.warn(`Rikishi not found in JSON: "${kanji}" (rank: ${rank}, division: ${rankDivision || division})`)
+      logWarning(`Rikishi not found in JSON: "${kanji}" (rank: ${rank}, division: ${rankDivision || division})`)
     }
 
     return {
@@ -197,7 +198,7 @@ function parsePlayer(
       name,
     }
   } catch (error) {
-    console.warn('Error parsing player:', error)
+    logWarning(`Error parsing player: ${error instanceof Error ? error.message : String(error)}`)
     return null
   }
 }

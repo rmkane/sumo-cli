@@ -3,6 +3,7 @@ import path from 'node:path'
 
 import { PATHS } from '@/config/urls'
 import type { DivisionType, MatchupData } from '@/types'
+import { logDebug } from '@/utils/logger'
 
 /**
  * CSV column structure - defines the order and names of columns
@@ -134,5 +135,5 @@ export async function saveMatchupCSV(
   const filepath = path.join(csvDir, filename)
 
   fs.writeFileSync(filepath, csvContent, 'utf8')
-  console.log(`Saved matchup CSV: ${filepath}`)
+  logDebug(`Saved matchup CSV: ${filepath}`)
 }

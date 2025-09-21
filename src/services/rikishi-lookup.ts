@@ -4,6 +4,7 @@ import { PATHS } from '@/config/urls'
 import { Division } from '@/constants'
 import type { DivisionType, Rikishi } from '@/types'
 import { getDivisionName } from '@/utils/division'
+import { logDebug, logWarning } from '@/utils/logger'
 
 // Cache for rikishi data by division
 const rikishiDataCache = new Map<DivisionType, Rikishi[]>()
@@ -52,7 +53,7 @@ export function findRikishiAcrossDivisions(kanji: string, division: DivisionType
   if (rikishi) {
     return rikishi
   }
-  console.log(`Rikishi not found in current division ${division}: ${kanji}`)
+  logDebug(`Rikishi not found in current division ${division}: ${kanji}`)
 
   // If not found, try searching in all other divisions
   for (const [, divisionId] of Object.entries(Division)) {
@@ -60,11 +61,12 @@ export function findRikishiAcrossDivisions(kanji: string, division: DivisionType
 
     const otherRikishi = lookupRikishiByKanji(kanji, divisionId as DivisionType)
     if (otherRikishi) {
+      logDebug(`Found rikishi in different division: ${kanji} in ${divisionId}`)
       return otherRikishi
     }
   }
 
-  console.log(`Rikishi not found in any division: ${kanji}`)
+  logWarning(`Rikishi not found in any division: ${kanji}`)
   return null
 }
 
@@ -81,9 +83,8 @@ function lookupRikishiByKanji(kanji: string, division: DivisionType): Rikishi | 
     return rikishiData.find((r) => r.kanji === kanji) || null
   } catch (error) {
     // Log warning but don't throw - let caller decide how to handle
-    console.warn(
-      `Failed to load data for division ${division}:`,
-      error instanceof Error ? error.message : String(error),
+    logWarning(
+      `Failed to load data for division ${division}: ${error instanceof Error ? error.message : String(error)}`,
     )
     return null
   }

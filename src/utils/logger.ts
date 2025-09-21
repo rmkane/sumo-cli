@@ -1,5 +1,72 @@
+import path from 'node:path'
+
+import winston from 'winston'
+
+import { PATHS } from '@/config/urls'
+
 /**
- * Centralized logging utility for consistent formatting across the application.
+ * Professional logging configuration using Winston
+ */
+
+// Define log levels
+const levels = {
+  error: 0,
+  warn: 1,
+  info: 2,
+  http: 3,
+  debug: 4,
+}
+
+// Define colors for each level
+const colors = {
+  error: 'red',
+  warn: 'yellow',
+  info: 'green',
+  http: 'magenta',
+  debug: 'white',
+}
+
+// Tell winston about the colors
+winston.addColors(colors)
+
+// Define log format
+const format = winston.format.combine(
+  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+  winston.format.colorize({ all: true }),
+  winston.format.printf((info) => `${info.timestamp} ${info.level}: ${info.message}`),
+)
+
+// Define transports
+const transports = [
+  // Console transport
+  new winston.transports.Console({
+    level: process.env.NODE_ENV === 'production' ? 'warn' : 'debug',
+  }),
+
+  // File transport for errors
+  new winston.transports.File({
+    filename: path.join(PATHS.DATA_DIR, 'logs', 'error.log'),
+    level: 'error',
+    format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
+  }),
+
+  // File transport for all logs
+  new winston.transports.File({
+    filename: path.join(PATHS.DATA_DIR, 'logs', 'combined.log'),
+    format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
+  }),
+]
+
+// Create the logger
+const logger = winston.createLogger({
+  level: process.env.NODE_ENV === 'production' ? 'warn' : 'debug',
+  levels,
+  format,
+  transports,
+})
+
+/**
+ * Professional logging utility for consistent formatting across the application.
  */
 
 /**
@@ -11,12 +78,12 @@
  * @example
  * ```typescript
  * logProcessingStart('division processing', 'Makuuchi')
- * // Output: "=== Processing division processing (Makuuchi) ==="
+ * // Output: "2024-01-15 10:30:45 info: Processing division processing (Makuuchi)"
  * ```
  */
 export function logProcessingStart(operation: string, details?: string): void {
   const message = details ? `${operation} (${details})` : operation
-  console.log(`\n=== Processing ${message} ===`)
+  logger.info(`Processing ${message}`)
 }
 
 /**
@@ -29,12 +96,12 @@ export function logProcessingStart(operation: string, details?: string): void {
  * @example
  * ```typescript
  * logProcessingComplete('matchups', 15, 'Makuuchi day 1')
- * // Output: "Processed 15 matchups for Makuuchi day 1"
+ * // Output: "2024-01-15 10:30:45 info: Processed 15 matchups (Makuuchi day 1)"
  * ```
  */
 export function logProcessingComplete(operation: string, count: number, details?: string): void {
   const message = details ? `${operation} for ${details}` : operation
-  console.log(`Processed ${count} ${message}`)
+  logger.info(`Processed ${count} ${message}`)
 }
 
 /**
@@ -45,11 +112,11 @@ export function logProcessingComplete(operation: string, count: number, details?
  * @example
  * ```typescript
  * logSuccess('Processing completed successfully')
- * // Output: "=== Processing completed successfully ==="
+ * // Output: "2024-01-15 10:30:45 info: Processing completed successfully"
  * ```
  */
 export function logSuccess(message: string): void {
-  console.log(`\n=== ${message} ===`)
+  logger.info(message)
 }
 
 /**
@@ -61,11 +128,12 @@ export function logSuccess(message: string): void {
  * @example
  * ```typescript
  * logError('division processing', error)
- * // Output: "Error processing division processing: [error details]"
+ * // Output: "2024-01-15 10:30:45 error: Error processing division processing: [error details]"
  * ```
  */
 export function logError(context: string, error: unknown): void {
-  console.error(`Error processing ${context}:`, error)
+  const message = error instanceof Error ? error.message : String(error)
+  logger.error(`Error processing ${context}: ${message}`)
 }
 
 /**
@@ -76,8 +144,49 @@ export function logError(context: string, error: unknown): void {
  * @example
  * ```typescript
  * logWarning('No data found for division')
+ * // Output: "2024-01-15 10:30:45 warn: No data found for division"
  * ```
  */
 export function logWarning(message: string): void {
-  console.warn(message)
+  logger.warn(message)
 }
+
+/**
+ * Logs debug information.
+ *
+ * @param message - Debug message to log
+ * @param data - Optional data to include
+ *
+ * @example
+ * ```typescript
+ * logDebug('Cache hit for division', { division: 'Makuuchi', count: 42 })
+ * ```
+ */
+export function logDebug(message: string, data?: unknown): void {
+  if (data) {
+    logger.debug(`${message}: ${JSON.stringify(data)}`)
+  } else {
+    logger.debug(message)
+  }
+}
+
+/**
+ * Logs HTTP request information.
+ *
+ * @param method - HTTP method
+ * @param url - Request URL
+ * @param status - Response status
+ * @param duration - Request duration in ms
+ *
+ * @example
+ * ```typescript
+ * logHttp('GET', '/api/rikishi', 200, 150)
+ * // Output: "2024-01-15 10:30:45 http: GET /api/rikishi 200 150ms"
+ * ```
+ */
+export function logHttp(method: string, url: string, status: number, duration: number): void {
+  logger.http(`${method} ${url} ${status} ${duration}ms`)
+}
+
+// Export the winston logger instance for advanced usage
+export { logger }

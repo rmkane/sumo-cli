@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import type { MatchupData } from '@/services/matchup'
+import type { MatchupData } from '@/types'
 import { matchupDataToCSV } from '@/utils/csv'
 
 describe('CSV Utilities', () => {

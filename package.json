@@ -1,13 +1,17 @@
 {
-  "name": "rikishi-data",
+  "name": "sumo-cli",
   "version": "0.1.0",
   "type": "module",
-  "description": "Japanese Sumo Rikishi Reading Data",
+  "description": "Professional CLI tool for sumo rikishi data extraction and processing",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tsc-alias && node scripts/fix-imports.js",
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts",
+    "cli": "tsx src/index.ts",
+    "link": "npm link",
+    "unlink": "npm unlink -g sumo-cli",
+    "install-local": "npm run build && npm run link",
     "lint": "eslint src/**/*.{ts,js}",
     "lint:fix": "eslint src/**/*.{ts,js} --fix",
     "format": "prettier --write \"src/**/*.{ts,js}\"",
@@ -16,6 +20,9 @@
     "test:run": "vitest run",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage"
+  },
+  "bin": {
+    "sumo-cli": "./dist/cli/index.js"
   },
   "keywords": [
     "rikishi",
@@ -26,8 +33,10 @@
   "license": "MIT",
   "dependencies": {
     "cheerio": "^1.1.2",
+    "commander": "^14.0.1",
     "puppeteer": "^24.15.0",
-    "wanakana": "^5.3.1"
+    "wanakana": "^5.3.1",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
@@ -43,6 +52,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.1.0",
     "prettier": "^3.6.2",
+    "tsc-alias": "^1.8.16",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"

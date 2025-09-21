@@ -8,7 +8,7 @@ import promisePlugin from 'eslint-plugin-promise'
 export default [
   js.configs.recommended,
   {
-    files: ['**/*.{ts,js}'],
+    files: ['src/**/*.{ts,js}'],
     languageOptions: {
       parser: tsparser,
       parserOptions: {
@@ -62,7 +62,7 @@ export default [
             order: 'asc',
             caseInsensitive: true,
           },
-        },
+        }
       ],
       'import/no-unresolved': 'error',
       'import/no-duplicates': 'error',
@@ -97,13 +97,28 @@ export default [
         },
       },
     },
-  },
-  {
     ignores: [
       'dist/',
       'node_modules/',
       '*.js',
       'tmp.js',
     ],
+  },
+  {
+    files: ['scripts/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        Buffer: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+      },
+    },
+    rules: {
+      'no-console': 'off',
+    },
   },
 ]
