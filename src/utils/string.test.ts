@@ -1,11 +1,6 @@
-import { describe, it, expect } from 'vitest'
-import {
-  capitalize,
-  unwrapText,
-  normalizeJapaneseText,
-  extractNumber,
-  isJapaneseOnly,
-} from './string'
+import { describe, expect, it } from 'vitest'
+
+import { capitalize, extractNumber, isJapaneseOnly, normalizeJapaneseText, unwrapText } from '@/utils/string'
 
 describe('String Utilities', () => {
   describe('capitalize', () => {
@@ -173,39 +168,25 @@ describe('String Utilities', () => {
     })
 
     it('should handle mixed whitespace characters', () => {
-      expect(normalizeJapaneseText('hello\tworld\nspace　full')).toBe(
-        'hello world space full',
-      )
-      expect(normalizeJapaneseText('大関\t関脇\n前頭　後頭')).toBe(
-        '大関 関脇 前頭 後頭',
-      )
+      expect(normalizeJapaneseText('hello\tworld\nspace　full')).toBe('hello world space full')
+      expect(normalizeJapaneseText('大関\t関脇\n前頭　後頭')).toBe('大関 関脇 前頭 後頭')
     })
 
     it('should preserve Japanese characters', () => {
       expect(normalizeJapaneseText('こんにちは世界')).toBe('こんにちは世界')
       expect(normalizeJapaneseText('大関関脇小結')).toBe('大関関脇小結')
-      expect(normalizeJapaneseText('横綱大関関脇小結前頭')).toBe(
-        '横綱大関関脇小結前頭',
-      )
+      expect(normalizeJapaneseText('横綱大関関脇小結前頭')).toBe('横綱大関関脇小結前頭')
     })
 
     it('should handle complex normalization scenarios', () => {
-      expect(normalizeJapaneseText('  こんにちは　世界\n\n大関\t関脇  ')).toBe(
-        'こんにちは 世界 大関 関脇',
-      )
-      expect(normalizeJapaneseText('\n\n\n大関\n\n\n関脇\n\n\n')).toBe(
-        '大関 関脇',
-      )
+      expect(normalizeJapaneseText('  こんにちは　世界\n\n大関\t関脇  ')).toBe('こんにちは 世界 大関 関脇')
+      expect(normalizeJapaneseText('\n\n\n大関\n\n\n関脇\n\n\n')).toBe('大関 関脇')
       expect(normalizeJapaneseText('　　a　　b　　c　　')).toBe('a b c')
     })
 
     it('should handle mixed language text', () => {
-      expect(normalizeJapaneseText('Hello　世界\n\nWorld')).toBe(
-        'Hello 世界 World',
-      )
-      expect(normalizeJapaneseText('大関\tOzeki\n関脇　Sekiwake')).toBe(
-        '大関 Ozeki 関脇 Sekiwake',
-      )
+      expect(normalizeJapaneseText('Hello　世界\n\nWorld')).toBe('Hello 世界 World')
+      expect(normalizeJapaneseText('大関\tOzeki\n関脇　Sekiwake')).toBe('大関 Ozeki 関脇 Sekiwake')
     })
   })
 

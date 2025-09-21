@@ -79,7 +79,7 @@ export function unwrapText(str: string): string {
  *
  * @example
  * ```typescript
- * normalizeJapaneseText('  こんにちは　世界  ')  // returns 'こんにちは 世界'
+ * normalizeJapaneseText('  こんにちは 世界  ')  // returns 'こんにちは 世界'
  * normalizeJapaneseText('大関\n\n関脇')         // returns '大関 関脇'
  * normalizeJapaneseText('')                    // returns ''
  * ```

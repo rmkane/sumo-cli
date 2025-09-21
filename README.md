@@ -1,74 +1,110 @@
-# Rikishi Data
+<!-- omit in toc -->
+# Sumo CLI
 
-A Node.js application for downloading Rikishi names in Kanji and Hiragana, with support for converting Romaji to English.
+A professional command-line interface for processing sumo rikishi data. Extract, parse, and export sumo tournament data with modern tooling and TypeScript.
 
-## Prerequisites
+<!-- omit in toc -->
+## Table of Contents
 
-```sh
-npx puppeteer browsers install chrome
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Sumo Divisions](#sumo-divisions)
+- [Data Structure](#data-structure)
+- [Usage Examples](#usage-examples)
+- [Resources](#resources)
+  - [Official Sumo Sources](#official-sumo-sources)
+  - [Third-Party APIs \& Databases](#third-party-apis--databases)
+  - [Development Resources](#development-resources)
+
+## Features
+
+- **Professional CLI** - Modern command-line interface with `commander.js`
+- **Data Extraction** - Download rikishi data and matchup information from official sources
+- **Smart Caching** - Intelligent caching system to avoid redundant downloads
+- **CSV Export** - Generate structured CSV files for data analysis
+- **TypeScript** - Fully typed with modern TypeScript practices
+- **Modern Build** - Built with `tsup` for fast compilation and ES modules
+- **Professional Logging** - Winston-based logging with multiple transports
+
+## Quick Start
+
+```bash
+# Install dependencies
+pnpm install
+
+# Build and link globally
+pnpm run install-local
+
+# Start using the CLI
+sumo-cli --help
+sumo-cli list
 ```
 
-## Divisions
+## Sumo Divisions
 
-- Sekitori（関取）
-  - Makuuchi（幕内） – I（一）
+The CLI processes all six sumo divisions:
+
+- Sekitori（関取
+  - Makuuchi（幕内 – I（一）
     - Yokozuna（横綱）
     - Ōzeki（大関）
     - Sekiwake（関脇）
     - Komusubi（小結）
     - Maegashira（前頭）
-  - Jūryō（十両） – II（二）
-- Non-Sekitori（取的）
+  - Jūryō（十両 – II（二）
+- Non-Sekitori（取的
   - Makushita（幕下） – III（三）
   - Sandanme（三段目） – IV（四）
   - Jonidan（序二段） – V（五）
   - Jonokuchi（序ノ口） – VI（六）
 
-## Rikishi structure
+## Data Structure
 
-A `.box` element contains name in Kaji and Hiragana, as well as the profile ID (link) and record.
+The CLI extracts and processes:
 
-```html
-<div class="box">
-  <div>
-    <div>
-      <img src="/img/sumo_data/rikishi/60x60/20170096.jpg">
-    </div>
-    <div>
-      <a href="/ResultRikishiData/profile/3842/">
-        <span style="font-size: large; margin: auto 10px">豊昇龍</span>
-      </a>
-      <span class="hoshi_br">(ほうしょうりゅう)</span>
-    </div>
-  </div>
-  <p style="text-align: center">
-    <span onclick="smKimaritePop(3842,'E','豊昇龍',0)">1勝4敗10休</span>
-  </p>
-</div>
+- **Rikishi Data** - Names in Kanji, Hiragana, Romaji, and English
+- **Matchup Data** - Tournament day results with win/loss records
+- **Rank Information** - Current division and position data
+- **Technique Data** - Winning techniques (kimarite) when available
+
+## Usage Examples
+
+```bash
+# Process all divisions
+sumo-cli process-all
+
+# Process specific tournament day
+sumo-cli process-day 1
+
+# Use custom output directory
+sumo-cli process-day 1 --output-dir ./my-data
+
+# Force refresh cached data
+sumo-cli process-all --force-refresh --verbose
+
+# List data storage locations
+sumo-cli list
 ```
 
-## Data
-
-The table data can be accessed on <sumo.or.jp> via:
-
-```js
-console.log([...document.querySelectorAll('#torikumi_table tbody tr')].slice(1).map(tr => [...tr.querySelectorAll('.player')].map(player => [
-    player.querySelector('.rank').textContent.trim(),
-    player.querySelector('.name').textContent.trim(),
-    player.querySelector('.perform').textContent.trim(),
-].join('\t')).join('\t')).join('\n'))
-```
+For complete documentation, see [CLI.md](./CLI.md).
 
 ## Resources
 
-### Official
+### Official Sumo Sources
 
-- English Matches: <https://www.sumo.or.jp/EnHonbashoMain/torikumi/1/15/>
-- Japanese Matches: <https://www.sumo.or.jp/ResultData/torikumi/1/15/>
-- Japanese Standings: <https://sumo.or.jp/ResultData/hoshitori/1/1/>
-- Rikishi Search (EN): <https://www.sumo.or.jp/EnSumoDataRikishi/search/>
+- **English Tournament Results**: <https://www.sumo.or.jp/EnHonbashoMain/torikumi/1/15/>
+- **Japanese Tournament Results**: <https://www.sumo.or.jp/ResultData/torikumi/1/15/>
+- **Japanese Rankings**: <https://sumo.or.jp/ResultData/hoshitori/1/1/>
+- **Rikishi Search (English)**: <https://www.sumo.or.jp/EnSumoDataRikishi/search/>
 
-### APIs and Databases
+### Third-Party APIs & Databases
 
-- API: <https://www.sumo-api.com/>
-- Database: <https://sumodb.sumogames.de/>
+- **Sumo API**: <https://www.sumo-api.com/> - RESTful API for sumo data
+- **Sumo Database**: <https://sumodb.sumogames.de/> - Comprehensive sumo database
+
+### Development Resources
+
+- **TypeScript**: <https://www.typescriptlang.org/> - Type-safe JavaScript
+- **Commander.js**: <https://github.com/tj/commander.js> - CLI framework
+- **Winston**: <https://github.com/winstonjs/winston> - Logging library
+- **tsup**: <https://github.com/egoist/tsup> - TypeScript bundler

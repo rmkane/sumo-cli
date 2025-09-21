@@ -1,14 +1,15 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
+
 import {
-  toRomajiWithMacrons,
   convertDiacriticsToAscii,
-  toHiraganaSafe,
-  toKatakanaSafe,
-  extractFirstKanji,
   countKanji,
+  extractFirstKanji,
   hasKanji,
   normalizeJapanese,
-} from './japanese'
+  toHiraganaSafe,
+  toKatakanaSafe,
+  toRomajiWithMacrons,
+} from '@/utils/japanese'
 
 describe('Japanese Utilities', () => {
   describe('toRomajiWithMacrons', () => {

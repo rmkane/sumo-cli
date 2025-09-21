@@ -1,13 +1,33 @@
-import { load } from 'cheerio'
+import { type Cheerio, load } from 'cheerio'
+import { type Element } from 'domhandler'
 
-import type { Rank, Rikishi } from '../types'
-import { RankMapping } from '../constants'
-import { capitalize, unwrapText } from '../utils/string'
-import {
-  convertDiacriticsToAscii,
-  kanjiToNumber,
-  toRomajiWithMacrons,
-} from '../utils/japanese'
+import { ranksDictionaryJp } from '@/dict'
+import type { DivisionType, Rank, Rikishi } from '@/types'
+import { downloadStatsData } from '@/utils/cache-manager'
+import { convertDiacriticsToAscii, kanjiToNumber, toRomajiWithMacrons } from '@/utils/japanese'
+import { capitalize, unwrapText } from '@/utils/string'
+
+/**
+ * Fetches rikishi data for a division, using cache when possible.
+ * Downloads are queued with rate limiting to be respectful to the server.
+ *
+ * @param division - Division identifier
+ * @param forceRefresh - Whether to bypass cache
+ * @returns Object containing results and whether data was fetched from server
+ */
+export async function fetchResults(
+  division: DivisionType,
+  forceRefresh: boolean = false,
+): Promise<{ results: Rikishi[]; fromServer: boolean }> {
+  try {
+    const { content: html, fromServer } = await downloadStatsData(division, forceRefresh)
+    const results = parseRikishiFromHTML(html)
+    return { results, fromServer }
+  } catch (error) {
+    console.error(`Error fetching results for division ${division}:`, error)
+    throw error
+  }
+}
 
 /**
  * Parses HTML content to extract rikishi data.
@@ -32,7 +52,7 @@ export function parseRikishiFromHTML(html: string): Rikishi[] {
  * @param $box - Cheerio object representing the table row
  * @returns Parsed Rikishi object
  */
-function parseRecord($box: any): Rikishi {
+function parseRecord($box: Cheerio<Element>): Rikishi {
   const href = $box.find('a').attr('href') || ''
   const id = +(href.match(/\d+/)?.[0] || '0')
 
@@ -63,14 +83,14 @@ function parseRank(rankText: string): Rank | undefined {
   // Clean the rank text
   const cleanRank = rankText.trim()
 
-  // Find the matching rank in our mapping
-  for (const rankEntry of RankMapping) {
-    if (cleanRank.startsWith(rankEntry.kanji)) {
-      const division = rankEntry.english
+  // Find the matching rank in our dictionary
+  for (const [kanji, english] of Object.entries(ranksDictionaryJp)) {
+    if (cleanRank.startsWith(kanji)) {
+      const division = english.charAt(0).toUpperCase() + english.slice(1)
       let position = 0
 
       // Extract position from remaining text (e.g., "六枚目" -> 6)
-      const remainingText = cleanRank.replace(rankEntry.kanji, '').trim()
+      const remainingText = cleanRank.replace(kanji, '').trim()
 
       if (remainingText) {
         // Remove "枚目" suffix if present

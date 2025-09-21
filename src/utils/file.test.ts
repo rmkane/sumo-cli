@@ -1,16 +1,17 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+
 import {
-  saveJSON,
-  readJSON,
-  validateFilePath,
+  deleteFile,
   ensureDirectory,
   fileExists,
   getFileInfo,
-  deleteFile,
-  FileOptions,
-} from './file'
+  readJSON,
+  saveJSON,
+  validateFilePath,
+} from '@/utils/file'
 
 describe('File Utilities', () => {
   const testDir = './test-temp'
@@ -57,9 +58,9 @@ describe('File Utilities', () => {
       await saveJSON(testFile, { original: 'data' })
 
       // Try to save without overwrite
-      await expect(
-        saveJSON(testFile, testData, 'test', { overwrite: false }),
-      ).rejects.toThrow('already exists and overwrite is disabled')
+      await expect(saveJSON(testFile, testData, 'test', { overwrite: false })).rejects.toThrow(
+        'already exists and overwrite is disabled',
+      )
     })
 
     it('should handle custom encoding', async () => {
@@ -68,10 +69,10 @@ describe('File Utilities', () => {
     })
 
     it('should handle errors gracefully', async () => {
-      const invalidPath = '/invalid/path/file.json'
-      await expect(
-        saveJSON(invalidPath, testData, 'test', { createDirectories: false }),
-      ).rejects.toThrow('File operation failed')
+      const invalidPath = '\0invalid\0path\0file.json' // Null bytes are invalid in file paths
+      await expect(saveJSON(invalidPath, testData, 'test', { createDirectories: false })).rejects.toThrow(
+        'File operation failed',
+      )
     })
   })
 
@@ -99,9 +100,7 @@ describe('File Utilities', () => {
     })
 
     it('should throw error for non-existent file', async () => {
-      await expect(readJSON('./non-existent.json')).rejects.toThrow(
-        'File operation failed',
-      )
+      await expect(readJSON('./non-existent.json')).rejects.toThrow('File operation failed')
     })
   })
 
@@ -161,10 +160,8 @@ describe('File Utilities', () => {
     })
 
     it('should handle errors gracefully', async () => {
-      const invalidPath = '/invalid/path'
-      await expect(
-        ensureDirectory(invalidPath, { errorMessage: 'Custom error' }),
-      ).rejects.toThrow('Custom error')
+      const invalidPath = '\0invalid\0path\0directory' // Null bytes are invalid in file paths
+      await expect(ensureDirectory(invalidPath, { errorMessage: 'Custom error' })).rejects.toThrow('Custom error')
     })
   })
 

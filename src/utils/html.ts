@@ -1,5 +1,7 @@
 import puppeteer, { Browser, Page } from 'puppeteer'
 
+import { logDebug } from '@/utils/logger'
+
 /**
  * Configuration options for HTML fetching operations.
  */
@@ -58,13 +60,10 @@ const DEFAULT_FETCH_OPTIONS: Required<FetchOptions> = {
  * @throws {Error} When the URL is invalid or network request fails
  * @since 1.0.0
  */
-async function fetchFromUrl(
-  url: string,
-  options: FetchOptions = {},
-): Promise<string> {
+async function fetchFromUrl(url: string, options: FetchOptions = {}): Promise<string> {
   const config = { ...DEFAULT_FETCH_OPTIONS, ...options }
 
-  console.log(`Fetching ${url} with Puppeteer...`)
+  logDebug(`Fetching ${url} with Puppeteer...`)
 
   let browser: Browser | null = null
   let page: Page | null = null
@@ -102,9 +101,7 @@ async function fetchFromUrl(
     }
 
     // Navigate to URL with appropriate wait strategy
-    const waitUntil = config.waitForNetworkIdle
-      ? 'networkidle0'
-      : 'domcontentloaded'
+    const waitUntil = config.waitForNetworkIdle ? 'networkidle0' : 'domcontentloaded'
     await page.goto(url, {
       waitUntil,
       timeout: config.timeout,
@@ -114,8 +111,7 @@ async function fetchFromUrl(
     const html = await page.content()
     return html
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error'
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     console.error(`Error fetching ${url}:`, errorMessage)
     throw new Error(`Failed to fetch HTML from ${url}: ${errorMessage}`)
   } finally {
@@ -181,10 +177,7 @@ export async function fetchHTML(url: string): Promise<string> {
  * @throws {Error} When the URL is invalid or network request fails
  * @since 1.0.0
  */
-export async function fetchHTMLWithOptions(
-  url: string,
-  options: FetchOptions,
-): Promise<string> {
+export async function fetchHTMLWithOptions(url: string, options: FetchOptions): Promise<string> {
   return fetchFromUrl(url, options)
 }
 
@@ -311,11 +304,7 @@ export function extractText(html: string): string {
  *
  * @since 1.0.0
  */
-export function containsText(
-  html: string,
-  searchText: string,
-  caseSensitive: boolean = false,
-): boolean {
+export function containsText(html: string, searchText: string, caseSensitive: boolean = false): boolean {
   if (html.length === 0 || searchText.length === 0) return false
 
   const content = caseSensitive ? html : html.toLowerCase()

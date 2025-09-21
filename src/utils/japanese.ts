@@ -1,4 +1,4 @@
-import { toRomaji, toHiragana, toKatakana } from 'wanakana'
+import { toHiragana, toKatakana, toRomaji } from 'wanakana'
 
 /**
  * Converts Japanese text to romaji with proper macron notation for long vowels.
@@ -130,7 +130,7 @@ export function toHiraganaSafe(text: string): string {
 
   try {
     return toHiragana(text)
-  } catch (error) {
+  } catch {
     // Return original text if conversion fails
     return text
   }
@@ -161,7 +161,7 @@ export function toKatakanaSafe(text: string): string {
 
   try {
     return toKatakana(text)
-  } catch (error) {
+  } catch {
     // Return original text if conversion fails
     return text
   }

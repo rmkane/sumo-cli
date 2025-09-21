@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-import { RateLimitedQueue } from './queue'
+import { RateLimitedQueue } from '@/classes/queue'
 
 describe('RateLimitedQueue', () => {
   it('should execute tasks with rate limiting', async () => {

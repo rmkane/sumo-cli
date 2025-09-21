@@ -1,19 +1,8 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-/**
- * Configuration options for file operations.
- */
-export interface FileOptions {
-  /** Whether to create parent directories if they don't exist */
-  createDirectories?: boolean
-  /** Encoding to use for text files (default: 'utf-8') */
-  encoding?: BufferEncoding
-  /** Whether to overwrite existing files */
-  overwrite?: boolean
-  /** Custom error message for file operations */
-  errorMessage?: string
-}
+import type { FileOptions } from '@/types'
+import { logDebug } from '@/utils/logger'
 
 /**
  * Default configuration for file operations.
@@ -55,9 +44,9 @@ const DEFAULT_FILE_OPTIONS: Required<FileOptions> = {
  * @throws {Error} When file cannot be written or directory cannot be created
  * @since 1.0.0
  */
-export async function saveJSON(
+export async function saveJSON<T = unknown>(
   filename: string,
-  data: any,
+  data: T,
   itemName: string = 'items',
   options: FileOptions = {},
 ): Promise<void> {
@@ -74,17 +63,13 @@ export async function saveJSON(
     if (!config.overwrite) {
       try {
         await fs.access(filename)
-        throw new Error(
-          `File ${filename} already exists and overwrite is disabled`,
-        )
+        throw new Error(`File ${filename} already exists and overwrite is disabled`)
       } catch (error) {
-        if (
-          error instanceof Error &&
-          error.message.includes('already exists')
-        ) {
+        // If it's our custom error, re-throw it
+        if (error instanceof Error && error.message.includes('already exists')) {
           throw error
         }
-        // File doesn't exist, continue
+        // File doesn't exist, continue with writing
       }
     }
 
@@ -92,7 +77,7 @@ export async function saveJSON(
     await fs.writeFile(filename, jsonContent, config.encoding)
 
     const count = Array.isArray(data) ? data.length : 'data'
-    console.log(`Saved ${count} ${itemName} to ${filename}`)
+    logDebug(`Saved ${count} ${itemName} to ${path.basename(filename)}`)
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     throw new Error(`${config.errorMessage}: ${message}`)
@@ -125,10 +110,7 @@ export async function saveJSON(
  * @throws {Error} When file cannot be read or contains invalid JSON
  * @since 1.0.0
  */
-export async function readJSON<T = any>(
-  filename: string,
-  options: FileOptions = {},
-): Promise<T> {
+export async function readJSON<T = unknown>(filename: string, options: FileOptions = {}): Promise<T> {
   const config = { ...DEFAULT_FILE_OPTIONS, ...options }
 
   try {
@@ -211,10 +193,7 @@ export function validateFilePath(filePath: string): {
  * @throws {Error} When directory cannot be created
  * @since 1.0.0
  */
-export async function ensureDirectory(
-  dirPath: string,
-  options: FileOptions = {},
-): Promise<void> {
+export async function ensureDirectory(dirPath: string, options: FileOptions = {}): Promise<void> {
   const config = { ...DEFAULT_FILE_OPTIONS, ...options }
 
   try {
@@ -313,10 +292,7 @@ export async function getFileInfo(filePath: string): Promise<{
  * @throws {Error} When file exists but cannot be deleted
  * @since 1.0.0
  */
-export async function deleteFile(
-  filePath: string,
-  options: FileOptions = {},
-): Promise<boolean> {
+export async function deleteFile(filePath: string, options: FileOptions = {}): Promise<boolean> {
   const config = { ...DEFAULT_FILE_OPTIONS, ...options }
 
   try {
