@@ -2,7 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import { RateLimitedQueue } from '@/classes/queue'
-import { RATE_LIMITS } from '@/config/urls'
+import { PATHS, RATE_LIMITS } from '@/config/urls'
 import type { DivisionType } from '@/types'
 import { getDivisionName } from '@/utils/division'
 import { fetchHTML } from '@/utils/html'
@@ -112,7 +112,7 @@ function getCachePath(url: string, cacheType: CacheType, customFilename?: string
   const config = CACHE_CONFIG[cacheType]
 
   if (customFilename) {
-    return `./data/${config.directory}/${customFilename}${config.extension}`
+    return `${PATHS.DATA_DIR}/${config.directory}/${customFilename}${config.extension}`
   }
 
   // Fallback to URL-based naming
@@ -120,7 +120,7 @@ function getCachePath(url: string, cacheType: CacheType, customFilename?: string
     .toString('base64')
     .replace(/[^a-zA-Z0-9]/g, '')
 
-  return `./data/${config.directory}/${cacheKey}${config.extension}`
+  return `${PATHS.DATA_DIR}/${config.directory}/${cacheKey}${config.extension}`
 }
 
 /**

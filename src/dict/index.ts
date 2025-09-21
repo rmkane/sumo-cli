@@ -3,7 +3,7 @@ export { kimariteDictionaryJp } from './kimarite'
 export { divisionsDictionaryJp } from './divisions'
 export { ranksDictionaryJp } from './ranks'
 
-// English to Japanese dictionaries (sorted alphabetically)
+// English to Japanese dictionaries
 export { kimariteDictionaryEn } from './kimarite'
 export { divisionsDictionaryEn } from './divisions'
 export { ranksDictionaryEn } from './ranks'

@@ -1,5 +1,7 @@
 import fs from 'node:fs/promises'
 
+import { PATHS } from '@/config/urls'
+
 // Cache utilities
 function getCacheKey(url: string): string {
   return Buffer.from(url)
@@ -8,11 +10,11 @@ function getCacheKey(url: string): string {
 }
 
 export function getCachePath(url: string): string {
-  return `./cache/${getCacheKey(url)}.html`
+  return `${PATHS.DATA_DIR}/cache/${getCacheKey(url)}.html`
 }
 
 export async function ensureCacheDirectory(): Promise<void> {
-  await fs.mkdir('./cache', { recursive: true })
+  await fs.mkdir(`${PATHS.DATA_DIR}/cache`, { recursive: true })
 }
 
 export async function readFromCache(cachePath: string): Promise<string | null> {

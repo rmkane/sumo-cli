@@ -51,11 +51,11 @@ lint-fix: # Run ESLint and automatically fix issues
 # =============================================================================
 # Testing
 # =============================================================================
-test: # Run tests in watch mode
-	pnpm test
+test: # Run tests once
+	pnpm test --run
 
-test-run: # Run tests once
-	pnpm test:run
+test-watch: # Run tests in watch mode
+	pnpm test
 
 test-ui: # Run tests with UI
 	pnpm test:ui

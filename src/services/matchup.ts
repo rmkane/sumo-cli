@@ -3,34 +3,12 @@ import { type Element } from 'domhandler'
 
 import { lookupKimarite } from '@/dict'
 import { lookupRikishiByKanji } from '@/services/rikishi-lookup'
-import type { DivisionType } from '@/types'
+import type { DivisionType, MatchupData } from '@/types'
 import { downloadMatchupData } from '@/utils/cache-manager'
 import { getDivisionByRank } from '@/utils/division'
 import { translateRank, translateRecord } from '@/utils/translation'
 
-/**
- * Interface for parsed matchup data
- */
-export interface MatchupData {
-  east: {
-    rank: string
-    record: string
-    kanji: string
-    hiragana: string
-    name: string
-    result: string // 'W' for win, 'L' for loss, '' for no result yet
-    technique?: string // English kimarite name if there's a recorded win
-  }
-  west: {
-    rank: string
-    record: string
-    kanji: string
-    hiragana: string
-    name: string
-    result: string // 'W' for win, 'L' for loss, '' for no result yet
-    technique?: string // English kimarite name if there's a recorded win
-  }
-}
+const KIMARITE_SUFFIX = '取組解説'
 
 /**
  * Extracts and translates the winning technique from a player cell
@@ -55,7 +33,7 @@ function extractWinningTechnique($player: Cheerio<Element>): string | undefined 
   }
 
   // Remove "取組解説" suffix if present
-  const cleanTechnique = japaneseTechnique.replace('取組解説', '').trim()
+  const cleanTechnique = japaneseTechnique.replace(KIMARITE_SUFFIX, '').trim()
 
   // Look up the English translation
   return lookupKimarite(cleanTechnique)
@@ -109,9 +87,13 @@ export function parseMatchupHTML(html: string, division: DivisionType): MatchupD
     .each((_, row) => {
       const $row = $(row)
       const matchup = parseMatchupRow($row, division)
-      if (matchup) {
-        matchups.push(matchup)
+
+      if (!matchup) {
+        console.warn('Failed to parse matchup row:', row)
+        return
       }
+
+      matchups.push(matchup)
     })
 
   return matchups

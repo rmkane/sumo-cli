@@ -1,19 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-/**
- * Configuration options for file operations.
- */
-export interface FileOptions {
-  /** Whether to create parent directories if they don't exist */
-  createDirectories?: boolean
-  /** Encoding to use for text files (default: 'utf-8') */
-  encoding?: BufferEncoding
-  /** Whether to overwrite existing files */
-  overwrite?: boolean
-  /** Custom error message for file operations */
-  errorMessage?: string
-}
+import type { FileOptions } from '@/types'
 
 /**
  * Default configuration for file operations.
@@ -76,10 +64,11 @@ export async function saveJSON<T = unknown>(
         await fs.access(filename)
         throw new Error(`File ${filename} already exists and overwrite is disabled`)
       } catch (error) {
+        // If it's our custom error, re-throw it
         if (error instanceof Error && error.message.includes('already exists')) {
           throw error
         }
-        // File doesn't exist, continue
+        // File doesn't exist, continue with writing
       }
     }
 

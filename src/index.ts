@@ -16,14 +16,17 @@ async function main(): Promise<void> {
   try {
     const { day, forceRefresh } = parseArgs()
 
+    // Handle day-specific processing
     if (day !== undefined) {
       console.log(`Starting CLI for day ${day}${forceRefresh ? ' (force refresh enabled)' : ''}`)
       await processDayMatchups(day, forceRefresh)
-    } else {
-      console.log(`Starting App${forceRefresh ? ' (force refresh enabled)' : ''}`)
-      await processAllDivisions(forceRefresh)
+      console.log('\n=== Processing completed successfully ===')
+      return
     }
 
+    // Handle full app processing
+    console.log(`Starting App${forceRefresh ? ' (force refresh enabled)' : ''}`)
+    await processAllDivisions(forceRefresh)
     console.log('\n=== Processing completed successfully ===')
   } catch (error) {
     console.error('Fatal error in main:', error)

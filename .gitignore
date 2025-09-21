@@ -1,5 +1,12 @@
-.vscode/
-cache/
+# Generated
 data/
-dist/
+
+# Node.js
 node_modules/
+dist/
+
+# Test
+coverage/
+
+# VS Code
+.vscode/
