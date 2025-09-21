@@ -1,4 +1,5 @@
-import { load } from 'cheerio'
+import { type Cheerio, load } from 'cheerio'
+import { type Element } from 'domhandler'
 
 import { lookupKimarite } from '@/dict'
 import { lookupRikishiByKanji } from '@/services/rikishi-lookup'
@@ -36,7 +37,7 @@ export interface MatchupData {
  * @param $player - Cheerio element representing the player cell
  * @returns English kimarite name or undefined if no technique found
  */
-function extractWinningTechnique($player: any): string | undefined {
+function extractWinningTechnique($player: Cheerio<Element>): string | undefined {
   // Look for the technique in a sibling .decide cell
   const $decideCell = $player.siblings('.decide')
   if ($decideCell.length === 0) {
@@ -123,7 +124,7 @@ export function parseMatchupHTML(html: string, division: DivisionType): MatchupD
  * @param division - Division identifier for rikishi lookup
  * @returns Parsed MatchupData object or null if parsing fails
  */
-function parseMatchupRow($row: any, division: DivisionType): MatchupData | null {
+function parseMatchupRow($row: Cheerio<Element>, division: DivisionType): MatchupData | null {
   try {
     // East rikishi is always the first td, west rikishi is always the last td
     const $tds = $row.find('td')
@@ -172,7 +173,7 @@ function parseMatchupRow($row: any, division: DivisionType): MatchupData | null 
  * @returns Parsed player data or null if parsing fails
  */
 function parsePlayer(
-  $player: any,
+  $player: Cheerio<Element>,
   division: DivisionType,
 ): {
   rank: string
@@ -225,7 +226,7 @@ function parsePlayer(
  * @param $player - Cheerio object representing the player cell
  * @returns 'W' for win, 'L' for loss, '' for no result yet
  */
-function determineResult($player: any): string {
+function determineResult($player: Cheerio<Element>): string {
   // Check if the player cell has the 'win' class (completed match - winner)
   if ($player.hasClass('win')) {
     return 'W'

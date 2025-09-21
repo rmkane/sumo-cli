@@ -3,7 +3,7 @@
  * Ensures operations are executed with a minimum delay between them.
  */
 export class RateLimitedQueue {
-  private queue: Array<() => Promise<any>> = []
+  private queue: Array<() => Promise<unknown>> = []
   private processing = false
   private delayMs: number
 

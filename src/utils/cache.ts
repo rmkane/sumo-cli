@@ -20,7 +20,7 @@ export async function readFromCache(cachePath: string): Promise<string | null> {
     const cached = await fs.readFile(cachePath, 'utf-8')
     console.log(`Using cached version`)
     return cached
-  } catch (error) {
+  } catch {
     return null
   }
 }

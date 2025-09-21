@@ -7,7 +7,7 @@
 # Phony targets
 # =============================================================================
 .PHONY: dev build clean clean-all format help install refresh format-check
-.PHONY: test test-run test-ui test-coverage
+.PHONY: test test-run test-ui test-coverage lint lint-fix
 
 # =============================================================================
 # Help
@@ -41,6 +41,12 @@ format: # Format code with Prettier
 
 format-check: # Check formatting without changing files
 	pnpm format:check
+
+lint: # Run ESLint to check code quality
+	pnpm lint
+
+lint-fix: # Run ESLint and automatically fix issues
+	pnpm lint:fix
 
 # =============================================================================
 # Testing

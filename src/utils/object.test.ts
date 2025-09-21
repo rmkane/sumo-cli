@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { getKeyByValue } from '@/utils/object'
+import { getKeyByValue } from './object'
 
 describe('Object Utilities', () => {
   describe('getKeyByValue', () => {
@@ -14,9 +14,9 @@ describe('Object Utilities', () => {
     it('should return "unknown" for non-existent value', () => {
       const obj = { a: 1, b: 2, c: 3 }
       expect(getKeyByValue(obj, 5)).toBe('unknown')
-      expect(getKeyByValue(obj, 'test' as any)).toBe('unknown')
-      expect(getKeyByValue(obj, null as any)).toBe('unknown')
-      expect(getKeyByValue(obj, undefined as any)).toBe('unknown')
+      expect(getKeyByValue(obj, 'test' as never)).toBe('unknown')
+      expect(getKeyByValue(obj, null as never)).toBe('unknown')
+      expect(getKeyByValue(obj, undefined as never)).toBe('unknown')
     })
 
     it('should handle string values', () => {
@@ -40,7 +40,7 @@ describe('Object Utilities', () => {
     })
 
     it('should handle empty objects', () => {
-      const obj: Record<string, any> = {}
+      const obj: Record<string, unknown> = {}
       expect(getKeyByValue(obj, 'any')).toBe('unknown')
       expect(getKeyByValue(obj, 1)).toBe('unknown')
       expect(getKeyByValue(obj, null)).toBe('unknown')
@@ -65,7 +65,7 @@ describe('Object Utilities', () => {
         number: 42,
         boolean: true,
         null: null,
-        undefined: undefined,
+        undefined,
         array: [1, 2, 3],
         object: { key: 'value' },
       }
@@ -162,7 +162,7 @@ describe('Object Utilities', () => {
     })
 
     it('should handle objects with non-enumerable properties', () => {
-      const obj: Record<string, any> = { visible: 'visible value' }
+      const obj: Record<string, unknown> = { visible: 'visible value' }
       Object.defineProperty(obj, 'hidden', {
         value: 'hidden value',
         enumerable: false,
@@ -178,7 +178,7 @@ describe('Object Utilities', () => {
         emptyString: '',
         false: false,
         null: null,
-        undefined: undefined,
+        undefined,
         nan: NaN,
       }
 

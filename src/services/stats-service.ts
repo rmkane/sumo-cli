@@ -1,4 +1,5 @@
-import { load } from 'cheerio'
+import { type Cheerio, load } from 'cheerio'
+import { type Element } from 'domhandler'
 
 import { ranksDictionaryJp } from '@/dict'
 import type { DivisionType, Rank, Rikishi } from '@/types'
@@ -51,7 +52,7 @@ export function parseRikishiFromHTML(html: string): Rikishi[] {
  * @param $box - Cheerio object representing the table row
  * @returns Parsed Rikishi object
  */
-function parseRecord($box: any): Rikishi {
+function parseRecord($box: Cheerio<Element>): Rikishi {
   const href = $box.find('a').attr('href') || ''
   const id = +(href.match(/\d+/)?.[0] || '0')
 

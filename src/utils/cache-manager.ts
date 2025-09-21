@@ -124,16 +124,6 @@ function getCachePath(url: string, cacheType: CacheType, customFilename?: string
 }
 
 /**
- * Ensures the cache directory exists.
- *
- * @param cacheType - Type of cache directory to ensure
- */
-async function ensureCacheDirectory(cacheType: CacheType): Promise<void> {
-  const config = CACHE_CONFIG[cacheType]
-  await fs.mkdir(`./data/${config.directory}`, { recursive: true })
-}
-
-/**
  * Reads content from cache.
  *
  * @param cachePath - Path to cached file
@@ -144,7 +134,7 @@ async function readFromCache(cachePath: string): Promise<string | null> {
     const cached = await fs.readFile(cachePath, 'utf-8')
     console.log(`Using cached version`)
     return cached
-  } catch (error) {
+  } catch {
     return null
   }
 }

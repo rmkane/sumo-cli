@@ -9,6 +9,6 @@
  * getKeyByValue(obj, 2) // returns 'b'
  * getKeyByValue(obj, 5) // returns 'unknown'
  */
-export function getKeyByValue<T extends Record<string, any>>(obj: T, value: T[keyof T]): string {
+export function getKeyByValue<T extends Record<string, unknown>>(obj: T, value: T[keyof T]): string {
   return Object.keys(obj).find((key) => obj[key as keyof T] === value) || 'unknown'
 }

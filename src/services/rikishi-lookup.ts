@@ -15,7 +15,11 @@ const rikishiDataCache = new Map<DivisionType, Rikishi[]>()
  */
 function loadRikishiData(division: DivisionType): Rikishi[] {
   if (rikishiDataCache.has(division)) {
-    return rikishiDataCache.get(division)!
+    const cachedData = rikishiDataCache.get(division)
+    if (!cachedData) {
+      throw new Error(`Cache inconsistency: division ${division} marked as present but data is undefined`)
+    }
+    return cachedData
   }
 
   const divisionName = getDivisionName(division)
@@ -27,8 +31,9 @@ function loadRikishiData(division: DivisionType): Rikishi[] {
     rikishiDataCache.set(division, rikishiData)
     return rikishiData
   } catch (error) {
-    console.warn(`Error loading rikishi data for division ${division}:`, error)
-    return []
+    throw new Error(
+      `Failed to load rikishi data for division ${division} from ${filename}: ${error instanceof Error ? error.message : String(error)}`,
+    )
   }
 }
 
@@ -40,25 +45,40 @@ function loadRikishiData(division: DivisionType): Rikishi[] {
  * @returns Rikishi data or null if not found
  */
 export function lookupRikishiByKanji(kanji: string, division: DivisionType): Rikishi | null {
-  // First try exact match in the current division
-  const rikishiData = loadRikishiData(division)
-  let rikishi = rikishiData.find((r) => r.kanji === kanji)
-
-  if (rikishi) {
-    return rikishi
-  }
-
-  // If not found, try searching in all divisions
-  for (const [divisionName, divisionId] of Object.entries(Division)) {
-    if (divisionId === division) continue // Skip current division
-
-    const otherDivisionData = loadRikishiData(divisionId as DivisionType)
-    rikishi = otherDivisionData.find((r) => r.kanji === kanji)
+  try {
+    // First try exact match in the current division
+    const rikishiData = loadRikishiData(division)
+    let rikishi = rikishiData.find((r) => r.kanji === kanji)
 
     if (rikishi) {
       return rikishi
     }
-  }
 
-  return null
+    // If not found, try searching in all divisions
+    for (const [, divisionId] of Object.entries(Division)) {
+      if (divisionId === division) continue // Skip current division
+
+      try {
+        const otherDivisionData = loadRikishiData(divisionId as DivisionType)
+        rikishi = otherDivisionData.find((r) => r.kanji === kanji)
+
+        if (rikishi) {
+          return rikishi
+        }
+      } catch (error) {
+        // Log warning but continue searching other divisions
+        console.warn(
+          `Failed to load data for division ${divisionId}:`,
+          error instanceof Error ? error.message : String(error),
+        )
+      }
+    }
+
+    return null
+  } catch (error) {
+    // If the primary division fails, throw the error
+    throw new Error(
+      `Failed to lookup rikishi '${kanji}' in division ${division}: ${error instanceof Error ? error.message : String(error)}`,
+    )
+  }
 }

@@ -5,6 +5,25 @@ import type { MatchupData } from '@/services/matchup'
 import type { DivisionType } from '@/types'
 
 /**
+ * CSV column structure - defines the order and names of columns
+ */
+const CSV_COLUMNS = [
+  'rank',
+  'record',
+  'kanji',
+  'hiragana',
+  'name',
+  'result',
+  'technique',
+  'result',
+  'name',
+  'hiragana',
+  'kanji',
+  'record',
+  'rank',
+] as const
+
+/**
  * CSV headers for matchup data
  */
 const CSV_HEADERS = ['', '', '東', '', 'East', '', '', '', 'West', '', '西', '', '']
@@ -12,21 +31,23 @@ const CSV_HEADERS = ['', '', '東', '', 'East', '', '', '', 'West', '', '西', '
 /**
  * CSV subheaders for matchup data
  */
-const CSV_SUBHEADERS = [
-  'Rank',
-  'Record',
-  'Kanji',
-  'Hiragana',
-  'Name',
-  'Result',
-  'Technique',
-  'Result',
-  'Name',
-  'Hiragana',
-  'Kanji',
-  'Record',
-  'Rank',
-]
+const CSV_SUBHEADERS = CSV_COLUMNS.map((col) => col.charAt(0).toUpperCase() + col.slice(1))
+
+/**
+ * Extracts player data in the correct column order
+ * @param player - Player data (east or west)
+ * @returns Array of player values in CSV column order
+ */
+function extractPlayerData(player: MatchupData['east'] | MatchupData['west']): string[] {
+  return [
+    player.rank || '',
+    player.record || '',
+    player.kanji || '',
+    player.hiragana || '',
+    player.name || '',
+    player.result || '',
+  ]
+}
 
 /**
  * Extracts the winning technique from a matchup
@@ -34,13 +55,8 @@ const CSV_SUBHEADERS = [
  * @returns Winning technique or empty string
  */
 function getWinningTechnique(matchup: MatchupData): string {
-  if (matchup.east.result === 'W') {
-    return matchup.east.technique || ''
-  }
-  if (matchup.west.result === 'W') {
-    return matchup.west.technique || ''
-  }
-  return ''
+  const winner = matchup.east.result === 'W' ? matchup.east : matchup.west.result === 'W' ? matchup.west : null
+  return winner?.technique || ''
 }
 
 /**
@@ -49,22 +65,14 @@ function getWinningTechnique(matchup: MatchupData): string {
  * @returns Array of cell values for the row
  */
 function buildMatchupRow(matchup: MatchupData): string[] {
+  const eastData = extractPlayerData(matchup.east)
+  const westData = extractPlayerData(matchup.west)
   const winningTechnique = getWinningTechnique(matchup)
 
   return [
-    matchup.east.rank || '',
-    matchup.east.record || '',
-    matchup.east.kanji || '',
-    matchup.east.hiragana || '',
-    matchup.east.name || '',
-    matchup.east.result || '',
+    ...eastData,
     winningTechnique,
-    matchup.west.result || '',
-    matchup.west.name || '',
-    matchup.west.hiragana || '',
-    matchup.west.kanji || '',
-    matchup.west.record || '',
-    matchup.west.rank || '',
+    ...westData.slice().reverse(), // Reverse west data to match column order
   ]
 }
 
@@ -84,6 +92,28 @@ export function matchupDataToCSV(matchups: MatchupData[]): string {
 }
 
 /**
+ * Ensures directory exists, creating it if necessary
+ * @param dirPath - Directory path to ensure exists
+ */
+function ensureDirectoryExists(dirPath: string): void {
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true })
+  }
+}
+
+/**
+ * Generates filename for matchup CSV
+ * @param day - Tournament day
+ * @param divisionId - Division identifier
+ * @param divisionName - Human-readable division name
+ * @returns Generated filename
+ */
+function generateMatchupFilename(day: number, divisionId: DivisionType, divisionName: string): string {
+  const paddedDay = day.toString().padStart(2, '0')
+  return `day_${paddedDay}_${divisionId}_${divisionName.toLowerCase()}.csv`
+}
+
+/**
  * Saves matchup data to a CSV file
  * @param matchups - Array of parsed matchup data
  * @param divisionName - Human-readable division name
@@ -96,18 +126,11 @@ export async function saveMatchupCSV(
   divisionId: DivisionType,
   day: number,
 ): Promise<void> {
-  // Create CSV directory if it doesn't exist
   const csvDir = './data/csv'
-  if (!fs.existsSync(csvDir)) {
-    fs.mkdirSync(csvDir, { recursive: true })
-  }
+  ensureDirectoryExists(csvDir)
 
-  // Generate CSV content
   const csvContent = matchupDataToCSV(matchups)
-
-  // Save to file
-  const paddedDay = day.toString().padStart(2, '0')
-  const filename = `day_${paddedDay}_${divisionId}_${divisionName.toLowerCase()}.csv`
+  const filename = generateMatchupFilename(day, divisionId, divisionName)
   const filepath = path.join(csvDir, filename)
 
   fs.writeFileSync(filepath, csvContent, 'utf8')

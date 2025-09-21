@@ -130,7 +130,7 @@ export function toHiraganaSafe(text: string): string {
 
   try {
     return toHiragana(text)
-  } catch (error) {
+  } catch {
     // Return original text if conversion fails
     return text
   }
@@ -161,7 +161,7 @@ export function toKatakanaSafe(text: string): string {
 
   try {
     return toKatakana(text)
-  } catch (error) {
+  } catch {
     // Return original text if conversion fails
     return text
   }

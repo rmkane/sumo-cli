@@ -55,9 +55,9 @@ const DEFAULT_FILE_OPTIONS: Required<FileOptions> = {
  * @throws {Error} When file cannot be written or directory cannot be created
  * @since 1.0.0
  */
-export async function saveJSON(
+export async function saveJSON<T = unknown>(
   filename: string,
-  data: any,
+  data: T,
   itemName: string = 'items',
   options: FileOptions = {},
 ): Promise<void> {
@@ -120,7 +120,7 @@ export async function saveJSON(
  * @throws {Error} When file cannot be read or contains invalid JSON
  * @since 1.0.0
  */
-export async function readJSON<T = any>(filename: string, options: FileOptions = {}): Promise<T> {
+export async function readJSON<T = unknown>(filename: string, options: FileOptions = {}): Promise<T> {
   const config = { ...DEFAULT_FILE_OPTIONS, ...options }
 
   try {
