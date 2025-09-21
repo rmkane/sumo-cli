@@ -25,10 +25,7 @@ export async function readFromCache(cachePath: string): Promise<string | null> {
   }
 }
 
-export async function writeToCache(
-  cachePath: string,
-  content: string,
-): Promise<void> {
+export async function writeToCache(cachePath: string, content: string): Promise<void> {
   await fs.writeFile(cachePath, content, 'utf-8')
   console.log(`Cached to ${cachePath}`)
 }

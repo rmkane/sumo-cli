@@ -1,14 +1,10 @@
 import { load } from 'cheerio'
 
+import { ranksDictionaryJp } from '@/dict'
 import type { DivisionType, Rank, Rikishi } from '@/types'
-import { RankMapping } from '@/constants'
-import { capitalize, unwrapText } from '@/utils/string'
-import {
-  convertDiacriticsToAscii,
-  kanjiToNumber,
-  toRomajiWithMacrons,
-} from '@/utils/japanese'
 import { downloadStatsData } from '@/utils/cache-manager'
+import { convertDiacriticsToAscii, kanjiToNumber, toRomajiWithMacrons } from '@/utils/japanese'
+import { capitalize, unwrapText } from '@/utils/string'
 
 /**
  * Fetches rikishi data for a division, using cache when possible.
@@ -86,14 +82,14 @@ function parseRank(rankText: string): Rank | undefined {
   // Clean the rank text
   const cleanRank = rankText.trim()
 
-  // Find the matching rank in our mapping
-  for (const rankEntry of RankMapping) {
-    if (cleanRank.startsWith(rankEntry.kanji)) {
-      const division = rankEntry.english
+  // Find the matching rank in our dictionary
+  for (const [kanji, english] of Object.entries(ranksDictionaryJp)) {
+    if (cleanRank.startsWith(kanji)) {
+      const division = english.charAt(0).toUpperCase() + english.slice(1)
       let position = 0
 
       // Extract position from remaining text (e.g., "六枚目" -> 6)
-      const remainingText = cleanRank.replace(rankEntry.kanji, '').trim()
+      const remainingText = cleanRank.replace(kanji, '').trim()
 
       if (remainingText) {
         // Remove "枚目" suffix if present
@@ -113,4 +109,3 @@ function parseRank(rankText: string): Rank | undefined {
   // Fallback for unknown ranks
   return undefined
 }
-

@@ -1,8 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import type { DivisionType } from '@/types'
 import type { MatchupData } from '@/services/matchup'
+import type { DivisionType } from '@/types'
 
 /**
  * Saves matchup data to a CSV file.
@@ -62,20 +62,22 @@ function generateMatchupCSV(matchups: MatchupData[]): string {
   const rows = [
     headers.join('\t'),
     subHeaders.join('\t'),
-    ...matchups.map(matchup => [
-      matchup.east.rank || '',
-      matchup.east.record || '',
-      matchup.east.kanji || '',
-      matchup.east.hiragana || '',
-      matchup.east.name || '',
-      matchup.east.result || '',
-      matchup.west.result || '',
-      matchup.west.name || '',
-      matchup.west.hiragana || '',
-      matchup.west.kanji || '',
-      matchup.west.record || '',
-      matchup.west.rank || ''
-    ].join('\t'))
+    ...matchups.map((matchup) =>
+      [
+        matchup.east.rank || '',
+        matchup.east.record || '',
+        matchup.east.kanji || '',
+        matchup.east.hiragana || '',
+        matchup.east.name || '',
+        matchup.east.result || '',
+        matchup.west.result || '',
+        matchup.west.name || '',
+        matchup.west.hiragana || '',
+        matchup.west.kanji || '',
+        matchup.west.record || '',
+        matchup.west.rank || '',
+      ].join('\t'),
+    ),
   ]
 
   return rows.join('\n')

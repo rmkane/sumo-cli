@@ -1,10 +1,10 @@
 import { load } from 'cheerio'
 
+import { lookupRikishiByKanji } from '@/services/rikishi-lookup'
 import type { DivisionType } from '@/types'
+import { downloadMatchupData } from '@/utils/cache-manager'
 import { getDivisionByRank } from '@/utils/division'
 import { translateRank, translateRecord } from '@/utils/translation'
-import { lookupRikishiByKanji } from '@/services/rikishi-lookup'
-import { downloadMatchupData } from '@/utils/cache-manager'
 
 /**
  * Interface for parsed matchup data
@@ -27,7 +27,6 @@ export interface MatchupData {
     result: string // 'W' for win, 'L' for loss, '' for no result yet
   }
 }
-
 
 /**
  * Fetches matchup data for a specific division and day, using cache when possible.
@@ -52,7 +51,6 @@ export async function fetchMatchupData(
   }
 }
 
-
 /**
  * Parses HTML content to extract matchup data from the torikumi table.
  *
@@ -72,13 +70,16 @@ export function parseMatchupHTML(html: string, division: DivisionType): MatchupD
   }
 
   // Process each row (skip the first header row)
-  table.find('tbody tr').slice(1).each((_, row) => {
-    const $row = $(row)
-    const matchup = parseMatchupRow($row, division)
-    if (matchup) {
-      matchups.push(matchup)
-    }
-  })
+  table
+    .find('tbody tr')
+    .slice(1)
+    .each((_, row) => {
+      const $row = $(row)
+      const matchup = parseMatchupRow($row, division)
+      if (matchup) {
+        matchups.push(matchup)
+      }
+    })
 
   return matchups
 }
@@ -134,7 +135,16 @@ function parseMatchupRow($row: any, division: DivisionType): MatchupData | null 
  * @param division - Division identifier for rikishi lookup
  * @returns Parsed player data or null if parsing fails
  */
-function parsePlayer($player: any, division: DivisionType): { rank: string; record: string; kanji: string; hiragana: string; name: string } | null {
+function parsePlayer(
+  $player: any,
+  division: DivisionType,
+): {
+  rank: string
+  record: string
+  kanji: string
+  hiragana: string
+  name: string
+} | null {
   try {
     // Extract rank
     const rankText = $player.find('.rank').text().trim()
@@ -203,5 +213,3 @@ function determineResult($player: any): string {
   // No result yet (incomplete day)
   return ''
 }
-
-

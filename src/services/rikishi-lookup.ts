@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 
-import type { DivisionType, Rikishi } from '@/types'
 import { Division } from '@/constants'
+import type { DivisionType, Rikishi } from '@/types'
 import { getDivisionName } from '@/utils/division'
 
 // Cache for rikishi data by division
@@ -42,7 +42,7 @@ function loadRikishiData(division: DivisionType): Rikishi[] {
 export function lookupRikishiByKanji(kanji: string, division: DivisionType): Rikishi | null {
   // First try exact match in the current division
   const rikishiData = loadRikishiData(division)
-  let rikishi = rikishiData.find(r => r.kanji === kanji)
+  let rikishi = rikishiData.find((r) => r.kanji === kanji)
 
   if (rikishi) {
     return rikishi
@@ -53,7 +53,7 @@ export function lookupRikishiByKanji(kanji: string, division: DivisionType): Rik
     if (divisionId === division) continue // Skip current division
 
     const otherDivisionData = loadRikishiData(divisionId as DivisionType)
-    rikishi = otherDivisionData.find(r => r.kanji === kanji)
+    rikishi = otherDivisionData.find((r) => r.kanji === kanji)
 
     if (rikishi) {
       return rikishi

@@ -1,8 +1,8 @@
-import type { DivisionType, Rikishi } from '@/types'
 import { Division } from '@/constants'
+import { fetchResults } from '@/services/stats-service'
+import type { DivisionType, Rikishi } from '@/types'
 import { saveJSON } from '@/utils/file'
 import { getKeyByValue } from '@/utils/object'
-import { fetchResults } from '@/services/stats-service'
 
 /**
  * Processes a single sumo division by fetching, parsing, and saving rikishi data.
@@ -22,9 +22,7 @@ export async function processDivision(
   const wasFetched = await fetchResults(divisionId, forceRefresh)
   await saveResults(wasFetched.results, divisionId)
 
-  console.log(
-    `Fetched ${wasFetched.results.length} rikishi for ${divisionName}`,
-  )
+  console.log(`Fetched ${wasFetched.results.length} rikishi for ${divisionName}`)
 }
 
 /**
@@ -34,9 +32,8 @@ export async function processDivision(
  */
 export async function processAllDivisions(forceRefresh: boolean): Promise<void> {
   // Process all divisions in parallel
-  const divisionPromises = Object.entries(Division).map(
-    ([divisionName, divisionId]) =>
-      processDivision(divisionName, divisionId, forceRefresh),
+  const divisionPromises = Object.entries(Division).map(([divisionName, divisionId]) =>
+    processDivision(divisionName, divisionId, forceRefresh),
   )
 
   // Wait for all divisions to complete
@@ -49,10 +46,7 @@ export async function processAllDivisions(forceRefresh: boolean): Promise<void> 
  * @param results - Array of parsed rikishi data
  * @param division - Division identifier
  */
-async function saveResults(
-  results: Rikishi[],
-  division: DivisionType,
-): Promise<void> {
+async function saveResults(results: Rikishi[], division: DivisionType): Promise<void> {
   const divisionName = getKeyByValue(Division, division)
   const filename = `./data/json/${division}_${divisionName.toLowerCase()}_rikishi.json`
 

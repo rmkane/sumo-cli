@@ -1,5 +1,5 @@
-import type { DivisionType } from '@/types'
 import { Division } from '@/constants'
+import type { DivisionType } from '@/types'
 
 /**
  * Gets the division name from division ID.
@@ -36,16 +36,16 @@ export function getDivisionByRank(rank: string): DivisionType | null {
 
   // Map rank names to division IDs
   const rankToDivision: Record<string, DivisionType> = {
-    'Yokozuna': Division.MAKUUCHI,
-    'Ozeki': Division.MAKUUCHI,
-    'Sekiwake': Division.MAKUUCHI,
-    'Komusubi': Division.MAKUUCHI,
-    'Maegashira': Division.MAKUUCHI,
-    'Juryo': Division.JURYO,
-    'Makushita': Division.MAKUSHITA,
-    'Sandanme': Division.SANDANME,
-    'Jonidan': Division.JONIDAN,
-    'Jonokuchi': Division.JONOKUCHI,
+    Yokozuna: Division.MAKUUCHI,
+    Ozeki: Division.MAKUUCHI,
+    Sekiwake: Division.MAKUUCHI,
+    Komusubi: Division.MAKUUCHI,
+    Maegashira: Division.MAKUUCHI,
+    Juryo: Division.JURYO,
+    Makushita: Division.MAKUSHITA,
+    Sandanme: Division.SANDANME,
+    Jonidan: Division.JONIDAN,
+    Jonokuchi: Division.JONOKUCHI,
   }
 
   return rankToDivision[divisionName] || null

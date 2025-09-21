@@ -1,4 +1,4 @@
-import { RankMapping } from '@/constants'
+import { getAllJapaneseRanks, lookupRank } from '@/dict'
 import { kanjiToNumber } from '@/utils/japanese'
 
 /**
@@ -10,33 +10,54 @@ import { kanjiToNumber } from '@/utils/japanese'
 export function translateRank(rankText: string): string {
   const cleanRank = rankText.trim()
 
-  // Find the matching rank in our mapping
-  for (const rankEntry of RankMapping) {
-    if (cleanRank.startsWith(rankEntry.kanji)) {
-      const division = rankEntry.english
-      let position = 0
+  // Extract the base rank (e.g., "前頭" from "前頭十八枚目")
+  const baseRank = extractBaseRank(cleanRank)
+  if (!baseRank) {
+    return cleanRank
+  }
 
-      // Extract position from remaining text (e.g., "六枚目" -> 6)
-      const remainingText = cleanRank.replace(rankEntry.kanji, '').trim()
+  const english = lookupRank(baseRank)
+  if (!english) {
+    return cleanRank
+  }
 
-      if (remainingText) {
-        // Remove "枚目" suffix if present
-        const positionText = remainingText.replace('枚目', '')
-        if (positionText) {
-          position = kanjiToNumber(positionText)
-        }
-      }
+  const division = english.charAt(0).toUpperCase() + english.slice(1)
 
-      if (position > 0) {
-        return `${division} #${position}`
-      } else {
-        return division
-      }
+  // Extract position from remaining text (e.g., "六枚目" -> 6)
+  const remainingText = cleanRank.replace(baseRank, '').trim()
+  let position = 0
+
+  if (remainingText) {
+    // Remove "枚目" suffix if present
+    const positionText = remainingText.replace('枚目', '')
+    if (positionText) {
+      position = kanjiToNumber(positionText)
     }
   }
 
-  // Fallback for unknown ranks
-  return cleanRank
+  if (position > 0) {
+    return `${division} #${position}`
+  } else {
+    return division
+  }
+}
+
+/**
+ * Extracts the base rank from a full rank string.
+ *
+ * @param rankText - Full rank text (e.g., "前頭十八枚目")
+ * @returns Base rank (e.g., "前頭") or null if not found
+ */
+function extractBaseRank(rankText: string): string | null {
+  // Check for exact matches first (for ranks without positions)
+  if (lookupRank(rankText)) {
+    return rankText
+  }
+
+  // Check for prefixes using dictionary function
+  const possibleRanks = getAllJapaneseRanks()
+
+  return possibleRanks.find((rank) => rankText.startsWith(rank)) || null
 }
 
 /**

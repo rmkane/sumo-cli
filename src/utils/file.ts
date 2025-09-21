@@ -74,14 +74,9 @@ export async function saveJSON(
     if (!config.overwrite) {
       try {
         await fs.access(filename)
-        throw new Error(
-          `File ${filename} already exists and overwrite is disabled`,
-        )
+        throw new Error(`File ${filename} already exists and overwrite is disabled`)
       } catch (error) {
-        if (
-          error instanceof Error &&
-          error.message.includes('already exists')
-        ) {
+        if (error instanceof Error && error.message.includes('already exists')) {
           throw error
         }
         // File doesn't exist, continue
@@ -125,10 +120,7 @@ export async function saveJSON(
  * @throws {Error} When file cannot be read or contains invalid JSON
  * @since 1.0.0
  */
-export async function readJSON<T = any>(
-  filename: string,
-  options: FileOptions = {},
-): Promise<T> {
+export async function readJSON<T = any>(filename: string, options: FileOptions = {}): Promise<T> {
   const config = { ...DEFAULT_FILE_OPTIONS, ...options }
 
   try {
@@ -211,10 +203,7 @@ export function validateFilePath(filePath: string): {
  * @throws {Error} When directory cannot be created
  * @since 1.0.0
  */
-export async function ensureDirectory(
-  dirPath: string,
-  options: FileOptions = {},
-): Promise<void> {
+export async function ensureDirectory(dirPath: string, options: FileOptions = {}): Promise<void> {
   const config = { ...DEFAULT_FILE_OPTIONS, ...options }
 
   try {
@@ -313,10 +302,7 @@ export async function getFileInfo(filePath: string): Promise<{
  * @throws {Error} When file exists but cannot be deleted
  * @since 1.0.0
  */
-export async function deleteFile(
-  filePath: string,
-  options: FileOptions = {},
-): Promise<boolean> {
+export async function deleteFile(filePath: string, options: FileOptions = {}): Promise<boolean> {
   const config = { ...DEFAULT_FILE_OPTIONS, ...options }
 
   try {

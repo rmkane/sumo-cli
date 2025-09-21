@@ -1,4 +1,4 @@
-import { toRomaji, toHiragana, toKatakana } from 'wanakana'
+import { toHiragana, toKatakana, toRomaji } from 'wanakana'
 
 /**
  * Converts Japanese text to romaji with proper macron notation for long vowels.

@@ -1,11 +1,11 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
+import { RateLimitedQueue } from '@/classes/queue'
+import { RATE_LIMITS } from '@/config/urls'
 import type { DivisionType } from '@/types'
 import { getDivisionName } from '@/utils/division'
 import { fetchHTML } from '@/utils/html'
-import { RateLimitedQueue } from '@/classes/queue'
-import { RATE_LIMITS } from '@/config/urls'
 
 // Global queue for rate-limited downloads
 const downloadQueue = new RateLimitedQueue(RATE_LIMITS.DOWNLOAD_DELAY_MS)
@@ -21,12 +21,12 @@ const downloadQueue = new RateLimitedQueue(RATE_LIMITS.DOWNLOAD_DELAY_MS)
 const CACHE_CONFIG = {
   html: {
     directory: 'html',
-    extension: '.html'
+    extension: '.html',
   },
   json: {
     directory: 'json',
-    extension: '.json'
-  }
+    extension: '.json',
+  },
 } as const
 
 type CacheType = keyof typeof CACHE_CONFIG
@@ -44,7 +44,7 @@ export async function downloadAndCache(
   url: string,
   cacheType: CacheType,
   customFilename?: string,
-  forceRefresh: boolean = false
+  forceRefresh: boolean = false,
 ): Promise<{ content: string; fromServer: boolean }> {
   const cachePath = getCachePath(url, cacheType, customFilename)
 
@@ -74,7 +74,7 @@ export async function downloadAndCache(
 export async function downloadMatchupData(
   division: DivisionType,
   day: number,
-  forceRefresh: boolean = false
+  forceRefresh: boolean = false,
 ): Promise<{ content: string; fromServer: boolean }> {
   const url = `https://www.sumo.or.jp/ResultData/torikumi/${division}/${day}/`
   const paddedDay = day.toString().padStart(2, '0')
@@ -92,7 +92,7 @@ export async function downloadMatchupData(
  */
 export async function downloadStatsData(
   division: DivisionType,
-  forceRefresh: boolean = false
+  forceRefresh: boolean = false,
 ): Promise<{ content: string; fromServer: boolean }> {
   const url = `https://sumo.or.jp/ResultData/hoshitori/${division}/1/`
   const customFilename = `stats_${division}_${getDivisionName(division)}`

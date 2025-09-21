@@ -1,8 +1,8 @@
-import type { DivisionType } from '@/types'
 import { Division } from '@/constants'
-import { fetchMatchupData, parseMatchupHTML } from '@/services/matchup'
-import { saveMatchupCSV } from '@/utils/csv'
 import { processDivision } from '@/services/division-processor'
+import { fetchMatchupData, parseMatchupHTML } from '@/services/matchup'
+import type { DivisionType } from '@/types'
+import { saveMatchupCSV } from '@/utils/csv'
 
 /**
  * Processes matchup data for a specific division and day.
@@ -45,17 +45,15 @@ export async function processDayMatchups(day: number, forceRefresh: boolean): Pr
 
   // First, ensure we have division info cached
   console.log('Caching division info...')
-  const divisionPromises = Object.entries(Division).map(
-    ([divisionName, divisionId]) =>
-      processDivision(divisionName, divisionId, forceRefresh),
+  const divisionPromises = Object.entries(Division).map(([divisionName, divisionId]) =>
+    processDivision(divisionName, divisionId, forceRefresh),
   )
   await Promise.all(divisionPromises)
 
   // Then fetch and process matchup data for each division
   console.log('Fetching matchup data...')
-  const matchupPromises = Object.entries(Division).map(
-    ([divisionName, divisionId]) =>
-      processDivisionMatchups(divisionName, divisionId, day, forceRefresh),
+  const matchupPromises = Object.entries(Division).map(([divisionName, divisionId]) =>
+    processDivisionMatchups(divisionName, divisionId, day, forceRefresh),
   )
   await Promise.all(matchupPromises)
 }
