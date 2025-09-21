@@ -1,5 +1,6 @@
 import { load } from 'cheerio'
 
+import { lookupKimarite } from '@/dict'
 import { lookupRikishiByKanji } from '@/services/rikishi-lookup'
 import type { DivisionType } from '@/types'
 import { downloadMatchupData } from '@/utils/cache-manager'
@@ -17,6 +18,7 @@ export interface MatchupData {
     hiragana: string
     name: string
     result: string // 'W' for win, 'L' for loss, '' for no result yet
+    technique?: string // English kimarite name if there's a recorded win
   }
   west: {
     rank: string
@@ -25,7 +27,37 @@ export interface MatchupData {
     hiragana: string
     name: string
     result: string // 'W' for win, 'L' for loss, '' for no result yet
+    technique?: string // English kimarite name if there's a recorded win
   }
+}
+
+/**
+ * Extracts and translates the winning technique from a player cell
+ * @param $player - Cheerio element representing the player cell
+ * @returns English kimarite name or undefined if no technique found
+ */
+function extractWinningTechnique($player: any): string | undefined {
+  // Look for the technique in a sibling .decide cell
+  const $decideCell = $player.siblings('.decide')
+  if ($decideCell.length === 0) {
+    return undefined
+  }
+
+  const techniqueLink = $decideCell.find('a.technic')
+  if (techniqueLink.length === 0) {
+    return undefined
+  }
+
+  const japaneseTechnique = techniqueLink.text().trim()
+  if (!japaneseTechnique) {
+    return undefined
+  }
+
+  // Remove "取組解説" suffix if present
+  const cleanTechnique = japaneseTechnique.replace('取組解説', '').trim()
+
+  // Look up the English translation
+  return lookupKimarite(cleanTechnique)
 }
 
 /**
@@ -118,9 +150,13 @@ function parseMatchupRow($row: any, division: DivisionType): MatchupData | null 
     const eastResult = determineResult($eastPlayer)
     const westResult = determineResult($westPlayer)
 
+    // Extract winning techniques if there are recorded wins
+    const eastTechnique = eastResult === 'W' ? extractWinningTechnique($eastPlayer) : undefined
+    const westTechnique = westResult === 'W' ? extractWinningTechnique($westPlayer) : undefined
+
     return {
-      east: { ...eastPlayer, result: eastResult },
-      west: { ...westPlayer, result: westResult },
+      east: { ...eastPlayer, result: eastResult, technique: eastTechnique },
+      west: { ...westPlayer, result: westResult, technique: westTechnique },
     }
   } catch (error) {
     console.warn('Error parsing matchup row:', error)

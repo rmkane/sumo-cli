@@ -5,8 +5,86 @@ import type { MatchupData } from '@/services/matchup'
 import type { DivisionType } from '@/types'
 
 /**
- * Saves matchup data to a CSV file.
- *
+ * CSV headers for matchup data
+ */
+const CSV_HEADERS = ['', '', '東', '', 'East', '', '', '', 'West', '', '西', '', '']
+
+/**
+ * CSV subheaders for matchup data
+ */
+const CSV_SUBHEADERS = [
+  'Rank',
+  'Record',
+  'Kanji',
+  'Hiragana',
+  'Name',
+  'Result',
+  'Technique',
+  'Result',
+  'Name',
+  'Hiragana',
+  'Kanji',
+  'Record',
+  'Rank',
+]
+
+/**
+ * Extracts the winning technique from a matchup
+ * @param matchup - Matchup data
+ * @returns Winning technique or empty string
+ */
+function getWinningTechnique(matchup: MatchupData): string {
+  if (matchup.east.result === 'W') {
+    return matchup.east.technique || ''
+  }
+  if (matchup.west.result === 'W') {
+    return matchup.west.technique || ''
+  }
+  return ''
+}
+
+/**
+ * Builds a single CSV row from matchup data
+ * @param matchup - Single matchup data
+ * @returns Array of cell values for the row
+ */
+function buildMatchupRow(matchup: MatchupData): string[] {
+  const winningTechnique = getWinningTechnique(matchup)
+
+  return [
+    matchup.east.rank || '',
+    matchup.east.record || '',
+    matchup.east.kanji || '',
+    matchup.east.hiragana || '',
+    matchup.east.name || '',
+    matchup.east.result || '',
+    winningTechnique,
+    matchup.west.result || '',
+    matchup.west.name || '',
+    matchup.west.hiragana || '',
+    matchup.west.kanji || '',
+    matchup.west.record || '',
+    matchup.west.rank || '',
+  ]
+}
+
+/**
+ * Converts matchup data to CSV string
+ * @param matchups - Array of parsed matchup data
+ * @returns CSV content as string
+ */
+export function matchupDataToCSV(matchups: MatchupData[]): string {
+  const rows = [
+    CSV_HEADERS.join('\t'),
+    CSV_SUBHEADERS.join('\t'),
+    ...matchups.map((matchup) => buildMatchupRow(matchup).join('\t')),
+  ]
+
+  return rows.join('\n')
+}
+
+/**
+ * Saves matchup data to a CSV file
  * @param matchups - Array of parsed matchup data
  * @param divisionName - Human-readable division name
  * @param divisionId - Division identifier
@@ -25,7 +103,7 @@ export async function saveMatchupCSV(
   }
 
   // Generate CSV content
-  const csvContent = generateMatchupCSV(matchups)
+  const csvContent = matchupDataToCSV(matchups)
 
   // Save to file
   const paddedDay = day.toString().padStart(2, '0')
@@ -34,51 +112,4 @@ export async function saveMatchupCSV(
 
   fs.writeFileSync(filepath, csvContent, 'utf8')
   console.log(`Saved matchup CSV: ${filepath}`)
-}
-
-/**
- * Generates CSV content from matchup data.
- *
- * @param matchups - Array of parsed matchup data
- * @returns CSV content as string
- */
-function generateMatchupCSV(matchups: MatchupData[]): string {
-  const headers = ['', '', '東', '', 'East', '', '', 'West', '', '西', '', '']
-  const subHeaders = [
-    'Rank',
-    'Record',
-    'Kanji',
-    'Hiragana',
-    'Name',
-    'Result',
-    'Result',
-    'Name',
-    'Hiragana',
-    'Kanji',
-    'Record',
-    'Rank',
-  ]
-
-  const rows = [
-    headers.join('\t'),
-    subHeaders.join('\t'),
-    ...matchups.map((matchup) =>
-      [
-        matchup.east.rank || '',
-        matchup.east.record || '',
-        matchup.east.kanji || '',
-        matchup.east.hiragana || '',
-        matchup.east.name || '',
-        matchup.east.result || '',
-        matchup.west.result || '',
-        matchup.west.name || '',
-        matchup.west.hiragana || '',
-        matchup.west.kanji || '',
-        matchup.west.record || '',
-        matchup.west.rank || '',
-      ].join('\t'),
-    ),
-  ]
-
-  return rows.join('\n')
 }
