@@ -2,6 +2,12 @@
 
 A Node.js application for downloading Rikishi names in Kanji and Hiragana, with support for converting Romaji to English.
 
+## Prerequisites
+
+```sh
+npx puppeteer browsers install chrome
+```
+
 ## Divisions
 
 - Sekitori（関取）
@@ -39,6 +45,18 @@ A `.box` element contains name in Kaji and Hiragana, as well as the profile ID (
     <span onclick="smKimaritePop(3842,'E','豊昇龍',0)">1勝4敗10休</span>
   </p>
 </div>
+```
+
+## Data
+
+The table data can be accessed on <sumo.or.jp> via:
+
+```js
+console.log([...document.querySelectorAll('#torikumi_table tbody tr')].slice(1).map(tr => [...tr.querySelectorAll('.player')].map(player => [
+    player.querySelector('.rank').textContent.trim(),
+    player.querySelector('.name').textContent.trim(),
+    player.querySelector('.perform').textContent.trim(),
+].join('\t')).join('\t')).join('\n'))
 ```
 
 ## Resources
