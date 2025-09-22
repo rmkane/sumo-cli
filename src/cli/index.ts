@@ -3,56 +3,19 @@ import path from 'node:path'
 
 import { Command } from 'commander'
 
+import { formatDivisionJson, formatDivisionList, formatDivisionTable } from '@/cli/formatters.js'
 import { launchInteractiveMode } from '@/cli/repl.js'
 import { DATA_DIRS, DATA_PATHS } from '@/config/data.js'
 import { processAllDivisions } from '@/services/division-processor.js'
 import { listDivisionRikishi } from '@/services/division-service.js'
 import { processDayMatchups } from '@/services/matchup-processor.js'
 import { getCurrentTournament } from '@/services/tournament'
-import type { Rikishi } from '@/types.js'
 import { getAvailableDivisions, getDivisionNameFromNumber, getDivisionNumberMappings } from '@/utils/division.js'
 import { logDebug, logError } from '@/utils/logger.js'
-import { type TableColumn, formatTable } from '@/utils/table.js'
 
 import packageJson from '../../package.json'
 
 const program = new Command()
-
-// Format functions for division command
-function formatDivisionJson(rikishiList: Rikishi[]): void {
-  console.log(JSON.stringify(rikishiList, null, 2))
-}
-
-function formatDivisionList(rikishiList: Rikishi[]): void {
-  rikishiList.forEach((rikishi, index: number) => {
-    const rankInfo = rikishi.rank
-      ? `${rikishi.rank.division}${rikishi.rank.position ? ` #${rikishi.rank.position}` : ''} (${rikishi.rank.side || ''})`
-      : 'No rank data'
-    console.log(`${index + 1}. ${rikishi.english} (${rikishi.kanji}) - ${rankInfo}`)
-  })
-}
-
-function formatDivisionTable(rikishiList: Rikishi[]): void {
-  const columns: TableColumn[] = [
-    { field: 'division', align: 'left' },
-    { field: 'rank', align: 'right', title: 'No' },
-    { field: 'side', align: 'center' },
-    { field: 'name', align: 'left' },
-    { field: 'kanji', align: 'left' },
-    { field: 'romaji', align: 'left' },
-  ]
-
-  const tableData = rikishiList.map((rikishi) => ({
-    division: rikishi.rank ? rikishi.rank.division : '-',
-    rank: rikishi.rank?.position ?? '-',
-    side: rikishi.rank?.side || '-',
-    name: rikishi.english,
-    kanji: rikishi.kanji,
-    romaji: rikishi.romaji,
-  }))
-
-  console.log(formatTable(columns, tableData))
-}
 
 program
   .name('sumo-cli')
