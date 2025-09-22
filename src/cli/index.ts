@@ -10,12 +10,14 @@ import { processDayMatchups } from '@/services/matchup-processor.js'
 import { getCurrentTournament } from '@/services/tournament'
 import { logDebug, logError } from '@/utils/logger.js'
 
+import packageJson from '../../package.json'
+
 const program = new Command()
 
 program
   .name('sumo-cli')
   .description('Professional CLI tool for sumo rikishi data extraction and processing')
-  .version('1.0.0')
+  .version(packageJson.version)
 
 // Global options
 program
@@ -190,6 +192,9 @@ program
 const args = process.argv.slice(2)
 if (args.includes('-i') || args.includes('--interactive')) {
   launchInteractiveMode(program)
+} else if (args.length === 0) {
+  // Show help when no arguments provided
+  program.help()
 } else {
   // Parse command line arguments
   program.parse()

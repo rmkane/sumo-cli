@@ -2,6 +2,10 @@ import readline from 'node:readline'
 
 import type { Command } from 'commander'
 
+import { centerText, centerTextWithDecorations, createHorizontalLine } from '@/utils/text'
+
+import packageJson from '../../package.json'
+
 /**
  * Shows help information for interactive mode
  */
@@ -13,6 +17,8 @@ function showInteractiveHelp(): void {
   console.log('  list                    List data storage locations')
   console.log('  process-all             Process all divisions')
   console.log('  process-day <day>       Process specific tournament day (1-15)')
+  console.log('  tournament [date]      Get tournament information')
+  console.log('  validate <day>          Validate HTML data for a specific day')
   console.log('\n📋 Options (use with commands):')
   console.log('  --force-refresh         Force refresh of cached data')
   console.log('  --verbose               Enable verbose logging')
@@ -21,6 +27,8 @@ function showInteractiveHelp(): void {
   console.log('  process-all --force-refresh')
   console.log('  process-day 1 --verbose')
   console.log('  process-day 8 --output-dir ./my-data')
+  console.log('  tournament 2025-09-21')
+  console.log('  validate 10')
   console.log('')
 }
 
@@ -28,6 +36,8 @@ function showInteractiveHelp(): void {
  * Launches interactive REPL mode
  */
 export function launchInteractiveMode(program: Command): void {
+  showBanner()
+
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
@@ -93,4 +103,20 @@ export function launchInteractiveMode(program: Command): void {
   rl.on('close', () => {
     process.exit(0)
   })
+}
+
+/**
+ * Displays the sumo CLI banner
+ */
+function showBanner(): void {
+  const width = 80
+
+  console.log('')
+  console.log(createHorizontalLine(width, '═'))
+  console.log(centerTextWithDecorations(`SUMO CLI v${packageJson.version}`, width))
+  console.log(createHorizontalLine(width, '═'))
+  console.log('')
+  console.log(centerText('Professional CLI tool for sumo rikishi data extraction', width))
+  console.log(centerText('and processing from the official sumo website', width))
+  console.log('')
 }
