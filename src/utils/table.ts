@@ -63,7 +63,9 @@ export function formatTable(
     const headerWidth = getVisualWidth(col.header)
     const dataWidth = Math.max(
       ...data.map((row) => {
-        const value = row[col.header] || ''
+        // Try to find the property by header name (case-insensitive) or use the header as-is
+        const propertyKey = Object.keys(row).find((key) => key.toLowerCase() === col.header.toLowerCase()) || col.header
+        const value = row[propertyKey]
         return getVisualWidth(String(value))
       }),
     )
@@ -95,7 +97,9 @@ export function formatTable(
     return columns
       .map((col, index) => {
         const width = actualWidths[index]
-        const value = row[col.header] || ''
+        // Try to find the property by header name (case-insensitive) or use the header as-is
+        const propertyKey = Object.keys(row).find((key) => key.toLowerCase() === col.header.toLowerCase()) || col.header
+        const value = row[propertyKey]
         return padText(String(value), width, col.align || 'left')
       })
       .join(showSeparators ? ` ${separatorChar} ` : '  ')

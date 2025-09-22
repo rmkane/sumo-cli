@@ -4,6 +4,7 @@ import { type Element } from 'domhandler'
 import { ranksDictionaryJp } from '@/dict'
 import type { DivisionType, Rank, Rikishi } from '@/types'
 import { downloadStatsData } from '@/utils/cache-manager'
+import { getDivisionName } from '@/utils/division'
 import { convertDiacriticsToAscii, kanjiToNumber, toRomajiWithMacrons } from '@/utils/japanese'
 import { capitalize, unwrapText } from '@/utils/string'
 
@@ -21,7 +22,7 @@ export async function fetchResults(
 ): Promise<{ results: Rikishi[]; fromServer: boolean }> {
   try {
     const { content: html, fromServer } = await downloadStatsData(division, forceRefresh)
-    const results = parseRikishiFromHTML(html)
+    const results = parseRikishiFromHTML(html, division)
     return { results, fromServer }
   } catch (error) {
     console.error(`Error fetching results for division ${division}:`, error)
@@ -35,12 +36,35 @@ export async function fetchResults(
  * @param html - Raw HTML content from the sumo website
  * @returns Array of parsed Rikishi objects
  */
-export function parseRikishiFromHTML(html: string): Rikishi[] {
+export function parseRikishiFromHTML(html: string, division?: DivisionType): Rikishi[] {
   const $ = load(html)
   const records: Rikishi[] = []
 
-  $('#ew_table_sm tbody .box').each((_, box) => {
-    records.push(parseRecord($(box)))
+  // Handle the simple 3-column table structure (second table)
+  $('#ew_table_sm tbody tr').each((_, row) => {
+    const $row = $(row)
+    const $cells = $row.find('td, th')
+
+    // Look for the middle cell which contains the rank
+    if ($cells.length === 3) {
+      const $leftCell = $cells.eq(0)
+      const $rankCell = $cells.eq(1) // Middle cell with rank
+      const $rightCell = $cells.eq(2)
+
+      const rankText = $rankCell.text().trim()
+
+      // Parse left cell if it has div.box (East side)
+      const $leftBox = $leftCell.find('div.box')
+      if ($leftBox.length > 0) {
+        records.push(parseRecord($leftBox, rankText, division, 'East'))
+      }
+
+      // Parse right cell if it has div.box (West side)
+      const $rightBox = $rightCell.find('div.box')
+      if ($rightBox.length > 0) {
+        records.push(parseRecord($rightBox, rankText, division, 'West'))
+      }
+    }
   })
 
   return records
@@ -49,16 +73,24 @@ export function parseRikishiFromHTML(html: string): Rikishi[] {
 /**
  * Parses a single rikishi record from the HTML table.
  *
- * @param $box - Cheerio object representing the table row
+ * @param $box - Cheerio object representing the div.box element
+ * @param rankText - Rank text from the center td
+ * @param division - Division type for context
+ * @param side - Side of the ranking (East or West)
  * @returns Parsed Rikishi object
  */
-function parseRecord($box: Cheerio<Element>): Rikishi {
+function parseRecord(
+  $box: Cheerio<Element>,
+  rankText: string,
+  division?: DivisionType,
+  side?: 'East' | 'West',
+): Rikishi {
   const href = $box.find('a').attr('href') || ''
   const id = +(href.match(/\d+/)?.[0] || '0')
 
-  const rank = parseRank($box.find('.rank').text().trim())
+  const rank = parseRank(rankText, division, side)
 
-  const kanji = $box.find('a').text().trim()
+  const kanji = $box.find('a span').text().trim() || $box.find('a').text().trim()
   const hiragana = unwrapText($box.find('.hoshi_br').text())
   const romaji = capitalize(toRomajiWithMacrons(hiragana))
   const english = convertDiacriticsToAscii(romaji)
@@ -74,35 +106,74 @@ function parseRecord($box: Cheerio<Element>): Rikishi {
 }
 
 /**
+ * Parses a position string from rank text.
+ *
+ * @param positionText - Position text (e.g., "筆頭", "二枚目", "六枚目", etc.)
+ * @returns Position number (0 if not found)
+ */
+function parsePosition(positionText: string): number {
+  if (!positionText) {
+    return 0
+  }
+
+  // Handle special cases
+  if (positionText === '筆頭') {
+    return 1 // "筆頭" means "first" or "top"
+  }
+
+  // Handle "X枚目" format (e.g., "二枚目", "三枚目")
+  const match = positionText.match(/^(.+)枚目$/)
+  if (match) {
+    const numberText = match[1]
+    return kanjiToNumber(numberText)
+  }
+
+  // Try to parse as a direct number
+  return kanjiToNumber(positionText)
+}
+
+/**
  * Parses a rank string from HTML and converts it to a Rank object.
  *
  * @param rankText - Raw rank text from HTML (e.g., "横綱", "大関", "前頭六枚目", etc.)
- * @returns Rank object with division and position
+ * @param division - Division type for context
+ * @param side - Side of the ranking (East or West)
+ * @returns Rank object with division, position, and side
  */
-function parseRank(rankText: string): Rank | undefined {
+function parseRank(rankText: string, division?: DivisionType, side?: 'East' | 'West'): Rank | undefined {
   // Clean the rank text
   const cleanRank = rankText.trim()
 
-  // Find the matching rank in our dictionary
+  // Get division name from division ID
+  const divisionName = division ? getDivisionName(division) : 'unknown'
+  const divisionCapitalized = divisionName.charAt(0).toUpperCase() + divisionName.slice(1)
+
+  // Handle specific rank formats from the HTML
+  if (cleanRank === '筆頭') {
+    return { division: divisionCapitalized, position: 1, side }
+  }
+
+  // Handle "X枚目" format (e.g., "二枚目", "三枚目")
+  const match = cleanRank.match(/^(.+)枚目$/)
+  if (match) {
+    const positionText = match[1]
+    const position = parsePosition(positionText)
+    return { division: divisionCapitalized, position, side }
+  }
+
+  // Handle other rank formats (e.g., "序ノ口十八枚目")
   for (const [kanji, english] of Object.entries(ranksDictionaryJp)) {
     if (cleanRank.startsWith(kanji)) {
       const division = english.charAt(0).toUpperCase() + english.slice(1)
-      let position = 0
 
-      // Extract position from remaining text (e.g., "六枚目" -> 6)
+      // Extract position from remaining text
       const remainingText = cleanRank.replace(kanji, '').trim()
-
-      if (remainingText) {
-        // Remove "枚目" suffix if present
-        const positionText = remainingText.replace('枚目', '')
-        if (positionText) {
-          position = kanjiToNumber(positionText)
-        }
-      }
+      const position = parsePosition(remainingText)
 
       return {
         division,
         position,
+        side,
       }
     }
   }

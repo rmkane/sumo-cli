@@ -23,6 +23,8 @@ export interface Rank {
   division: string
   /** Position within the division (1-based) */
   position: number
+  /** Side of the ranking (East or West) */
+  side?: 'East' | 'West'
 }
 
 /**

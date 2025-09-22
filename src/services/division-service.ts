@@ -4,6 +4,7 @@ import { DATA_DIRS, DATA_PATHS } from '@/config/data'
 import type { DivisionType, Rikishi } from '@/types'
 import { getDivisionName, getDivisionType } from '@/utils/division'
 import { logDebug, logError } from '@/utils/logger'
+import { sortRikishi } from '@/utils/sorting'
 
 /**
  * Loads rikishi data for a specific division from JSON file.
@@ -40,14 +41,10 @@ export async function listDivisionRikishi(divisionName: string, _format: string 
     const division = getDivisionType(divisionName.toLowerCase())
     const rikishiData = loadRikishiData(division)
 
-    // Sort by English name alphabetically
-    const sortedRikishi = rikishiData.sort((a, b) => {
-      const nameA = a.english.toLowerCase()
-      const nameB = b.english.toLowerCase()
-      return nameA.localeCompare(nameB)
-    })
+    // Sort by division hierarchy, then rank, then English name alphabetically
+    const sortedRikishi = rikishiData.sort(sortRikishi)
 
-    logDebug(`Sorted ${sortedRikishi.length} rikishi by English name for division ${divisionName}`)
+    logDebug(`Sorted ${sortedRikishi.length} rikishi by division, rank, then name for division ${divisionName}`)
     return sortedRikishi
   } catch (error) {
     logError('listing division rikishi', error)
