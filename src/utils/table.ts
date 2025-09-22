@@ -2,12 +2,23 @@
  * Interface for table column configuration
  */
 export interface TableColumn {
-  /** Column header text */
-  header: string
+  /** Field name for data mapping */
+  field: string
+  /** Display title for the column header */
+  title?: string
   /** Column width (minimum width) - optional */
   width?: number
   /** Alignment: 'left', 'right', or 'center' */
   align?: 'left' | 'right' | 'center'
+}
+
+/**
+ * Capitalizes the first letter of a string
+ * @param str - String to capitalize
+ * @returns String with first letter capitalized
+ */
+function capitalizeFirst(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
 /**
@@ -60,12 +71,11 @@ export function formatTable(
 
   // Calculate actual column widths based on content
   const actualWidths = columns.map((col) => {
-    const headerWidth = getVisualWidth(col.header)
+    const headerText = col.title || capitalizeFirst(col.field)
+    const headerWidth = getVisualWidth(headerText)
     const dataWidth = Math.max(
       ...data.map((row) => {
-        // Try to find the property by header name (case-insensitive) or use the header as-is
-        const propertyKey = Object.keys(row).find((key) => key.toLowerCase() === col.header.toLowerCase()) || col.header
-        const value = row[propertyKey]
+        const value = row[col.field]
         return getVisualWidth(String(value))
       }),
     )
@@ -83,7 +93,8 @@ export function formatTable(
   const headerRow = columns
     .map((col, index) => {
       const width = actualWidths[index]
-      return padText(col.header, width, col.align || 'left')
+      const headerText = col.title || capitalizeFirst(col.field)
+      return padText(headerText, width, col.align || 'left')
     })
     .join(showSeparators ? ` ${separatorChar} ` : '  ')
 
@@ -97,9 +108,7 @@ export function formatTable(
     return columns
       .map((col, index) => {
         const width = actualWidths[index]
-        // Try to find the property by header name (case-insensitive) or use the header as-is
-        const propertyKey = Object.keys(row).find((key) => key.toLowerCase() === col.header.toLowerCase()) || col.header
-        const value = row[propertyKey]
+        const value = row[col.field]
         return padText(String(value), width, col.align || 'left')
       })
       .join(showSeparators ? ` ${separatorChar} ` : '  ')

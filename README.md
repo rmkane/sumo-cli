@@ -84,6 +84,9 @@ sumo-cli process-all --force-refresh --verbose
 
 # List data storage locations
 sumo-cli list
+
+# Show rikishi by division
+sumo-cli division makuuchi
 ```
 
 For complete documentation, see [CLI.md](./CLI.md).

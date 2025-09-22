@@ -5,6 +5,7 @@ import {
   countKanji,
   extractFirstKanji,
   hasKanji,
+  kanjiToNumber,
   normalizeJapanese,
   toHiraganaSafe,
   toKatakanaSafe,
@@ -225,6 +226,42 @@ describe('Japanese Utilities', () => {
       expect(hasKanji('大関 おおぜき')).toBe(true)
       expect(hasKanji('こんにちは 世界')).toBe(true)
       expect(hasKanji('Hello こんにちは')).toBe(false)
+    })
+  })
+
+  describe('kanjiToNumber', () => {
+    it('should convert basic kanji numbers', () => {
+      expect(kanjiToNumber('一')).toBe(1)
+      expect(kanjiToNumber('二')).toBe(2)
+      expect(kanjiToNumber('三')).toBe(3)
+      expect(kanjiToNumber('四')).toBe(4)
+      expect(kanjiToNumber('五')).toBe(5)
+      expect(kanjiToNumber('六')).toBe(6)
+      expect(kanjiToNumber('七')).toBe(7)
+      expect(kanjiToNumber('八')).toBe(8)
+      expect(kanjiToNumber('九')).toBe(9)
+      expect(kanjiToNumber('〇')).toBe(0)
+    })
+
+    it('should handle compound numbers', () => {
+      expect(kanjiToNumber('十')).toBe(10)
+      expect(kanjiToNumber('二十')).toBe(20)
+      expect(kanjiToNumber('三十')).toBe(30)
+      expect(kanjiToNumber('百')).toBe(100)
+      expect(kanjiToNumber('二百')).toBe(200)
+      expect(kanjiToNumber('千')).toBe(1000)
+    })
+
+    it('should handle complex numbers', () => {
+      expect(kanjiToNumber('二十五')).toBe(25)
+      expect(kanjiToNumber('百五十')).toBe(150)
+      expect(kanjiToNumber('千二百')).toBe(1200)
+    })
+
+    it('should return 0 for invalid input', () => {
+      expect(kanjiToNumber('')).toBe(0)
+      expect(kanjiToNumber('abc')).toBe(0)
+      expect(kanjiToNumber('こんにちは')).toBe(0)
     })
   })
 

@@ -154,21 +154,21 @@ program
       } else {
         // Table format (default)
         const columns: TableColumn[] = [
-          { header: 'Division', align: 'left' },
-          { header: 'Rank', align: 'center' },
-          { header: 'Side', align: 'center' },
-          { header: 'English Name', align: 'left' },
-          { header: 'Kanji', align: 'left' },
-          { header: 'Romaji', align: 'left' },
+          { field: 'division', align: 'left' },
+          { field: 'rank', align: 'right', title: 'No' },
+          { field: 'side', align: 'center' },
+          { field: 'name', align: 'left' },
+          { field: 'kanji', align: 'left' },
+          { field: 'romaji', align: 'left' },
         ]
 
         const tableData = rikishiList.map((rikishi) => ({
-          Division: rikishi.rank ? rikishi.rank.division : '—',
-          Rank: rikishi.rank ? rikishi.rank.position : '—',
-          Side: rikishi.rank?.side || '—',
-          'English Name': rikishi.english,
-          Kanji: rikishi.kanji,
-          Romaji: rikishi.romaji,
+          division: rikishi.rank ? rikishi.rank.division : '—',
+          rank: rikishi.rank?.position ?? '—',
+          side: rikishi.rank?.side || '—',
+          name: rikishi.english,
+          kanji: rikishi.kanji,
+          romaji: rikishi.romaji,
         }))
 
         console.log(formatTable(columns, tableData))

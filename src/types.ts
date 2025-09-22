@@ -15,6 +15,8 @@ export type ValueOf<T> = T[KeyOf<T>]
  */
 export type DivisionType = ValueOf<typeof Division>
 
+export type Side = 'East' | 'West'
+
 /**
  * Interface for sumo rank data
  */
@@ -22,9 +24,9 @@ export interface Rank {
   /** Division name (e.g., "Makuuchi", "Juryo") */
   division: string
   /** Position within the division (1-based) */
-  position: number
+  position?: number
   /** Side of the ranking (East or West) */
-  side?: 'East' | 'West'
+  side?: Side
 }
 
 /**

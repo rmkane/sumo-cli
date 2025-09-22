@@ -10,9 +10,9 @@ describe('Table Utilities', () => {
   ]
 
   const columns: TableColumn[] = [
-    { header: 'Name', width: 10, align: 'left' },
-    { header: 'Age', width: 5, align: 'center' },
-    { header: 'City', width: 15, align: 'left' },
+    { field: 'name', width: 10, align: 'left' },
+    { field: 'age', width: 5, align: 'center' },
+    { field: 'city', width: 15, align: 'left' },
   ]
 
   describe('formatTable', () => {
@@ -37,9 +37,9 @@ describe('Table Utilities', () => {
 
     it('should respect column alignment', () => {
       const centerColumns: TableColumn[] = [
-        { header: 'Name', width: 10, align: 'left' },
-        { header: 'Age', width: 5, align: 'center' },
-        { header: 'City', width: 15, align: 'right' },
+        { field: 'name', width: 10, align: 'left' },
+        { field: 'age', width: 5, align: 'center' },
+        { field: 'city', width: 15, align: 'right' },
       ]
 
       const result = formatTable(centerColumns, sampleData)
@@ -55,9 +55,9 @@ describe('Table Utilities', () => {
       const wideData = [{ name: 'VeryLongName', age: 100, city: 'VeryLongCityName' }]
 
       const narrowColumns: TableColumn[] = [
-        { header: 'Name', width: 5, align: 'left' },
-        { header: 'Age', width: 3, align: 'center' },
-        { header: 'City', width: 8, align: 'left' },
+        { field: 'name', width: 5, align: 'left' },
+        { field: 'age', width: 3, align: 'center' },
+        { field: 'city', width: 8, align: 'left' },
       ]
 
       const result = formatTable(narrowColumns, wideData)
@@ -107,9 +107,9 @@ describe('Table Utilities', () => {
       ]
 
       const mixedColumns: TableColumn[] = [
-        { header: 'Name', width: 10, align: 'left' },
-        { header: 'Age', width: 5, align: 'center' },
-        { header: 'Active', width: 8, align: 'center' },
+        { field: 'name', width: 10, align: 'left' },
+        { field: 'age', width: 5, align: 'center' },
+        { field: 'active', width: 8, align: 'center' },
       ]
 
       const result = formatTable(mixedColumns, mixedData)

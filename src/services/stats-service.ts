@@ -2,7 +2,7 @@ import { type Cheerio, load } from 'cheerio'
 import { type Element } from 'domhandler'
 
 import { ranksDictionaryJp } from '@/dict'
-import type { DivisionType, Rank, Rikishi } from '@/types'
+import type { DivisionType, Rank, Rikishi, Side } from '@/types'
 import { downloadStatsData } from '@/utils/cache-manager'
 import { getDivisionName } from '@/utils/division'
 import { convertDiacriticsToAscii, kanjiToNumber, toRomajiWithMacrons } from '@/utils/japanese'
@@ -111,9 +111,9 @@ function parseRecord(
  * @param positionText - Position text (e.g., "筆頭", "二枚目", "六枚目", etc.)
  * @returns Position number (0 if not found)
  */
-function parsePosition(positionText: string): number {
+function parsePosition(positionText: string): number | undefined {
   if (!positionText) {
-    return 0
+    return undefined
   }
 
   // Handle special cases
@@ -125,11 +125,13 @@ function parsePosition(positionText: string): number {
   const match = positionText.match(/^(.+)枚目$/)
   if (match) {
     const numberText = match[1]
-    return kanjiToNumber(numberText)
+    const result = kanjiToNumber(numberText)
+    return result > 0 ? result : undefined
   }
 
   // Try to parse as a direct number
-  return kanjiToNumber(positionText)
+  const result = kanjiToNumber(positionText)
+  return result > 0 ? result : undefined
 }
 
 /**
@@ -140,7 +142,7 @@ function parsePosition(positionText: string): number {
  * @param side - Side of the ranking (East or West)
  * @returns Rank object with division, position, and side
  */
-function parseRank(rankText: string, division?: DivisionType, side?: 'East' | 'West'): Rank | undefined {
+function parseRank(rankText: string, division?: DivisionType, side?: Side): Rank | undefined {
   // Clean the rank text
   const cleanRank = rankText.trim()
 
@@ -153,29 +155,42 @@ function parseRank(rankText: string, division?: DivisionType, side?: 'East' | 'W
     return { division: divisionCapitalized, position: 1, side }
   }
 
-  // Handle "X枚目" format (e.g., "二枚目", "三枚目")
-  const match = cleanRank.match(/^(.+)枚目$/)
-  if (match) {
-    const positionText = match[1]
-    const position = parsePosition(positionText)
-    return { division: divisionCapitalized, position, side }
-  }
-
-  // Handle other rank formats (e.g., "序ノ口十八枚目")
+  // Handle other rank formats (e.g., "序ノ口十八枚目") - check ranks dictionary first
   for (const [kanji, english] of Object.entries(ranksDictionaryJp)) {
     if (cleanRank.startsWith(kanji)) {
       const division = english.charAt(0).toUpperCase() + english.slice(1)
 
       // Extract position from remaining text
       const remainingText = cleanRank.replace(kanji, '').trim()
-      const position = parsePosition(remainingText)
 
-      return {
-        division,
-        position,
-        side,
+      // Check if remaining text matches "X枚目" pattern
+      const match = remainingText.match(/^(.+)枚目$/)
+      if (match) {
+        const positionText = match[1]
+        const position = parsePosition(positionText)
+        return position !== undefined ? { division, position, side } : { division, side }
       }
+
+      // Try to parse remaining text as position
+      const position = parsePosition(remainingText)
+      return position !== undefined ? { division, position, side } : { division, side }
     }
+  }
+
+  // Handle "X枚目" format (e.g., "二枚目", "三枚目") - only if no rank match found
+  const match = cleanRank.match(/^(.+)枚目$/)
+  if (match) {
+    const positionText = match[1]
+    const position = parsePosition(positionText)
+    // Only include position if it's meaningful (not undefined)
+    return position !== undefined
+      ? { division: divisionCapitalized, position, side }
+      : { division: divisionCapitalized, side }
+  }
+
+  // If no rank pattern matched, use the division parameter as fallback
+  if (division) {
+    return { division: divisionCapitalized, side }
   }
 
   // Fallback for unknown ranks
