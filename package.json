@@ -8,7 +8,7 @@
     "build": "tsup",
     "start": "node dist/index.js",
     "dev": "tsup --watch",
-    "cli": "tsx src/index.ts",
+    "cli": "tsx src/cli/index.ts",
     "link": "npm link",
     "unlink": "npm unlink -g sumo-cli",
     "install-local": "npm run build && npm run link",
