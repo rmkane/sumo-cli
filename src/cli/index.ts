@@ -6,9 +6,12 @@ import { Command } from 'commander'
 import { launchInteractiveMode } from '@/cli/repl.js'
 import { DATA_DIRS, DATA_PATHS } from '@/config/data.js'
 import { processAllDivisions } from '@/services/division-processor.js'
+import { listDivisionRikishi } from '@/services/division-service.js'
 import { processDayMatchups } from '@/services/matchup-processor.js'
 import { getCurrentTournament } from '@/services/tournament'
+import { getAvailableDivisions } from '@/utils/division.js'
 import { logDebug, logError } from '@/utils/logger.js'
+import { type TableColumn, formatTable } from '@/utils/table.js'
 
 import packageJson from '../../package.json'
 
@@ -113,6 +116,71 @@ program
       }
     } catch (error) {
       console.error(`Error getting tournament info:`, error)
+      process.exit(1)
+    }
+  })
+
+// Division rikishi list command
+program
+  .command('division <division>')
+  .description('List all rikishi in a division in English alphabetical order')
+  .option('-f, --format <format>', 'Output format: table, list, json', 'table')
+  .action(async (division, options) => {
+    try {
+      const rikishiList = await listDivisionRikishi(division, options.format)
+
+      if (rikishiList.length === 0) {
+        console.log(`No rikishi found for division: ${division}`)
+        console.log(`Available divisions: ${getAvailableDivisions().join(', ')}`)
+        return
+      }
+
+      console.log(`\n🥋 ${division.toUpperCase()} Division - ${rikishiList.length} Rikishi`)
+      console.log('='.repeat(50))
+
+      // Check if any rikishi have rank data
+      const hasRankData = rikishiList.some((rikishi) => rikishi.rank)
+      if (!hasRankData) {
+        console.log('ℹ️  Note: Rank data not available in current dataset')
+        console.log('')
+      }
+
+      if (options.format === 'json') {
+        console.log(JSON.stringify(rikishiList, null, 2))
+      } else if (options.format === 'list') {
+        rikishiList.forEach((rikishi, index: number) => {
+          console.log(`${index + 1}. ${rikishi.english} (${rikishi.kanji})`)
+        })
+      } else {
+        // Table format (default)
+        const columns: TableColumn[] = [
+          { header: 'Rank', align: 'center' },
+          { header: 'English Name', align: 'left' },
+          { header: 'Kanji', align: 'left' },
+          { header: 'Romaji', align: 'left' },
+        ]
+
+        const tableData = rikishiList.map((rikishi) => ({
+          Rank: rikishi.rank ? `${rikishi.rank.position}` : '—',
+          'English Name': rikishi.english,
+          Kanji: rikishi.kanji,
+          Romaji: rikishi.romaji,
+        }))
+
+        console.log(formatTable(columns, tableData))
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('Invalid division name')) {
+        console.error(`❌ Invalid division: "${division}"`)
+        console.log(`\nAvailable divisions:`)
+        getAvailableDivisions().forEach((div) => {
+          console.log(`  • ${div}`)
+        })
+        console.log(`\nExample: pnpm cli division makuuchi`)
+      } else {
+        console.error(`❌ Error listing division rikishi:`, error)
+        console.log(`Available divisions: ${getAvailableDivisions().join(', ')}`)
+      }
       process.exit(1)
     }
   })

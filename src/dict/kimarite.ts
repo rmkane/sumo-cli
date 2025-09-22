@@ -1,4 +1,4 @@
-import { invertDict } from '@/dict/base'
+import { invertDict } from '@/utils/object'
 
 /*
   List of Kimarite, or Winning Techniques

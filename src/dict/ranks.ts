@@ -1,4 +1,4 @@
-import { invertDict } from '@/dict/base'
+import { invertDict } from '@/utils/object'
 
 // English to Japanese ranks dictionary (sorted alphabetically)
 export const ranksDictionaryEn = {

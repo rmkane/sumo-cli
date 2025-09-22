@@ -19,6 +19,7 @@ function showInteractiveHelp(): void {
   console.log('  process-day <day>       Process specific tournament day (1-15)')
   console.log('  tournament [date]      Get tournament information')
   console.log('  validate <day>          Validate HTML data for a specific day')
+  console.log('  division <name>         List rikishi in a division (alphabetical)')
   console.log('\n📋 Options (use with commands):')
   console.log('  --force-refresh         Force refresh of cached data')
   console.log('  --verbose               Enable verbose logging')
@@ -29,6 +30,8 @@ function showInteractiveHelp(): void {
   console.log('  process-day 8 --output-dir ./my-data')
   console.log('  tournament 2025-09-21')
   console.log('  validate 10')
+  console.log('  division makuuchi --format table')
+  console.log('  division juryo --format list')
   console.log('')
 }
 
