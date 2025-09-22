@@ -79,3 +79,22 @@ export function getDivisionType(divisionName: string): DivisionType {
 export function getAvailableDivisions(): string[] {
   return AVAILABLE_DIVISIONS
 }
+
+/**
+ * Converts division number to division name
+ *
+ * @param divisionNumber - Division number (1-6)
+ * @returns Division name or null if invalid
+ */
+export function getDivisionNameFromNumber(divisionNumber: number): string | null {
+  return DIVISION_NAMES[divisionNumber as DivisionType] || null
+}
+
+/**
+ * Gets division number to name mappings for display purposes
+ *
+ * @returns Array of strings showing number=name mappings
+ */
+export function getDivisionNumberMappings(): string[] {
+  return Object.entries(DIVISION_NAMES).map(([number, name]) => `${number}=${name}`)
+}

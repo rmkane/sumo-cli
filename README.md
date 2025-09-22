@@ -11,6 +11,7 @@ A professional command-line interface for processing sumo rikishi data. Extract,
 - [Sumo Divisions](#sumo-divisions)
 - [Data Structure](#data-structure)
 - [Usage Examples](#usage-examples)
+- [Development](#development)
 - [Resources](#resources)
   - [Official Sumo Sources](#official-sumo-sources)
   - [Third-Party APIs \& Databases](#third-party-apis--databases)
@@ -70,23 +71,46 @@ The CLI extracts and processes:
 ## Usage Examples
 
 ```bash
-# Process all divisions
-sumo-cli process-all
+# Get help (multiple ways to run)
+pnpm cli --help  # Development mode
+sumo-cli --help  # If installed globally
 
-# Process specific tournament day
-sumo-cli process-day 1
+# Download rikishi statistics for all divisions (saves as JSON)
+sumo-cli download-stats
+
+# Download matchup data for specific tournament day (saves as CSV)
+sumo-cli download-matchups 1
 
 # Use custom output directory
-sumo-cli process-day 1 --output-dir ./my-data
+sumo-cli download-matchups 1 --output-dir ./my-data
 
 # Force refresh cached data
-sumo-cli process-all --force-refresh --verbose
+sumo-cli download-stats --force-refresh --verbose
 
 # List data storage locations
 sumo-cli list
 
 # Show rikishi by division
 sumo-cli division makuuchi
+```
+
+## Development
+
+```bash
+# Run in development mode (with tsx)
+pnpm cli --help
+pnpm cli download-stats
+pnpm cli download-matchups 1
+
+# Build and watch for changes
+make dev
+
+# Run tests
+pnpm test --run
+
+# Format and lint
+pnpm format
+pnpm lint
 ```
 
 For complete documentation, see [CLI.md](./CLI.md).

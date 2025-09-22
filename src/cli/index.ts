@@ -9,13 +9,50 @@ import { processAllDivisions } from '@/services/division-processor.js'
 import { listDivisionRikishi } from '@/services/division-service.js'
 import { processDayMatchups } from '@/services/matchup-processor.js'
 import { getCurrentTournament } from '@/services/tournament'
-import { getAvailableDivisions } from '@/utils/division.js'
+import type { Rikishi } from '@/types.js'
+import { getAvailableDivisions, getDivisionNameFromNumber, getDivisionNumberMappings } from '@/utils/division.js'
 import { logDebug, logError } from '@/utils/logger.js'
 import { type TableColumn, formatTable } from '@/utils/table.js'
 
 import packageJson from '../../package.json'
 
 const program = new Command()
+
+// Format functions for division command
+function formatDivisionJson(rikishiList: Rikishi[]): void {
+  console.log(JSON.stringify(rikishiList, null, 2))
+}
+
+function formatDivisionList(rikishiList: Rikishi[]): void {
+  rikishiList.forEach((rikishi, index: number) => {
+    const rankInfo = rikishi.rank
+      ? `${rikishi.rank.division}${rikishi.rank.position ? ` #${rikishi.rank.position}` : ''} (${rikishi.rank.side || ''})`
+      : 'No rank data'
+    console.log(`${index + 1}. ${rikishi.english} (${rikishi.kanji}) - ${rankInfo}`)
+  })
+}
+
+function formatDivisionTable(rikishiList: Rikishi[]): void {
+  const columns: TableColumn[] = [
+    { field: 'division', align: 'left' },
+    { field: 'rank', align: 'right', title: 'No' },
+    { field: 'side', align: 'center' },
+    { field: 'name', align: 'left' },
+    { field: 'kanji', align: 'left' },
+    { field: 'romaji', align: 'left' },
+  ]
+
+  const tableData = rikishiList.map((rikishi) => ({
+    division: rikishi.rank ? rikishi.rank.division : '-',
+    rank: rikishi.rank?.position ?? '-',
+    side: rikishi.rank?.side || '-',
+    name: rikishi.english,
+    kanji: rikishi.kanji,
+    romaji: rikishi.romaji,
+  }))
+
+  console.log(formatTable(columns, tableData))
+}
 
 program
   .name('sumo-cli')
@@ -29,10 +66,10 @@ program
   .option('-o, --output-dir <path>', 'Custom output directory for CSV files', './output')
   .option('-i, --interactive', 'Launch interactive REPL mode')
 
-// Process all divisions command
+// Download rikishi statistics command
 program
-  .command('process-all')
-  .description('Process all sumo divisions and extract rikishi data')
+  .command('download-stats')
+  .description('Download rikishi statistics for all divisions and save as JSON files')
   // eslint-disable-next-line no-unused-vars
   .action(async (_options) => {
     try {
@@ -42,7 +79,7 @@ program
       logDebug('Starting full division processing...')
       const result = await processAllDivisions(globalOptions.forceRefresh)
       console.log(
-        `All divisions processed successfully - ${result.filesCreated} JSON files created in ${result.dataDir}`,
+        `✅ Rikishi statistics downloaded successfully - ${result.filesCreated} JSON files created in ${result.dataDir}`,
       )
     } catch (error) {
       logError('processing all divisions', error)
@@ -50,10 +87,10 @@ program
     }
   })
 
-// Process specific day command
+// Download matchup data command
 program
-  .command('process-day <day>')
-  .description('Process matchup data for a specific tournament day (1-15)')
+  .command('download-matchups <day>')
+  .description('Download matchup data for a specific tournament day (1-15) and save as CSV files')
   // eslint-disable-next-line no-unused-vars
   .action(async (day, _options) => {
     try {
@@ -74,7 +111,7 @@ program
         console.log(`   Use 'sumo-cli validate ${dayNum}' to check HTML metadata for details`)
       } else {
         console.log(
-          `✅ Day ${dayNum} processed successfully - ${result.filesCreated} CSV files created in ${result.outputDir}`,
+          `✅ Matchup data downloaded successfully - ${result.filesCreated} CSV files created in ${result.outputDir}`,
         )
       }
     } catch (error) {
@@ -127,15 +164,33 @@ program
   .option('-f, --format <format>', 'Output format: table, list, json', 'table')
   .action(async (division, options) => {
     try {
-      const rikishiList = await listDivisionRikishi(division, options.format)
+      // Handle both division names (makuuchi) and numbers (1)
+      let divisionName: string
+      const divisionNum = parseInt(division, 10)
+
+      if (!isNaN(divisionNum) && divisionNum >= 1 && divisionNum <= 6) {
+        // Convert number to division name using existing utility
+        const nameFromNumber = getDivisionNameFromNumber(divisionNum)
+        if (nameFromNumber) {
+          divisionName = nameFromNumber
+        } else {
+          throw new Error(`Invalid division number: ${divisionNum}`)
+        }
+      } else {
+        // Use the provided division name
+        divisionName = division.toLowerCase()
+      }
+
+      const rikishiList = await listDivisionRikishi(divisionName, options.format)
 
       if (rikishiList.length === 0) {
         console.log(`No rikishi found for division: ${division}`)
         console.log(`Available divisions: ${getAvailableDivisions().join(', ')}`)
+        console.log(`Or use numbers: ${getDivisionNumberMappings().join(', ')}`)
         return
       }
 
-      console.log(`\n🥋 ${division.toUpperCase()} Division - ${rikishiList.length} Rikishi`)
+      console.log(`\n🥋 ${divisionName.toUpperCase()} Division - ${rikishiList.length} Rikishi`)
       console.log('='.repeat(50))
 
       // Check if any rikishi have rank data
@@ -145,45 +200,36 @@ program
         console.log('')
       }
 
-      if (options.format === 'json') {
-        console.log(JSON.stringify(rikishiList, null, 2))
-      } else if (options.format === 'list') {
-        rikishiList.forEach((rikishi, index: number) => {
-          console.log(`${index + 1}. ${rikishi.english} (${rikishi.kanji})`)
-        })
-      } else {
-        // Table format (default)
-        const columns: TableColumn[] = [
-          { field: 'division', align: 'left' },
-          { field: 'rank', align: 'right', title: 'No' },
-          { field: 'side', align: 'center' },
-          { field: 'name', align: 'left' },
-          { field: 'kanji', align: 'left' },
-          { field: 'romaji', align: 'left' },
-        ]
-
-        const tableData = rikishiList.map((rikishi) => ({
-          division: rikishi.rank ? rikishi.rank.division : '—',
-          rank: rikishi.rank?.position ?? '—',
-          side: rikishi.rank?.side || '—',
-          name: rikishi.english,
-          kanji: rikishi.kanji,
-          romaji: rikishi.romaji,
-        }))
-
-        console.log(formatTable(columns, tableData))
+      // Format output based on requested format
+      switch (options.format) {
+        case 'json':
+          formatDivisionJson(rikishiList)
+          break
+        case 'list':
+          formatDivisionList(rikishiList)
+          break
+        case 'table':
+        default:
+          formatDivisionTable(rikishiList)
+          break
       }
     } catch (error) {
       if (error instanceof Error && error.message.includes('Invalid division name')) {
         console.error(`❌ Invalid division: "${division}"`)
         console.log(`\nAvailable divisions:`)
         getAvailableDivisions().forEach((div) => {
-          console.log(`  • ${div}`)
+          console.log(` - ${div}`)
         })
-        console.log(`\nExample: pnpm cli division makuuchi`)
+        console.log(`\nOr use numbers:`)
+        getDivisionNumberMappings().forEach((mapping) => {
+          const [number, name] = mapping.split('=')
+          console.log(` - ${number} = ${name}`)
+        })
+        console.log(`\nExample: sumo-cli division makuuchi or sumo-cli division 1`)
       } else {
         console.error(`❌ Error listing division rikishi:`, error)
         console.log(`Available divisions: ${getAvailableDivisions().join(', ')}`)
+        console.log(`Or use numbers: ${getDivisionNumberMappings().join(', ')}`)
       }
       process.exit(1)
     }
