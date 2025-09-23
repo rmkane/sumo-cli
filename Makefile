@@ -6,7 +6,7 @@
 # =============================================================================
 # Phony targets
 # =============================================================================
-.PHONY: dev build clean clean-all format help install refresh format-check
+.PHONY: dev build clean clean-all format help install install-cli uninstall-cli refresh format-check
 .PHONY: test test-run test-ui test-coverage lint lint-fix
 
 # =============================================================================
@@ -32,6 +32,12 @@ build: # Build TypeScript to JavaScript
 
 install: # Install dependencies
 	pnpm install
+
+install-cli: # Build and link CLI globally
+	pnpm run install-local
+
+uninstall-cli: # Unlink CLI globally
+	pnpm run unlink
 
 # =============================================================================
 # Code Quality
