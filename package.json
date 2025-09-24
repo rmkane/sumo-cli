@@ -22,7 +22,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "bin": {
-    "sumo-cli": "./dist/cli/index.js"
+    "sumo-cli": "./dist/index.js"
   },
   "keywords": [
     "rikishi",
