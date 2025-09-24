@@ -1,6 +1,7 @@
 import { Command } from 'commander'
 
 import { getCurrentTournament } from '@/services/tournament'
+import { formatTournamentDate } from '@/utils/date-formatter.js'
 
 export function createTournamentCommand(program: Command): Command {
   return (
@@ -25,12 +26,8 @@ export function createTournamentCommand(program: Command): Command {
           console.log(`\n🏆 Tournament Information:`)
           console.log(`📅 Tournament: ${tournament.tournamentMonth} ${tournament.startDate.getFullYear()}`)
           console.log(`🏟️ Venue: ${tournament.venue.name} (${tournament.venue.location})`)
-          console.log(
-            `📆 Start Date: ${tournament.startDate.toLocaleDateString('en-US', { timeZone: 'Asia/Tokyo' })} (JST)`,
-          )
-          console.log(
-            `📆 End Date: ${tournament.endDate.toLocaleDateString('en-US', { timeZone: 'Asia/Tokyo' })} (JST)`,
-          )
+          console.log(`📆 Start Date: ${formatTournamentDate(tournament.startDate)}`)
+          console.log(`📆 End Date: ${formatTournamentDate(tournament.endDate)}`)
           console.log(`🎯 Status: ${tournament.isActive ? 'Active' : 'Upcoming'}`)
 
           if (tournament.dayNumber) {
