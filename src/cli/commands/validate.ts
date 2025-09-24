@@ -1,6 +1,11 @@
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+
 import { Command } from 'commander'
 
 import { DATA_PATHS } from '@/config/data.js'
+import { validateHTMLDate } from '@/services/matchup'
+import { generateMatchupFilename } from '@/utils/filename'
 
 export function createValidateCommand(program: Command): Command {
   return (
@@ -18,16 +23,11 @@ export function createValidateCommand(program: Command): Command {
 
           console.log(`Validating HTML metadata for day ${dayNum}...`)
 
-          // Import the validation function
-          const { validateHTMLDate } = await import('@/services/matchup')
-          const { readFileSync } = await import('fs')
-          const { join } = await import('path')
-
           // Check if HTML file exists (HTML files are stored in 'html' directory, not 'cache')
           const htmlPath = join(
             DATA_PATHS.USER_DATA_DIR,
             'html',
-            `day_${dayNum.toString().padStart(2, '0')}_1_makuuchi.html`,
+            generateMatchupFilename(dayNum, 1, 'makuuchi', 'html'),
           )
 
           try {

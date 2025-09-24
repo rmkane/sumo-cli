@@ -1,9 +1,12 @@
-import { DATA_DIRS, DATA_PATHS } from '@/config/data'
+import { join } from 'node:path'
+
+import { DATA_PATHS } from '@/config/data'
 import { Division } from '@/constants'
 import { fetchResults } from '@/services/stats-service'
 import type { DivisionType, Rikishi } from '@/types'
 import { processAllDivisions as processAllDivisionsUtil } from '@/utils/division-iterator'
 import { saveJSON } from '@/utils/file'
+import { generateRikishiFilename } from '@/utils/filename'
 import { logProcessingComplete, logProcessingStart } from '@/utils/logger'
 import { getKeyByValue } from '@/utils/object'
 
@@ -44,6 +47,12 @@ export async function processAllDivisions(forceRefresh: boolean): Promise<{ data
   }
 }
 
+function generateRikishiFilenameLocal(division: DivisionType): string {
+  const divisionName = getKeyByValue(Division, division)
+  const filename = generateRikishiFilename(division, divisionName, 'json')
+  return join(DATA_PATHS.USER_DATA_DIR, 'json', filename)
+}
+
 /**
  * Saves processed rikishi data to a JSON file with metadata.
  *
@@ -52,7 +61,7 @@ export async function processAllDivisions(forceRefresh: boolean): Promise<{ data
  */
 async function saveResults(results: Rikishi[], division: DivisionType): Promise<void> {
   const divisionName = getKeyByValue(Division, division)
-  const filename = `${DATA_PATHS.USER_DATA_DIR}/${DATA_DIRS.JSON}/${division}_${divisionName.toLowerCase()}_rikishi.json`
+  const filename = generateRikishiFilenameLocal(division)
 
   const data = {
     division: divisionName,

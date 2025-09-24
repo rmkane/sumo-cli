@@ -1,12 +1,12 @@
 import { Command } from 'commander'
 
-import { processDayMatchups } from '@/services/matchup-processor.js'
+import { processDayMatchups } from '@/features/matchups/processor.js'
 import { logDebug, logError } from '@/utils/logger.js'
 
-export function createDownloadMatchupsCommand(program: Command): Command {
+export function createMatchupsCommand(program: Command): Command {
   return (
     program
-      .command('download-matchups <day>')
+      .command('matchups <day>')
       .description('Download matchup data for a specific tournament day (1-15) and save as CSV files')
       // eslint-disable-next-line no-unused-vars
       .action(async (day, _options) => {

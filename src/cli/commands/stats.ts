@@ -3,10 +3,10 @@ import { Command } from 'commander'
 import { processAllDivisions } from '@/services/division-processor.js'
 import { logDebug, logError } from '@/utils/logger.js'
 
-export function createDownloadStatsCommand(program: Command): Command {
+export function createStatsCommand(program: Command): Command {
   return (
     program
-      .command('download-stats')
+      .command('stats')
       .description('Download rikishi statistics for all divisions and save as JSON files')
       // eslint-disable-next-line no-unused-vars
       .action(async (_options) => {

@@ -2,9 +2,11 @@ import { DATA_PATHS } from '@/config/data'
 import { processDivision } from '@/services/division-processor'
 import { fetchMatchupData, parseMatchupHTML } from '@/services/matchup'
 import type { DivisionType } from '@/types'
-import { saveMatchupCSV } from '@/utils/csv'
 import { processAllDivisions } from '@/utils/division-iterator'
 import { logDebug, logError, logProcessingComplete, logProcessingStart, logWarning } from '@/utils/logger'
+
+import { saveMatchupCSV } from './csv'
+import { saveMatchupJSON } from './json'
 
 /**
  * Processes matchup data for a specific division and day.
@@ -28,12 +30,17 @@ export async function processDivisionMatchups(
     const matchupData = await fetchMatchupData(divisionId, day, forceRefresh)
     const parsedMatchups = parseMatchupHTML(matchupData.html, divisionId, day)
 
-    // Only save CSV if we have valid matchups
+    // Only save files if we have valid matchups
     if (parsedMatchups.length > 0) {
+      // Save JSON data to config directory
+      await saveMatchupJSON(parsedMatchups, divisionName, divisionId, day)
+
+      // Save CSV data to output directory
       await saveMatchupCSV(parsedMatchups, divisionName, divisionId, day, outputDir)
+
       logProcessingComplete('matchups', parsedMatchups.length, `${divisionName} day ${day}`)
     } else {
-      logWarning(`No valid matchups found for ${divisionName} day ${day} - skipping CSV creation`)
+      logWarning(`No valid matchups found for ${divisionName} day ${day} - skipping file creation`)
     }
   } catch (error) {
     logError(`${divisionName} day ${day}`, error)
@@ -68,11 +75,16 @@ export async function processDayMatchups(
     const parsedMatchups = parseMatchupHTML(matchupData.html, divisionId, day)
 
     if (parsedMatchups.length > 0) {
+      // Save JSON data to config directory
+      await saveMatchupJSON(parsedMatchups, divisionName, divisionId, day)
+
+      // Save CSV data to output directory
       await saveMatchupCSV(parsedMatchups, divisionName, divisionId, day, outputDir)
+
       filesCreated++
       logProcessingComplete('matchups', parsedMatchups.length, `${divisionName} day ${day}`)
     } else {
-      logWarning(`No valid matchups found for ${divisionName} day ${day} - skipping CSV creation`)
+      logWarning(`No valid matchups found for ${divisionName} day ${day} - skipping file creation`)
     }
   })
 

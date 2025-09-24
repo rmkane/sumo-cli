@@ -2,9 +2,9 @@
 import { Command } from 'commander'
 
 import { createDivisionCommand } from '@/cli/commands/division.js'
-import { createDownloadMatchupsCommand } from '@/cli/commands/download-matchups.js'
-import { createDownloadStatsCommand } from '@/cli/commands/download-stats.js'
 import { createListCommand } from '@/cli/commands/list.js'
+import { createMatchupsCommand } from '@/cli/commands/matchups.js'
+import { createStatsCommand } from '@/cli/commands/stats.js'
 import { createTournamentCommand } from '@/cli/commands/tournament.js'
 import { createValidateCommand } from '@/cli/commands/validate.js'
 import { launchInteractiveMode } from '@/cli/repl.js'
@@ -26,8 +26,8 @@ program
   .option('-i, --interactive', 'Launch interactive REPL mode')
 
 // Register all commands
-createDownloadStatsCommand(program)
-createDownloadMatchupsCommand(program)
+createStatsCommand(program)
+createMatchupsCommand(program)
 createTournamentCommand(program)
 createDivisionCommand(program)
 createValidateCommand(program)
