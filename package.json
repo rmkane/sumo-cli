@@ -5,9 +5,9 @@
   "description": "Professional CLI tool for sumo rikishi data extraction and processing",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "start": "node dist/index.js",
-    "dev": "tsup --watch",
+    "dev": "tsdown --watch",
     "cli": "tsx src/cli/index.ts",
     "link": "npm link",
     "unlink": "npm unlink -g sumo-cli",
@@ -22,7 +22,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "bin": {
-    "sumo-cli": "./dist/cli/index.js"
+    "sumo-cli": "./dist/index.js"
   },
   "keywords": [
     "rikishi",
@@ -52,7 +52,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^7.2.1",
     "prettier": "^3.6.2",
-    "tsup": "^8.5.0",
+    "tsdown": "^0.15.4",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
