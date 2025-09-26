@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
-import { matchupDataToCSV } from '@/features/matchups/csv'
+import { matchupDataToCSVObjects } from '@/features/matchups/csv'
 import type { MatchupData } from '@/types'
 
 describe('CSV Utilities', () => {
-  describe('matchupDataToCSV', () => {
-    it('should generate CSV with technique column for winner', () => {
+  describe('matchupDataToCSVObjects', () => {
+    it('should generate CSV objects with technique column for winner', () => {
       const matchups: MatchupData[] = [
         {
           east: {
@@ -29,22 +29,13 @@ describe('CSV Utilities', () => {
         },
       ]
 
-      const csv = matchupDataToCSV(matchups)
-      const lines = csv.split('\n')
+      const csvObjects = matchupDataToCSVObjects(matchups)
+      const firstRow = csvObjects[0]
 
-      // Check headers
-      expect(lines[0]).toContain('東')
-      expect(lines[0]).toContain('West')
-      expect(lines[0]).toContain('西')
-
-      // Check subheaders
-      expect(lines[1]).toContain('Technique')
-
-      // Check data row
-      const dataRow = lines[2].split('\t')
-      expect(dataRow[5]).toBe('L') // East result
-      expect(dataRow[6]).toBe('uwate-nage') // Technique (from winner)
-      expect(dataRow[7]).toBe('W') // West result
+      // Check that the technique comes from the winner (west in this case)
+      expect(firstRow.eastResult).toBe('L')
+      expect(firstRow.technique).toBe('uwate-nage') // Technique from west winner
+      expect(firstRow.westResult).toBe('W')
     })
 
     it('should handle matchup with east winner technique', () => {
@@ -71,13 +62,12 @@ describe('CSV Utilities', () => {
         },
       ]
 
-      const csv = matchupDataToCSV(matchups)
-      const lines = csv.split('\n')
-      const dataRow = lines[2].split('\t')
+      const csvObjects = matchupDataToCSVObjects(matchups)
+      const firstRow = csvObjects[0]
 
-      expect(dataRow[5]).toBe('W') // East result
-      expect(dataRow[6]).toBe('hataki-komi') // Technique (from east winner)
-      expect(dataRow[7]).toBe('L') // West result
+      expect(firstRow.eastResult).toBe('W')
+      expect(firstRow.technique).toBe('hataki-komi') // Technique from east winner
+      expect(firstRow.westResult).toBe('L')
     })
 
     it('should handle matchup with no technique', () => {
@@ -104,13 +94,12 @@ describe('CSV Utilities', () => {
         },
       ]
 
-      const csv = matchupDataToCSV(matchups)
-      const lines = csv.split('\n')
-      const dataRow = lines[2].split('\t')
+      const csvObjects = matchupDataToCSVObjects(matchups)
+      const firstRow = csvObjects[0]
 
-      expect(dataRow[5]).toBe('') // East result
-      expect(dataRow[6]).toBe('') // No technique
-      expect(dataRow[7]).toBe('') // West result
+      expect(firstRow.eastResult).toBe('')
+      expect(firstRow.technique).toBe('') // No technique
+      expect(firstRow.westResult).toBe('')
     })
   })
 })

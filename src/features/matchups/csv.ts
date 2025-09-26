@@ -1,17 +1,15 @@
-import fs from 'node:fs'
 import path from 'node:path'
-
-import { createObjectCsvWriter } from 'csv-writer'
 
 import { DATA_PATHS } from '@/config/data'
 import type { DivisionType, MatchupData } from '@/types'
+import { type CSVHeader, writeCSV } from '@/utils/csv'
 import { generateMatchupFilename } from '@/utils/filename'
 import { logDebug } from '@/utils/logger'
 
 /**
  * CSV headers configuration for matchup data
  */
-const CSV_HEADERS = [
+const CSV_GROUP_HEADERS: CSVHeader[] = [
   { id: 'eastRank', title: '' },
   { id: 'eastRecord', title: '' },
   { id: 'eastKanji', title: '東' },
@@ -30,7 +28,7 @@ const CSV_HEADERS = [
 /**
  * CSV subheaders for matchup data
  */
-const CSV_SUBHEADERS = [
+const CSV_HEADERS: CSVHeader[] = [
   { id: 'eastRank', title: 'Rank' },
   { id: 'eastRecord', title: 'Record' },
   { id: 'eastKanji', title: 'Kanji' },
@@ -51,7 +49,7 @@ const CSV_SUBHEADERS = [
  * @param matchups - Array of parsed matchup data
  * @returns Array of objects suitable for CSV writing
  */
-function matchupDataToCSVObjects(matchups: MatchupData[]): Record<string, string>[] {
+export function matchupDataToCSVObjects(matchups: MatchupData[]): Record<string, string>[] {
   return matchups.map((matchup) => {
     const winner = matchup.east.result === 'W' ? matchup.east : matchup.west.result === 'W' ? matchup.west : null
     const winningTechnique = winner?.technique || ''
@@ -75,16 +73,6 @@ function matchupDataToCSVObjects(matchups: MatchupData[]): Record<string, string
 }
 
 /**
- * Ensures directory exists, creating it if necessary
- * @param dirPath - Directory path to ensure exists
- */
-function ensureDirectoryExists(dirPath: string): void {
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true })
-  }
-}
-
-/**
  * Saves matchup data to a CSV file using csv-writer
  * @param matchups - Array of parsed matchup data
  * @param divisionName - Human-readable division name
@@ -100,44 +88,18 @@ export async function saveMatchupCSV(
   outputDir?: string,
 ): Promise<void> {
   const csvDir = outputDir || DATA_PATHS.OUTPUT_DIR
-  ensureDirectoryExists(csvDir)
-
   const filename = generateMatchupFilename(day, divisionId, divisionName, 'csv')
   const filepath = path.join(csvDir, filename)
-
-  // Create CSV writer with custom headers
-  const csvWriter = createObjectCsvWriter({
-    path: filepath,
-    header: CSV_HEADERS,
-  })
 
   // Convert matchup data to CSV objects
   const csvData = matchupDataToCSVObjects(matchups)
 
-  // Write headers and subheaders manually for custom formatting
-  const headerRow = CSV_HEADERS.map((h) => h.title).join('\t')
-  const subheaderRow = CSV_SUBHEADERS.map((h) => h.title).join('\t')
-
-  // Write custom headers first
-  fs.writeFileSync(filepath, `${headerRow}\n${subheaderRow}\n`, 'utf8')
-
-  // Append data rows using csv-writer
-  await csvWriter.writeRecords(csvData)
+  await writeCSV({
+    path: filepath,
+    headers: CSV_HEADERS,
+    rows: csvData,
+    extraHeaderRows: [CSV_GROUP_HEADERS],
+  })
 
   logDebug(`Saved matchup CSV: ${filepath}`)
-}
-
-/**
- * Legacy function for backward compatibility - converts matchup data to CSV string
- * @param matchups - Array of parsed matchup data
- * @returns CSV content as string
- */
-export function matchupDataToCSV(matchups: MatchupData[]): string {
-  const csvData = matchupDataToCSVObjects(matchups)
-
-  const headerRow = CSV_HEADERS.map((h) => h.title).join('\t')
-  const subheaderRow = CSV_SUBHEADERS.map((h) => h.title).join('\t')
-  const dataRows = csvData.map((row) => Object.values(row).join('\t'))
-
-  return [headerRow, subheaderRow, ...dataRows].join('\n')
 }

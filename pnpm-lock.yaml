@@ -14,9 +14,6 @@ importers:
       commander:
         specifier: ^14.0.1
         version: 14.0.1
-      csv-writer:
-        specifier: ^1.6.0
-        version: 1.6.0
       puppeteer:
         specifier: ^24.22.0
         version: 24.22.0(typescript@5.9.2)
@@ -1100,9 +1097,6 @@ packages:
   css-what@6.2.2:
     resolution: {integrity: sha512-u/O3vwbptzhMs3L1fQE82ZSLHQQfto5gyZzwteVIEyeaY5Fc7R4dapF/BvRoSYFeqfBk4m0V1Vafq5Pjv25wvA==}
     engines: {node: '>= 6'}
-
-  csv-writer@1.6.0:
-    resolution: {integrity: sha512-NOx7YDFWEsM/fTRAJjRpPp8t+MKRVvniAg9wQlUKx20MFrPs73WLJhFf5iteqrxNYnsy924K3Iroh3yNHeYd2g==}
 
   data-uri-to-buffer@6.0.2:
     resolution: {integrity: sha512-7hvf7/GW8e86rW0ptuwS3OcBGDjIi6SZva7hCyWC0yYry2cOPmLIjXAUHI6DK2HsnwJd9ifmt57i8eV2n4YNpw==}
@@ -3574,8 +3568,6 @@ snapshots:
       nth-check: 2.1.1
 
   css-what@6.2.2: {}
-
-  csv-writer@1.6.0: {}
 
   data-uri-to-buffer@6.0.2: {}
 
