@@ -279,6 +279,9 @@ export function normalizeJapanese(text: string): string {
 export function kanjiToNumber(kanji: string): number {
   if (!kanji) return 0
 
+  // Handle special sumo rank terms
+  if (kanji === '筆頭') return 1 // hittou = first position
+
   const map = {
     〇: 0,
     一: 1,
