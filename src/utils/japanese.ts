@@ -1,5 +1,7 @@
 import { toHiragana, toKatakana, toRomaji } from 'wanakana'
 
+import { JapaneseTerms } from '@/constants'
+
 /**
  * Converts Japanese text to romaji with proper macron notation for long vowels.
  *
@@ -280,7 +282,7 @@ export function kanjiToNumber(kanji: string): number {
   if (!kanji) return 0
 
   // Handle special sumo rank terms
-  if (kanji === '筆頭') return 1 // hittou = first position
+  if (kanji === JapaneseTerms.HITTOU) return 1 // hittou = first position
 
   const map = {
     〇: 0,

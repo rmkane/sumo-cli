@@ -1,3 +1,4 @@
+import { TournamentConstants } from '@/constants'
 import type { Rikishi } from '@/types'
 
 const DIVISION_HIERARCHY: Record<string, number> = {
@@ -17,7 +18,7 @@ const DIVISION_HIERARCHY: Record<string, number> = {
  * Gets the hierarchy order for division sorting (lower number = higher rank)
  */
 export function getDivisionHierarchyOrder(division: string): number {
-  return DIVISION_HIERARCHY[division] || 999 // Put unknown divisions at the end
+  return DIVISION_HIERARCHY[division] || TournamentConstants.FALLBACK_HIERARCHY // Put unknown divisions at the end
 }
 
 /**
@@ -46,8 +47,8 @@ export function sortDivision(a: Rikishi, b: Rikishi): number {
  * @returns Comparison result (-1, 0, 1)
  */
 export function sortRank(a: Rikishi, b: Rikishi): number {
-  const rankA = a.rank?.position ?? 999 // Put rikishi without rank at the end
-  const rankB = b.rank?.position ?? 999
+  const rankA = a.rank?.position ?? TournamentConstants.FALLBACK_HIERARCHY // Put rikishi without rank at the end
+  const rankB = b.rank?.position ?? TournamentConstants.FALLBACK_HIERARCHY
 
   return rankA - rankB
 }

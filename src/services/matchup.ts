@@ -1,7 +1,7 @@
 import { type Cheerio, load } from 'cheerio'
 import { type Element } from 'domhandler'
 
-import { CssClasses, MatchResult } from '@/constants'
+import { CssClasses, JapaneseTerms, MatchResult } from '@/constants'
 import { lookupKimarite } from '@/dict'
 import { findRikishiAcrossDivisions } from '@/services/rikishi-lookup'
 import { isDayAvailable } from '@/services/tournament'
@@ -9,8 +9,6 @@ import type { DivisionType, MatchResultType, MatchupData, RikishiName, RikishiRa
 import { downloadMatchupData } from '@/utils/cache-manager'
 import { getDivisionByRank, getDivisionName } from '@/utils/division'
 import { logDebug, logError, logWarning } from '@/utils/logger'
-
-const KIMARITE_SUFFIX = '取組解説'
 
 /**
  * Validates that the HTML content matches the requested day.
@@ -141,7 +139,7 @@ function extractWinningTechnique($player: Cheerio<Element>): string | undefined 
   }
 
   // Remove "取組解説" suffix if present
-  const cleanTechnique = japaneseTechnique.replace(KIMARITE_SUFFIX, '').trim()
+  const cleanTechnique = japaneseTechnique.replace(JapaneseTerms.KIMARITE_SUFFIX, '').trim()
 
   // Look up the English translation
   return lookupKimarite(cleanTechnique)
@@ -347,12 +345,12 @@ export function parseRank(rankText: string, division: DivisionType): RikishiRank
   const divisionNameStr = getDivisionName(divisionName)
 
   // Handle specific rank formats
-  if (cleanRank === '筆頭') {
+  if (cleanRank === JapaneseTerms.HITTOU) {
     return { division: divisionNameStr, position: 1 }
   }
 
   // Handle ranks with positions (e.g., "前頭十八枚目")
-  const match = cleanRank.match(/^(.+?)(\d+)枚目$/)
+  const match = cleanRank.match(new RegExp(`^(.+?)(\\d+)${JapaneseTerms.MAIME}$`))
   if (match) {
     const position = parseInt(match[2], 10)
     return { division: divisionNameStr, position }

@@ -1,4 +1,4 @@
-import { CssClasses, Division, DivisionNames, MatchResult, Side } from '@/constants'
+import { CssClasses, Division, DivisionNames, JapaneseTerms, MatchResult, Side, TournamentConstants } from '@/constants'
 
 /**
  * Utility type to extract keys from an object type
@@ -22,6 +22,10 @@ export type MatchResultType = ValueOf<typeof MatchResult>
 export type DivisionNameType = ValueOf<typeof DivisionNames>
 
 export type CssClassType = ValueOf<typeof CssClasses>
+
+export type JapaneseTermType = ValueOf<typeof JapaneseTerms>
+
+export type TournamentConstantType = ValueOf<typeof TournamentConstants>
 
 /**
  * Interface for sumo rank data

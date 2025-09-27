@@ -1,7 +1,7 @@
 import path from 'node:path'
 
 import { DATA_PATHS } from '@/config/data'
-import { MatchResult } from '@/constants'
+import { JapaneseTerms, MatchResult } from '@/constants'
 import type { DivisionType, MatchupData, RikishiRank, RikishiRecord } from '@/types'
 import { type CSVHeader, writeCSV } from '@/utils/csv'
 import { generateMatchupFilename } from '@/utils/filename'
@@ -12,7 +12,7 @@ import { logDebug } from '@/utils/logger'
  */
 const CSV_GROUP_HEADERS: CSVHeader[] = [
   { id: 'eastHiragana', title: '' },
-  { id: 'eastKanji', title: '東' },
+  { id: 'eastKanji', title: JapaneseTerms.EAST_JP },
   { id: 'eastRank', title: '' },
   { id: 'eastRecord', title: '' },
   { id: 'eastName', title: 'East' },
@@ -22,7 +22,7 @@ const CSV_GROUP_HEADERS: CSVHeader[] = [
   { id: 'westName', title: 'West' },
   { id: 'westRecord', title: '' },
   { id: 'westRank', title: '' },
-  { id: 'westKanji', title: '西' },
+  { id: 'westKanji', title: JapaneseTerms.WEST_JP },
   { id: 'westHiragana', title: '' },
 ]
 

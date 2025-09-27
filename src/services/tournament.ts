@@ -1,3 +1,4 @@
+import { TournamentConstants } from '@/constants'
 import type { TournamentInfo, TournamentVenue } from '@/types'
 
 const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24
@@ -73,7 +74,7 @@ export function getCurrentTournament(date?: Date): TournamentInfo {
 
   // Calculate tournament end date (15 days after start)
   const tournamentEnd = new Date(tournamentStart)
-  tournamentEnd.setDate(tournamentStart.getDate() + 14) // 15 days total (start + 14 more)
+  tournamentEnd.setDate(tournamentStart.getDate() + TournamentConstants.TOTAL_DAYS - 1) // 15 days total (start + 14 more)
 
   // Check if tournament is currently active
   const isActive = checkDate >= tournamentStart && checkDate <= tournamentEnd
@@ -81,7 +82,9 @@ export function getCurrentTournament(date?: Date): TournamentInfo {
   // Calculate current day number if tournament is active
   let dayNumber: number | null = null
   if (isActive) {
-    dayNumber = Math.floor((checkDate.getTime() - tournamentStart.getTime()) / MILLISECONDS_PER_DAY) + 1
+    dayNumber =
+      Math.floor((checkDate.getTime() - tournamentStart.getTime()) / MILLISECONDS_PER_DAY) +
+      TournamentConstants.FIRST_DAY
   }
 
   const monthNames: { [key: number]: string } = {
