@@ -4,11 +4,11 @@ import { type Element } from 'domhandler'
 import { lookupKimarite } from '@/dict'
 import { findRikishiAcrossDivisions } from '@/services/rikishi-lookup'
 import { isDayAvailable } from '@/services/tournament'
-import type { DivisionType, MatchupData } from '@/types'
+import type { BashoRecord, DivisionType, MatchupData } from '@/types'
 import { downloadMatchupData } from '@/utils/cache-manager'
 import { getDivisionByRank } from '@/utils/division'
 import { logDebug, logError, logWarning } from '@/utils/logger'
-import { translateRank, translateRecord } from '@/utils/translation'
+import { translateRank } from '@/utils/translation'
 
 const KIMARITE_SUFFIX = '取組解説'
 
@@ -289,7 +289,7 @@ function parsePlayer(
   division: DivisionType,
 ): {
   rank: string
-  record: string
+  record: BashoRecord
   kanji: string
   hiragana: string
   name: string
@@ -304,7 +304,7 @@ function parsePlayer(
 
     // Extract record/performance
     const recordText = $player.find('.perform').text().trim()
-    const record = translateRecord(recordText)
+    const record = parseRecord(recordText) // Parse
 
     // Determine the correct division based on the rank
     const rankDivision = getDivisionByRank(rank)
@@ -330,6 +330,36 @@ function parsePlayer(
     logWarning(`Error parsing player: ${error instanceof Error ? error.message : String(error)}`)
     return null
   }
+}
+
+/**
+ * Parses a single record from the HTML.
+ *
+ * @param recordText - Record text from the HTML
+ * @returns Parsed record data or null if parsing fails
+ */
+export function parseRecord(recordText: string): BashoRecord {
+  if (!recordText) return { wins: 0, losses: 0 }
+
+  // Extract wins, losses, and rest days from pattern like "（6勝2敗）" or "（1勝0敗3休）"
+  const matchWithRest = recordText.match(/（(\d+)勝(\d+)敗(\d+)休）/)
+  if (matchWithRest) {
+    const wins = matchWithRest[1]
+    const losses = matchWithRest[2]
+    const rest = matchWithRest[3]
+    return { wins: parseInt(wins, 10), losses: parseInt(losses, 10), rest: parseInt(rest, 10) }
+  }
+
+  // Extract wins and losses from pattern like "（6勝2敗）"
+  const match = recordText.match(/（(\d+)勝(\d+)敗）/)
+  if (match) {
+    const wins = match[1]
+    const losses = match[2]
+    return { wins: parseInt(wins, 10), losses: parseInt(losses, 10) }
+  }
+
+  // Fallback - return original text
+  return { wins: 0, losses: 0 }
 }
 
 /**

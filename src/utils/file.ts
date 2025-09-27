@@ -198,7 +198,7 @@ export async function ensureDirectory(dirPath: string, options: FileOptions = {}
 
   try {
     await fs.mkdir(dirPath, { recursive: true })
-    console.log(`Ensured directory exists: ${dirPath}`)
+    logDebug(`Ensured directory exists: ${dirPath}`)
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     throw new Error(`${config.errorMessage}: ${message}`)

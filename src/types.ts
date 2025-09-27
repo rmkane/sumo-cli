@@ -47,6 +47,12 @@ export interface Rikishi {
   rank?: Rank
 }
 
+export interface BashoRecord {
+  wins: number
+  losses: number
+  rest?: number
+}
+
 /**
  * Interface for rikishi match result data
  */
@@ -54,7 +60,7 @@ export interface RikishiResult {
   /** Current rank (e.g., "前頭十八枚目", "十両筆頭") */
   rank: string
   /** Tournament record (e.g., "(1勝0敗)", "(0勝1敗)") */
-  record: string
+  record: BashoRecord
   /** Japanese name in kanji characters */
   kanji: string
   /** Japanese name in hiragana characters */

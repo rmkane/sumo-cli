@@ -10,7 +10,7 @@ describe('CSV Utilities', () => {
         {
           east: {
             rank: 'Maegashira #18',
-            record: '0-1',
+            record: { wins: 0, losses: 1 },
             kanji: '獅司',
             hiragana: 'しし',
             name: 'Shishi',
@@ -19,7 +19,7 @@ describe('CSV Utilities', () => {
           },
           west: {
             rank: 'Juryo #1',
-            record: '1-0',
+            record: { wins: 1, losses: 0 },
             kanji: '大青山',
             hiragana: 'おおあおやま',
             name: 'Oaoyama',
@@ -43,7 +43,7 @@ describe('CSV Utilities', () => {
         {
           east: {
             rank: 'Maegashira #17',
-            record: '1-0',
+            record: { wins: 1, losses: 0 },
             kanji: '竜電',
             hiragana: 'りゅうでん',
             name: 'Ryuden',
@@ -52,7 +52,7 @@ describe('CSV Utilities', () => {
           },
           west: {
             rank: 'Maegashira #16',
-            record: '0-1',
+            record: { wins: 0, losses: 1 },
             kanji: '友風',
             hiragana: 'ともかぜ',
             name: 'Tomokaze',
@@ -75,7 +75,7 @@ describe('CSV Utilities', () => {
         {
           east: {
             rank: 'Maegashira #15',
-            record: '0-0',
+            record: { wins: 0, losses: 0 },
             kanji: '力士A',
             hiragana: 'りきしA',
             name: 'RikishiA',
@@ -84,7 +84,7 @@ describe('CSV Utilities', () => {
           },
           west: {
             rank: 'Maegashira #14',
-            record: '0-0',
+            record: { wins: 0, losses: 0 },
             kanji: '力士B',
             hiragana: 'りきしB',
             name: 'RikishiB',

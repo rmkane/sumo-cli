@@ -148,9 +148,9 @@ describe('Matchup Service', () => {
 
       expect(results).toHaveLength(1)
       expect(results[0].east.kanji).toBe('佐田の城')
-      expect(results[0].east.record).toBe('(1-0-3)') // Should translate rest days
+      expect(results[0].east.record).toEqual({ wins: 1, losses: 0, rest: 3 })
       expect(results[0].west.kanji).toBe('輝の里')
-      expect(results[0].west.record).toBe('(1-0-3)') // Should translate rest days
+      expect(results[0].west.record).toEqual({ wins: 1, losses: 0, rest: 3 })
     })
 
     it('should handle multiple matchups in one table', () => {

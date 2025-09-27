@@ -59,33 +59,3 @@ function extractBaseRank(rankText: string): string | null {
 
   return possibleRanks.find((rank) => rankText.startsWith(rank)) || null
 }
-
-/**
- * Translates Japanese record text to English format.
- *
- * @param recordText - Japanese record text (e.g., "（6勝2敗）", "（1勝0敗3休）")
- * @returns English record format (e.g., "(6-2)", "(1-0-3)")
- */
-export function translateRecord(recordText: string): string {
-  if (!recordText) return ''
-
-  // Extract wins, losses, and rest days from pattern like "（6勝2敗）" or "（1勝0敗3休）"
-  const matchWithRest = recordText.match(/（(\d+)勝(\d+)敗(\d+)休）/)
-  if (matchWithRest) {
-    const wins = matchWithRest[1]
-    const losses = matchWithRest[2]
-    const rest = matchWithRest[3]
-    return `(${wins}-${losses}-${rest})`
-  }
-
-  // Extract wins and losses from pattern like "（6勝2敗）"
-  const match = recordText.match(/（(\d+)勝(\d+)敗）/)
-  if (match) {
-    const wins = match[1]
-    const losses = match[2]
-    return `(${wins}-${losses})`
-  }
-
-  // Fallback - return original text
-  return recordText
-}

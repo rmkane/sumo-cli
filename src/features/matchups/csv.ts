@@ -1,7 +1,7 @@
 import path from 'node:path'
 
 import { DATA_PATHS } from '@/config/data'
-import type { DivisionType, MatchupData } from '@/types'
+import type { BashoRecord, DivisionType, MatchupData } from '@/types'
 import { type CSVHeader, writeCSV } from '@/utils/csv'
 import { generateMatchupFilename } from '@/utils/filename'
 import { logDebug } from '@/utils/logger'
@@ -56,7 +56,7 @@ export function matchupDataToCSVObjects(matchups: MatchupData[]): Record<string,
 
     return {
       eastRank: matchup.east.rank || '',
-      eastRecord: matchup.east.record || '',
+      eastRecord: formatBashoRecord(matchup.east.record),
       eastKanji: matchup.east.kanji || '',
       eastHiragana: matchup.east.hiragana || '',
       eastName: matchup.east.name || '',
@@ -66,10 +66,16 @@ export function matchupDataToCSVObjects(matchups: MatchupData[]): Record<string,
       westName: matchup.west.name || '',
       westHiragana: matchup.west.hiragana || '',
       westKanji: matchup.west.kanji || '',
-      westRecord: matchup.west.record || '',
+      westRecord: formatBashoRecord(matchup.west.record),
       westRank: matchup.west.rank || '',
     }
   })
+}
+
+function formatBashoRecord(record: BashoRecord): string {
+  if (!record) return ''
+  const { wins, losses, rest } = record
+  return `(${[wins, losses, rest].filter((n) => n != undefined).join('-')})`
 }
 
 /**
