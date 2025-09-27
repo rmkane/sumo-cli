@@ -1,5 +1,11 @@
 // Parser modules for data processing
 export { parseRank } from '@/core/parsers/rank-parser'
 export { parseRecord } from '@/core/parsers/record-parser'
-export { determineResult, extractWinningTechnique } from '@/core/parsers/result-parser'
-export { parseRikishiName } from '@/core/parsers/name-parser'
+export { parseResult, parseWinningTechnique } from '@/core/parsers/html/result-parser'
+export { parseRikishiName } from '@/core/parsers/html/name-parser'
+export { parseRikishi } from '@/core/parsers/html/rikishi-parser'
+export { parseStatsRecord } from '@/core/parsers/html/stats-record-parser'
+export { parseRikishiFromHTML } from '@/core/parsers/html/stats-html-parser'
+export { parseMatchupRow } from '@/core/parsers/html/matchup-row-parser'
+export { parseMatchupHTML } from '@/core/parsers/html/matchup-html-parser'
+export { parseHTMLDate } from '@/core/parsers/html/html-date-parser'

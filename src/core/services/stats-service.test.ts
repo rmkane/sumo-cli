@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { parseRikishiFromHTML } from '@/core/services/stats-service'
+import { parseRikishiFromHTML } from '@/core/parsers'
 
 describe('Stats Service', () => {
   describe('parseRank', () => {

@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { DATA_PATHS } from '@/config/data'
-import { validateHTMLDate } from '@/core/services/matchup'
+import { validateHTMLDate } from '@/core/services/matchup-validator'
 import { generateMatchupFilename } from '@/core/utils/filename'
 
 export interface ValidateCommandContext {

@@ -6,11 +6,11 @@ import { lookupKimarite } from '@/core/dict'
 import type { MatchResultType } from '@/types'
 
 /**
- * Extracts and translates the winning technique from a player cell
+ * Parses and translates the winning technique from a player cell
  * @param $player - Cheerio element representing the player cell
  * @returns English kimarite name or undefined if no technique found
  */
-export function extractWinningTechnique($player: Cheerio<Element>): string | undefined {
+export function parseWinningTechnique($player: Cheerio<Element>): string | undefined {
   // Look for the technique in a sibling .decide cell
   const $decideCell = $player.siblings('.decide')
   if ($decideCell.length === 0) {
@@ -35,12 +35,12 @@ export function extractWinningTechnique($player: Cheerio<Element>): string | und
 }
 
 /**
- * Determines the win/loss result for a player based on CSS classes.
+ * Parses the win/loss result for a player based on CSS classes.
  *
  * @param $player - Cheerio object representing the player cell
  * @returns 'W' for win, 'L' for loss, '' for no result yet
  */
-export function determineResult($player: Cheerio<Element>): MatchResultType {
+export function parseResult($player: Cheerio<Element>): MatchResultType {
   // Check if the player cell has the 'win' class (completed match - winner)
   if ($player.hasClass(CssClasses.WIN)) {
     return MatchResult.WIN

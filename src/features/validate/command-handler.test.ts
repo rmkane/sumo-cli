@@ -4,14 +4,14 @@ import { join } from 'node:path'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { DATA_PATHS } from '@/config/data'
-import { validateHTMLDate } from '@/core/services/matchup'
+import { validateHTMLDate } from '@/core/services/matchup-validator'
 import { generateMatchupFilename } from '@/core/utils/filename'
 import type { ValidateCommandContext } from '@/features/validate/command-handler'
 import { handleValidateCommand } from '@/features/validate/command-handler'
 
 // Mock dependencies
 vi.mock('node:fs')
-vi.mock('@/core/services/matchup')
+vi.mock('@/core/services/matchup-validator')
 vi.mock('@/core/utils/filename')
 
 const mockReadFileSync = vi.mocked(readFileSync)

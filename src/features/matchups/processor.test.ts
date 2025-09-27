@@ -2,8 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { DATA_PATHS } from '@/config/data'
 import { MatchResult } from '@/constants'
+import { parseMatchupHTML } from '@/core/parsers'
 import * as divisionProcessor from '@/core/services/division-processor'
-import * as matchupService from '@/core/services/matchup'
+import { fetchMatchupData } from '@/core/services/matchup-fetcher'
 import * as divisionIterator from '@/core/utils/division-iterator'
 import * as logger from '@/core/utils/logger'
 import * as csv from '@/features/matchups/csv'
@@ -13,7 +14,8 @@ import { processDayMatchups, processDivisionMatchups } from '@/features/matchups
 // Mock dependencies
 vi.mock('@/config/data')
 vi.mock('@/core/services/division-processor')
-vi.mock('@/core/services/matchup')
+vi.mock('@/core/parsers')
+vi.mock('@/core/services/matchup-fetcher')
 vi.mock('@/core/utils/division-iterator')
 vi.mock('@/core/utils/logger')
 vi.mock('@/features/matchups/csv', () => ({
@@ -65,8 +67,8 @@ describe('Matchups Processor', () => {
         },
       ]
 
-      vi.mocked(matchupService.fetchMatchupData).mockResolvedValue(mockMatchupData)
-      vi.mocked(matchupService.parseMatchupHTML).mockReturnValue(mockParsedMatchups)
+      vi.mocked(fetchMatchupData).mockResolvedValue(mockMatchupData)
+      vi.mocked(parseMatchupHTML).mockReturnValue(mockParsedMatchups)
       vi.mocked(csv.saveMatchupCSV).mockResolvedValue()
       vi.mocked(json.saveMatchupJSON).mockResolvedValue()
       vi.mocked(logger.logProcessingStart).mockImplementation(() => {})
@@ -75,8 +77,8 @@ describe('Matchups Processor', () => {
       await processDivisionMatchups('makuuchi', 1, 5, false, '/output')
 
       expect(logger.logProcessingStart).toHaveBeenCalledWith('matchups', 'makuuchi day 5')
-      expect(matchupService.fetchMatchupData).toHaveBeenCalledWith(1, 5, false)
-      expect(matchupService.parseMatchupHTML).toHaveBeenCalledWith(mockMatchupData.html, 1, 5)
+      expect(fetchMatchupData).toHaveBeenCalledWith(1, 5, false)
+      expect(parseMatchupHTML).toHaveBeenCalledWith(mockMatchupData.html, 1, 5)
       expect(json.saveMatchupJSON).toHaveBeenCalledWith(mockParsedMatchups, 'makuuchi', 1, 5)
       expect(csv.saveMatchupCSV).toHaveBeenCalledWith(mockParsedMatchups, 'makuuchi', 1, 5, '/output')
       expect(logger.logProcessingComplete).toHaveBeenCalledWith('matchups', 1, 'makuuchi day 5')
@@ -88,8 +90,8 @@ describe('Matchups Processor', () => {
         fromServer: true,
       }
 
-      vi.mocked(matchupService.fetchMatchupData).mockResolvedValue(mockMatchupData)
-      vi.mocked(matchupService.parseMatchupHTML).mockReturnValue([])
+      vi.mocked(fetchMatchupData).mockResolvedValue(mockMatchupData)
+      vi.mocked(parseMatchupHTML).mockReturnValue([])
       vi.mocked(logger.logProcessingStart).mockImplementation(() => {})
       vi.mocked(logger.logWarning).mockImplementation(() => {})
 
@@ -104,7 +106,7 @@ describe('Matchups Processor', () => {
 
     it('should handle errors and re-throw them', async () => {
       const error = new Error('Fetch error')
-      vi.mocked(matchupService.fetchMatchupData).mockRejectedValue(error)
+      vi.mocked(fetchMatchupData).mockRejectedValue(error)
       vi.mocked(logger.logProcessingStart).mockImplementation(() => {})
       vi.mocked(logger.logError).mockImplementation(() => {})
 
@@ -157,8 +159,8 @@ describe('Matchups Processor', () => {
         return [result1, result2]
       })
       vi.mocked(divisionProcessor.processDivision).mockResolvedValue()
-      vi.mocked(matchupService.fetchMatchupData).mockResolvedValue(mockMatchupData)
-      vi.mocked(matchupService.parseMatchupHTML).mockReturnValue(mockParsedMatchups)
+      vi.mocked(fetchMatchupData).mockResolvedValue(mockMatchupData)
+      vi.mocked(parseMatchupHTML).mockReturnValue(mockParsedMatchups)
       vi.mocked(csv.saveMatchupCSV).mockResolvedValue()
       vi.mocked(json.saveMatchupJSON).mockResolvedValue()
       vi.mocked(logger.logProcessingStart).mockImplementation(() => {})
@@ -193,11 +195,11 @@ describe('Matchups Processor', () => {
         return [result]
       })
       vi.mocked(divisionProcessor.processDivision).mockResolvedValue()
-      vi.mocked(matchupService.fetchMatchupData).mockResolvedValue({
+      vi.mocked(fetchMatchupData).mockResolvedValue({
         html: '<html>test</html>',
         fromServer: true,
       })
-      vi.mocked(matchupService.parseMatchupHTML).mockReturnValue([])
+      vi.mocked(parseMatchupHTML).mockReturnValue([])
       vi.mocked(logger.logProcessingStart).mockImplementation(() => {})
       vi.mocked(logger.logDebug).mockImplementation(() => {})
       vi.mocked(logger.logWarning).mockImplementation(() => {})
@@ -217,10 +219,10 @@ describe('Matchups Processor', () => {
         return [result1, result2]
       })
       vi.mocked(divisionProcessor.processDivision).mockResolvedValue()
-      vi.mocked(matchupService.fetchMatchupData)
+      vi.mocked(fetchMatchupData)
         .mockResolvedValueOnce({ html: '<html>test</html>', fromServer: true })
         .mockResolvedValueOnce({ html: '<html>test2</html>', fromServer: true })
-      vi.mocked(matchupService.parseMatchupHTML)
+      vi.mocked(parseMatchupHTML)
         .mockReturnValueOnce([
           {
             east: {

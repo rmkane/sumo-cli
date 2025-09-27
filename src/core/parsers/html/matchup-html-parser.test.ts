@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
 import { MatchResult } from '@/constants'
-import { parseMatchupHTML } from '@/core/services/matchup'
+import { parseMatchupHTML } from '@/core/parsers'
 
-describe('Matchup Service', () => {
+describe('Matchup HTML Parser', () => {
   describe('parseMatchupHTML', () => {
     it('should parse completed day HTML with win/loss indicators', () => {
       const completedDayHTML = `
