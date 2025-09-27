@@ -71,8 +71,8 @@ export interface RikishiName {
 export interface RikishiResult {
   /** Rikishi name information */
   name: RikishiName
-  /** Current rank (e.g., "前頭十八枚目", "十両筆頭") */
-  rank: string
+  /** Rank information with division, position, and side */
+  rank: Rank
   /** Tournament record (e.g., "(1勝0敗)", "(0勝1敗)") */
   record: BashoRecord
   /** Match result: 'W' for win, 'L' for loss, '' for no result yet */

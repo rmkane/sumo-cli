@@ -4,11 +4,10 @@ import { type Element } from 'domhandler'
 import { lookupKimarite } from '@/dict'
 import { findRikishiAcrossDivisions } from '@/services/rikishi-lookup'
 import { isDayAvailable } from '@/services/tournament'
-import type { BashoRecord, DivisionType, MatchupData, RikishiName } from '@/types'
+import type { BashoRecord, DivisionType, MatchupData, Rank, RikishiName } from '@/types'
 import { downloadMatchupData } from '@/utils/cache-manager'
 import { getDivisionByRank } from '@/utils/division'
 import { logDebug, logError, logWarning } from '@/utils/logger'
-import { translateRank } from '@/utils/translation'
 
 const KIMARITE_SUFFIX = '取組解説'
 
@@ -255,7 +254,7 @@ function parseMatchupRow($row: Cheerio<Element>, division: DivisionType): Matchu
     }
 
     // Only include matchups where both players have valid data
-    if (!eastPlayer.name.kanji || !westPlayer.name.kanji || !eastPlayer.rank || !westPlayer.rank) {
+    if (!eastPlayer.name.kanji || !westPlayer.name.kanji || !eastPlayer.rank.division || !westPlayer.rank.division) {
       return null
     }
 
@@ -289,13 +288,13 @@ function parsePlayer(
   division: DivisionType,
 ): {
   name: RikishiName
-  rank: string
+  rank: Rank
   record: BashoRecord
 } | null {
   try {
     // Extract rank
     const rankText = $player.find('.rank').text().trim()
-    const rank = translateRank(rankText)
+    const rank = parseRank(rankText, division)
 
     // Extract name (kanji) - it's inside a span within an anchor tag
     const kanji = $player.find('.name span').text().trim()
@@ -305,7 +304,7 @@ function parsePlayer(
     const record = parseRecord(recordText) // Parse
 
     // Determine the correct division based on the rank
-    const rankDivision = getDivisionByRank(rank)
+    const rankDivision = getDivisionByRank(rankText)
 
     // Look up rikishi data to get hiragana and English name
     const rikishiData = findRikishiAcrossDivisions(kanji, rankDivision || division)
@@ -330,6 +329,49 @@ function parsePlayer(
     logWarning(`Error parsing player: ${error instanceof Error ? error.message : String(error)}`)
     return null
   }
+}
+
+/**
+ * Parses a rank string into structured rank information.
+ *
+ * @param rankText - Japanese rank text from the HTML
+ * @param division - Division identifier for context
+ * @returns Structured rank information
+ */
+export function parseRank(rankText: string, division: DivisionType): Rank {
+  const cleanRank = rankText.trim()
+
+  // Get division name from division ID
+  const divisionName = getDivisionByRank(cleanRank) || division
+  const divisionNameStr =
+    divisionName === 1
+      ? 'Makuuchi'
+      : divisionName === 2
+        ? 'Juryo'
+        : divisionName === 3
+          ? 'Makushita'
+          : divisionName === 4
+            ? 'Sandanme'
+            : divisionName === 5
+              ? 'Jonidan'
+              : divisionName === 6
+                ? 'Jonokuchi'
+                : 'Unknown'
+
+  // Handle specific rank formats
+  if (cleanRank === '筆頭') {
+    return { division: divisionNameStr, position: 1 }
+  }
+
+  // Handle ranks with positions (e.g., "前頭十八枚目")
+  const match = cleanRank.match(/^(.+?)(\d+)枚目$/)
+  if (match) {
+    const position = parseInt(match[2], 10)
+    return { division: divisionNameStr, position }
+  }
+
+  // Handle ranks without positions (e.g., "横綱", "大関")
+  return { division: divisionNameStr }
 }
 
 /**
