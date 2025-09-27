@@ -4,7 +4,7 @@ import { type Element } from 'domhandler'
 import { lookupKimarite } from '@/dict'
 import { findRikishiAcrossDivisions } from '@/services/rikishi-lookup'
 import { isDayAvailable } from '@/services/tournament'
-import type { BashoRecord, DivisionType, MatchupData } from '@/types'
+import type { BashoRecord, DivisionType, MatchupData, RikishiName } from '@/types'
 import { downloadMatchupData } from '@/utils/cache-manager'
 import { getDivisionByRank } from '@/utils/division'
 import { logDebug, logError, logWarning } from '@/utils/logger'
@@ -255,7 +255,7 @@ function parseMatchupRow($row: Cheerio<Element>, division: DivisionType): Matchu
     }
 
     // Only include matchups where both players have valid data
-    if (!eastPlayer.kanji || !westPlayer.kanji || !eastPlayer.rank || !westPlayer.rank) {
+    if (!eastPlayer.name.kanji || !westPlayer.name.kanji || !eastPlayer.rank || !westPlayer.rank) {
       return null
     }
 
@@ -288,11 +288,9 @@ function parsePlayer(
   $player: Cheerio<Element>,
   division: DivisionType,
 ): {
+  name: RikishiName
   rank: string
   record: BashoRecord
-  kanji: string
-  hiragana: string
-  name: string
 } | null {
   try {
     // Extract rank
@@ -320,11 +318,13 @@ function parsePlayer(
     }
 
     return {
+      name: {
+        english: name,
+        kanji,
+        hiragana,
+      },
       rank,
       record,
-      kanji,
-      hiragana,
-      name,
     }
   } catch (error) {
     logWarning(`Error parsing player: ${error instanceof Error ? error.message : String(error)}`)

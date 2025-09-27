@@ -54,19 +54,27 @@ export interface BashoRecord {
 }
 
 /**
- * Interface for rikishi match result data
+ * Interface for rikishi name information
  */
-export interface RikishiResult {
-  /** Current rank (e.g., "前頭十八枚目", "十両筆頭") */
-  rank: string
-  /** Tournament record (e.g., "(1勝0敗)", "(0勝1敗)") */
-  record: BashoRecord
+export interface RikishiName {
+  /** English name or transliteration */
+  english: string
   /** Japanese name in kanji characters */
   kanji: string
   /** Japanese name in hiragana characters */
   hiragana: string
-  /** English name or transliteration */
-  name: string
+}
+
+/**
+ * Interface for rikishi match result data
+ */
+export interface RikishiResult {
+  /** Rikishi name information */
+  name: RikishiName
+  /** Current rank (e.g., "前頭十八枚目", "十両筆頭") */
+  rank: string
+  /** Tournament record (e.g., "(1勝0敗)", "(0勝1敗)") */
+  record: BashoRecord
   /** Match result: 'W' for win, 'L' for loss, '' for no result yet */
   result: string
   /** English kimarite name if there's a recorded win (optional) */

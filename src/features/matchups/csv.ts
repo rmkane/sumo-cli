@@ -10,38 +10,38 @@ import { logDebug } from '@/utils/logger'
  * CSV headers configuration for matchup data
  */
 const CSV_GROUP_HEADERS: CSVHeader[] = [
+  { id: 'eastHiragana', title: '' },
+  { id: 'eastKanji', title: '東' },
   { id: 'eastRank', title: '' },
   { id: 'eastRecord', title: '' },
-  { id: 'eastKanji', title: '東' },
-  { id: 'eastHiragana', title: '' },
   { id: 'eastName', title: 'East' },
   { id: 'eastResult', title: '' },
   { id: 'technique', title: '' },
   { id: 'westResult', title: '' },
   { id: 'westName', title: 'West' },
-  { id: 'westHiragana', title: '' },
-  { id: 'westKanji', title: '西' },
   { id: 'westRecord', title: '' },
   { id: 'westRank', title: '' },
+  { id: 'westKanji', title: '西' },
+  { id: 'westHiragana', title: '' },
 ]
 
 /**
  * CSV subheaders for matchup data
  */
 const CSV_HEADERS: CSVHeader[] = [
+  { id: 'eastHiragana', title: 'Hiragana' },
+  { id: 'eastKanji', title: 'Kanji' },
   { id: 'eastRank', title: 'Rank' },
   { id: 'eastRecord', title: 'Record' },
-  { id: 'eastKanji', title: 'Kanji' },
-  { id: 'eastHiragana', title: 'Hiragana' },
   { id: 'eastName', title: 'Name' },
   { id: 'eastResult', title: 'Result' },
   { id: 'technique', title: 'Technique' },
   { id: 'westResult', title: 'Result' },
   { id: 'westName', title: 'Name' },
-  { id: 'westHiragana', title: 'Hiragana' },
-  { id: 'westKanji', title: 'Kanji' },
   { id: 'westRecord', title: 'Record' },
   { id: 'westRank', title: 'Rank' },
+  { id: 'westKanji', title: 'Kanji' },
+  { id: 'westHiragana', title: 'Hiragana' },
 ]
 
 /**
@@ -55,19 +55,19 @@ export function matchupDataToCSVObjects(matchups: MatchupData[]): Record<string,
     const winningTechnique = winner?.technique || ''
 
     return {
+      eastHiragana: matchup.east.name.hiragana || '',
+      eastKanji: matchup.east.name.kanji || '',
       eastRank: matchup.east.rank || '',
       eastRecord: formatBashoRecord(matchup.east.record),
-      eastKanji: matchup.east.kanji || '',
-      eastHiragana: matchup.east.hiragana || '',
-      eastName: matchup.east.name || '',
+      eastName: matchup.east.name.english || '',
       eastResult: matchup.east.result || '',
       technique: winningTechnique,
       westResult: matchup.west.result || '',
-      westName: matchup.west.name || '',
-      westHiragana: matchup.west.hiragana || '',
-      westKanji: matchup.west.kanji || '',
+      westName: matchup.west.name.english || '',
       westRecord: formatBashoRecord(matchup.west.record),
       westRank: matchup.west.rank || '',
+      westKanji: matchup.west.name.kanji || '',
+      westHiragana: matchup.west.name.hiragana || '',
     }
   })
 }

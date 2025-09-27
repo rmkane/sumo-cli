@@ -9,20 +9,24 @@ describe('CSV Utilities', () => {
       const matchups: MatchupData[] = [
         {
           east: {
+            name: {
+              english: 'Shishi',
+              kanji: '獅司',
+              hiragana: 'しし',
+            },
             rank: 'Maegashira #18',
             record: { wins: 0, losses: 1 },
-            kanji: '獅司',
-            hiragana: 'しし',
-            name: 'Shishi',
             result: 'L',
             technique: undefined,
           },
           west: {
+            name: {
+              english: 'Oaoyama',
+              kanji: '大青山',
+              hiragana: 'おおあおやま',
+            },
             rank: 'Juryo #1',
             record: { wins: 1, losses: 0 },
-            kanji: '大青山',
-            hiragana: 'おおあおやま',
-            name: 'Oaoyama',
             result: 'W',
             technique: 'uwate-nage',
           },
@@ -42,20 +46,24 @@ describe('CSV Utilities', () => {
       const matchups: MatchupData[] = [
         {
           east: {
+            name: {
+              english: 'Ryuden',
+              kanji: '竜電',
+              hiragana: 'りゅうでん',
+            },
             rank: 'Maegashira #17',
             record: { wins: 1, losses: 0 },
-            kanji: '竜電',
-            hiragana: 'りゅうでん',
-            name: 'Ryuden',
             result: 'W',
             technique: 'hataki-komi',
           },
           west: {
+            name: {
+              english: 'Tomokaze',
+              kanji: '友風',
+              hiragana: 'ともかぜ',
+            },
             rank: 'Maegashira #16',
             record: { wins: 0, losses: 1 },
-            kanji: '友風',
-            hiragana: 'ともかぜ',
-            name: 'Tomokaze',
             result: 'L',
             technique: undefined,
           },
@@ -74,20 +82,24 @@ describe('CSV Utilities', () => {
       const matchups: MatchupData[] = [
         {
           east: {
+            name: {
+              english: 'RikishiA',
+              kanji: '力士A',
+              hiragana: 'りきしA',
+            },
             rank: 'Maegashira #15',
             record: { wins: 0, losses: 0 },
-            kanji: '力士A',
-            hiragana: 'りきしA',
-            name: 'RikishiA',
             result: '',
             technique: undefined,
           },
           west: {
+            name: {
+              english: 'RikishiB',
+              kanji: '力士B',
+              hiragana: 'りきしB',
+            },
             rank: 'Maegashira #14',
             record: { wins: 0, losses: 0 },
-            kanji: '力士B',
-            hiragana: 'りきしB',
-            name: 'RikishiB',
             result: '',
             technique: undefined,
           },
