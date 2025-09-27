@@ -44,6 +44,10 @@ export default [
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-non-null-assertion': 'warn',
+      '@typescript-eslint/prefer-nullish-coalescing': 'warn', // Prefer ?? over ||
+      '@typescript-eslint/prefer-optional-chain': 'warn', // Prefer ?. over &&
+      '@typescript-eslint/strict-boolean-expressions': 'warn', // Require explicit boolean expressions
+      '@typescript-eslint/explicit-function-return-type': 'warn', // Require explicit return types
 
       // Import rules
       'import/order': [
