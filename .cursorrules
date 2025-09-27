@@ -50,7 +50,9 @@ When running tests, always use one of these commands:
 - Fix linting errors before committing changes
 - Use proper TypeScript types and avoid `any` when possible
 - Follow the existing mocking patterns in test files
-- Use `make format` and `make lint-fix` before committing
+- **ALWAYS run `make format` and `make lint` before committing**
+- Use `make lint-fix` to automatically fix linting issues
+- Never commit code that fails linting checks
 
 ## Import Rules
 

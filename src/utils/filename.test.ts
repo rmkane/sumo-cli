@@ -64,7 +64,7 @@ describe('Filename Utils', () => {
 
     it('should handle different file extensions', () => {
       const extensions = ['json', 'csv', 'html', 'txt']
-      
+
       extensions.forEach((ext) => {
         const result = generateRikishiFilename(1, 'makuuchi', ext)
         expect(result).toBe(`1_makuuchi_rikishi.${ext}`)
