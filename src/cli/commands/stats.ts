@@ -1,7 +1,6 @@
 import { Command } from 'commander'
 
-import { processAllDivisions } from '@/services/division-processor.js'
-import { logDebug, logError } from '@/utils/logger.js'
+import { handleStatsCommand } from '@/features/stats/command-handler'
 
 export function createStatsCommand(program: Command): Command {
   return (
@@ -10,19 +9,11 @@ export function createStatsCommand(program: Command): Command {
       .description('Download rikishi statistics for all divisions and save as JSON files')
       // eslint-disable-next-line no-unused-vars
       .action(async (_options) => {
-        try {
-          // Get global options from the program
-          const globalOptions = program.opts()
-
-          logDebug('Starting full division processing...')
-          const result = await processAllDivisions(globalOptions.forceRefresh)
-          console.log(
-            `✅ Rikishi statistics downloaded successfully - ${result.filesCreated} JSON files created in ${result.dataDir}`,
-          )
-        } catch (error) {
-          logError('processing all divisions', error)
-          process.exit(1)
+        const globalOptions = program.opts()
+        const context = {
+          forceRefresh: globalOptions.forceRefresh ?? false,
         }
+        await handleStatsCommand(context)
       })
   )
 }
