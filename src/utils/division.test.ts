@@ -86,11 +86,11 @@ describe('Division Utilities', () => {
       expect(getDivisionByRank('Jonokuchi #30')).toBe(6)
     })
 
-    it('should return null for invalid rank strings', () => {
-      expect(getDivisionByRank('')).toBe(null)
-      expect(getDivisionByRank('InvalidRank')).toBe(null)
-      expect(getDivisionByRank('123')).toBe(null)
-      expect(getDivisionByRank('#5')).toBe(null)
+    it('should return undefined for invalid rank strings', () => {
+      expect(getDivisionByRank('')).toBe(undefined)
+      expect(getDivisionByRank('InvalidRank')).toBe(undefined)
+      expect(getDivisionByRank('123')).toBe(undefined)
+      expect(getDivisionByRank('#5')).toBe(undefined)
     })
 
     it('should handle partial rank strings', () => {
@@ -99,8 +99,8 @@ describe('Division Utilities', () => {
     })
 
     it('should handle case variations', () => {
-      expect(getDivisionByRank('yokozuna')).toBe(null) // Case sensitive
-      expect(getDivisionByRank('MAEGASHIRA')).toBe(null) // Case sensitive
+      expect(getDivisionByRank('yokozuna')).toBe(undefined) // Case sensitive
+      expect(getDivisionByRank('MAEGASHIRA')).toBe(undefined) // Case sensitive
     })
   })
 
@@ -203,7 +203,8 @@ describe('Division Utilities', () => {
         const mapping = mappings.find((m) => m.endsWith(`=${division}`))
         expect(mapping).toBeDefined()
 
-        const number = parseInt(mapping.split('=')[0])
+        const [index = '0'] = mapping?.split('=') ?? []
+        const number = parseInt(index, 10)
         expect(getDivisionNameFromNumber(number)).toBe(division)
         expect(getDivisionName(number as never)).toBe(division)
       })
@@ -213,7 +214,7 @@ describe('Division Utilities', () => {
       // Invalid inputs should be handled gracefully
       expect(getDivisionName(999 as never)).toBe('unknown')
       expect(getDivisionNameFromNumber(999)).toBe(null)
-      expect(getDivisionByRank('InvalidRank')).toBe(null)
+      expect(getDivisionByRank('InvalidRank')).toBe(undefined)
     })
   })
 })

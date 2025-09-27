@@ -28,15 +28,18 @@ export function getDivisionName(division: DivisionType): string {
  * Based on the logic from basho.js.
  *
  * @param rank - Rank string (e.g., "Maegashira #17", "Juryo #10")
- * @returns Division identifier or null if not found
+ * @returns Division identifier or undefined if not found
  */
-export function getDivisionByRank(rank: string): DivisionType | null {
+export function getDivisionByRank(rank: string): DivisionType | undefined {
   const match = rank.match(/([A-Za-z]+)(?:\s#(\d+))?/)
   if (!match) {
-    return null
+    return undefined
   }
 
   const [, divisionName] = match
+  if (!divisionName) {
+    return undefined
+  }
 
   // Map rank names to division IDs
   const rankToDivision: Record<string, DivisionType> = {
@@ -52,7 +55,7 @@ export function getDivisionByRank(rank: string): DivisionType | null {
     Jonokuchi: Division.JONOKUCHI,
   }
 
-  return rankToDivision[divisionName] || null
+  return rankToDivision[divisionName] || undefined
 }
 
 /**
@@ -96,5 +99,5 @@ export function getDivisionNameFromNumber(divisionNumber: number): string | null
  * @returns Array of strings showing number=name mappings
  */
 export function getDivisionNumberMappings(): string[] {
-  return Object.entries(DIVISION_NAMES).map(([number, name]) => `${number}=${name}`)
+  return Object.entries(DIVISION_NAMES).map(([index, name]) => `${index}=${name}`)
 }
