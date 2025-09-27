@@ -1,0 +1,68 @@
+# Cursor AI Rules for Sumo CLI Project
+
+## Testing Commands
+
+When running tests, always use one of these commands:
+
+- `make test` (preferred - runs all tests once)
+- `make test-watch` (runs tests in watch mode)
+- `make test-ui` (runs tests with UI)
+- `make test-coverage` (runs tests with coverage report)
+- `pnpm test --run` (alternative - runs all tests once)
+- `pnpm test <specific-file>` (for individual test files)
+
+## Test Execution Rules
+
+- Always run tests after making changes to verify functionality
+- Use `make test` for full test suite validation
+- Use specific file paths for focused testing during development
+- If tests fail, analyze the output and fix issues systematically
+- Run `make test-coverage` to check test coverage before major changes
+
+## Testing Philosophy
+
+- **CLI Commands**: Thin wrappers that marshal arguments and delegate to features
+- **Feature Modules**: Contain all business logic and should be thoroughly tested
+- **Commands**: Minimal testing - just verify argument parsing and delegation
+- **Focus**: Test the feature modules, not the command marshalling layer
+
+## Development Commands
+
+- `make dev` - Run development server
+- `make build` - Build TypeScript to JavaScript
+- `make install` - Install dependencies
+- `make install-cli` - Build and link CLI globally
+- `make format` - Format code with Prettier
+- `make lint` - Run ESLint to check code quality
+- `make lint-fix` - Run ESLint and automatically fix issues
+
+## Project Structure
+
+- This is a TypeScript/Node.js project using pnpm as package manager
+- Tests are written with Vitest framework
+- Use `make` commands for common development tasks
+- Follow existing code patterns and conventions
+- CLI tool for sumo wrestling data processing
+
+## Code Quality
+
+- Maintain test coverage and ensure all tests pass
+- Fix linting errors before committing changes
+- Use proper TypeScript types and avoid `any` when possible
+- Follow the existing mocking patterns in test files
+- Use `make format` and `make lint-fix` before committing
+
+## Import Rules
+
+- Always use absolute imports with `@/*` prefix for internal modules
+- Never use relative imports like `../` or `./` for internal modules
+- Example: Use `import { something } from '@/utils/helper'` instead of `import { something } from '../utils/helper'`
+- This ensures consistent import paths and better refactoring support
+- Sort imports alphabetically within each group (external, internal, relative)
+- Use `make lint-fix` to automatically fix import ordering issues
+
+## Markdown Formatting
+
+- When updating Markdown files, separate headers, lists, and code blocks with empty lines
+- This prevents Markdown linting errors and improves readability
+- Example: Use `## Header\n\nContent` instead of `## Header\nContent`
