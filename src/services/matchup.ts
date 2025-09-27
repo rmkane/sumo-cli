@@ -1,12 +1,13 @@
 import { type Cheerio, load } from 'cheerio'
 import { type Element } from 'domhandler'
 
+import { CssClasses, MatchResult } from '@/constants'
 import { lookupKimarite } from '@/dict'
 import { findRikishiAcrossDivisions } from '@/services/rikishi-lookup'
 import { isDayAvailable } from '@/services/tournament'
-import type { DivisionType, MatchupData, RikishiName, RikishiRank, RikishiRecord } from '@/types'
+import type { DivisionType, MatchResultType, MatchupData, RikishiName, RikishiRank, RikishiRecord } from '@/types'
 import { downloadMatchupData } from '@/utils/cache-manager'
-import { getDivisionByRank } from '@/utils/division'
+import { getDivisionByRank, getDivisionName } from '@/utils/division'
 import { logDebug, logError, logWarning } from '@/utils/logger'
 
 const KIMARITE_SUFFIX = '取組解説'
@@ -263,8 +264,8 @@ function parseMatchupRow($row: Cheerio<Element>, division: DivisionType): Matchu
     const westResult = determineResult($westPlayer)
 
     // Extract winning techniques if there are recorded wins
-    const eastTechnique = eastResult === 'W' ? extractWinningTechnique($eastPlayer) : undefined
-    const westTechnique = westResult === 'W' ? extractWinningTechnique($westPlayer) : undefined
+    const eastTechnique = eastResult === MatchResult.WIN ? extractWinningTechnique($eastPlayer) : undefined
+    const westTechnique = westResult === MatchResult.WIN ? extractWinningTechnique($westPlayer) : undefined
 
     return {
       east: { ...eastPlayer, result: eastResult, technique: eastTechnique },
@@ -343,22 +344,7 @@ export function parseRank(rankText: string, division: DivisionType): RikishiRank
 
   // Get division name from division ID
   const divisionName = getDivisionByRank(cleanRank) || division
-
-  // TODO, make this more dyanmic with a pre-existing lookup, constant, or switch?
-  const divisionNameStr =
-    divisionName === 1
-      ? 'Makuuchi'
-      : divisionName === 2
-        ? 'Juryo'
-        : divisionName === 3
-          ? 'Makushita'
-          : divisionName === 4
-            ? 'Sandanme'
-            : divisionName === 5
-              ? 'Jonidan'
-              : divisionName === 6
-                ? 'Jonokuchi'
-                : 'Unknown'
+  const divisionNameStr = getDivisionName(divisionName)
 
   // Handle specific rank formats
   if (cleanRank === '筆頭') {
@@ -412,27 +398,27 @@ export function parseRecord(recordText: string): RikishiRecord {
  * @param $player - Cheerio object representing the player cell
  * @returns 'W' for win, 'L' for loss, '' for no result yet
  */
-function determineResult($player: Cheerio<Element>): string {
+function determineResult($player: Cheerio<Element>): MatchResultType {
   // Check if the player cell has the 'win' class (completed match - winner)
-  if ($player.hasClass('win')) {
-    return 'W'
+  if ($player.hasClass(CssClasses.WIN)) {
+    return MatchResult.WIN
   }
 
   // Check if the player cell has the 'player' class but no 'win' class
   // This indicates they lost (since the winner would have 'win' class)
-  if ($player.hasClass('player') && !$player.hasClass('win')) {
+  if ($player.hasClass(CssClasses.PLAYER) && !$player.hasClass(CssClasses.WIN)) {
     // Look for result indicators in the same row to confirm this is a completed match
     const $row = $player.closest('tr')
-    const $resultCells = $row.find('td.result')
+    const $resultCells = $row.find(`td.${CssClasses.RESULT}`)
 
     // Check if there are result images indicating completed match
     const hasResultImages = $resultCells.find('img[src*="result_ic"]').length > 0
 
     if (hasResultImages) {
-      return 'L'
+      return MatchResult.LOSS
     }
   }
 
   // No result yet (incomplete day)
-  return ''
+  return MatchResult.NO_RESULT
 }

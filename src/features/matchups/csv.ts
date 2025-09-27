@@ -1,6 +1,7 @@
 import path from 'node:path'
 
 import { DATA_PATHS } from '@/config/data'
+import { MatchResult } from '@/constants'
 import type { DivisionType, MatchupData, RikishiRank, RikishiRecord } from '@/types'
 import { type CSVHeader, writeCSV } from '@/utils/csv'
 import { generateMatchupFilename } from '@/utils/filename'
@@ -51,7 +52,12 @@ const CSV_HEADERS: CSVHeader[] = [
  */
 export function matchupDataToCSVObjects(matchups: MatchupData[]): Record<string, string>[] {
   return matchups.map((matchup) => {
-    const winner = matchup.east.result === 'W' ? matchup.east : matchup.west.result === 'W' ? matchup.west : null
+    const winner =
+      matchup.east.result === MatchResult.WIN
+        ? matchup.east
+        : matchup.west.result === MatchResult.WIN
+          ? matchup.west
+          : null
     const winningTechnique = winner?.technique || ''
 
     return {

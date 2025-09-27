@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
+import { MatchResult } from '@/constants'
 import { parseMatchupHTML } from '@/services/matchup'
 
 describe('Matchup Service', () => {
@@ -48,10 +49,10 @@ describe('Matchup Service', () => {
 
       expect(results).toHaveLength(1)
       expect(results[0].east.name.kanji).toBe('獅司')
-      expect(results[0].east.result).toBe('L') // Lost
+      expect(results[0].east.result).toBe(MatchResult.LOSS) // Lost
       expect(results[0].east.technique).toBeUndefined() // No technique for loser
       expect(results[0].west.name.kanji).toBe('大青山')
-      expect(results[0].west.result).toBe('W') // Won
+      expect(results[0].west.result).toBe(MatchResult.WIN) // Won
       expect(results[0].west.technique).toBe('uwate-nage') // Technique should be extracted and translated
     })
 
@@ -99,9 +100,9 @@ describe('Matchup Service', () => {
 
       expect(results).toHaveLength(1)
       expect(results[0].east.name.kanji).toBe('獅司')
-      expect(results[0].east.result).toBe('') // No result yet
+      expect(results[0].east.result).toBe(MatchResult.NO_RESULT) // No result yet
       expect(results[0].west.name.kanji).toBe('大青山')
-      expect(results[0].west.result).toBe('') // No result yet
+      expect(results[0].west.result).toBe(MatchResult.NO_RESULT) // No result yet
     })
 
     it('should handle records with rest days', () => {
@@ -226,18 +227,18 @@ describe('Matchup Service', () => {
 
       // First matchup: 獅司 (L) vs 大青山 (W)
       expect(results[0].east.name.kanji).toBe('獅司')
-      expect(results[0].east.result).toBe('L')
+      expect(results[0].east.result).toBe(MatchResult.LOSS)
       expect(results[0].east.technique).toBeUndefined() // No technique for loser
       expect(results[0].west.name.kanji).toBe('大青山')
-      expect(results[0].west.result).toBe('W')
+      expect(results[0].west.result).toBe(MatchResult.WIN)
       expect(results[0].west.technique).toBe('uwate-nage') // 上手投げ -> uwate-nage
 
       // Second matchup: 竜電 (W) vs 友風 (L)
       expect(results[1].east.name.kanji).toBe('竜電')
-      expect(results[1].east.result).toBe('L')
+      expect(results[1].east.result).toBe(MatchResult.LOSS)
       expect(results[1].east.technique).toBeUndefined() // No technique for loser
       expect(results[1].west.name.kanji).toBe('友風')
-      expect(results[1].west.result).toBe('W')
+      expect(results[1].west.result).toBe(MatchResult.WIN)
       expect(results[1].west.technique).toBe('hataki-komi') // 叩き込み -> hataki-komi
     })
 

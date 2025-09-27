@@ -1,4 +1,4 @@
-import { Division } from '@/constants'
+import { CssClasses, Division, DivisionNames, MatchResult, Side } from '@/constants'
 
 /**
  * Utility type to extract keys from an object type
@@ -15,8 +15,13 @@ export type ValueOf<T> = T[KeyOf<T>]
  */
 export type DivisionType = ValueOf<typeof Division>
 
-// TODO: Values should be constants
-export type Side = 'East' | 'West'
+export type SideType = ValueOf<typeof Side>
+
+export type MatchResultType = ValueOf<typeof MatchResult>
+
+export type DivisionNameType = ValueOf<typeof DivisionNames>
+
+export type CssClassType = ValueOf<typeof CssClasses>
 
 /**
  * Interface for sumo rank data
@@ -27,7 +32,7 @@ export interface RikishiRank {
   /** Position within the division (1-based) */
   position?: number
   /** Side of the ranking (East or West) */
-  side?: Side
+  side?: SideType
 }
 
 /**
@@ -77,7 +82,7 @@ export interface RikishiResult {
   /** Tournament record (e.g., "(1勝0敗)", "(0勝1敗)") */
   record: RikishiRecord
   /** Match result: 'W' for win, 'L' for loss, '' for no result yet */
-  result: string
+  result: MatchResultType
   /** English kimarite name if there's a recorded win (optional) */
   technique?: string
 }

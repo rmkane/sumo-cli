@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
+import { DivisionNames, MatchResult } from '@/constants'
 import { matchupDataToCSVObjects } from '@/features/matchups/csv'
 import type { MatchupData } from '@/types'
 
@@ -15,11 +16,11 @@ describe('CSV Utilities', () => {
               hiragana: 'しし',
             },
             rank: {
-              division: 'Maegashira',
+              division: DivisionNames.MAEGASHIRA,
               position: 18,
             },
             record: { wins: 0, losses: 1 },
-            result: 'L',
+            result: MatchResult.LOSS,
             technique: undefined,
           },
           west: {
@@ -29,11 +30,11 @@ describe('CSV Utilities', () => {
               hiragana: 'おおあおやま',
             },
             rank: {
-              division: 'Juryo',
+              division: DivisionNames.JURYO,
               position: 1,
             },
             record: { wins: 1, losses: 0 },
-            result: 'W',
+            result: MatchResult.WIN,
             technique: 'uwate-nage',
           },
         },
@@ -43,9 +44,9 @@ describe('CSV Utilities', () => {
       const firstRow = csvObjects[0]
 
       // Check that the technique comes from the winner (west in this case)
-      expect(firstRow.eastResult).toBe('L')
+      expect(firstRow.eastResult).toBe(MatchResult.LOSS)
       expect(firstRow.technique).toBe('uwate-nage') // Technique from west winner
-      expect(firstRow.westResult).toBe('W')
+      expect(firstRow.westResult).toBe(MatchResult.WIN)
     })
 
     it('should handle matchup with east winner technique', () => {
@@ -58,11 +59,11 @@ describe('CSV Utilities', () => {
               hiragana: 'りゅうでん',
             },
             rank: {
-              division: 'Maegashira',
+              division: DivisionNames.MAEGASHIRA,
               position: 17,
             },
             record: { wins: 1, losses: 0 },
-            result: 'W',
+            result: MatchResult.WIN,
             technique: 'hataki-komi',
           },
           west: {
@@ -72,11 +73,11 @@ describe('CSV Utilities', () => {
               hiragana: 'ともかぜ',
             },
             rank: {
-              division: 'Maegashira',
+              division: DivisionNames.MAEGASHIRA,
               position: 16,
             },
             record: { wins: 0, losses: 1 },
-            result: 'L',
+            result: MatchResult.LOSS,
             technique: undefined,
           },
         },
@@ -85,9 +86,9 @@ describe('CSV Utilities', () => {
       const csvObjects = matchupDataToCSVObjects(matchups)
       const firstRow = csvObjects[0]
 
-      expect(firstRow.eastResult).toBe('W')
+      expect(firstRow.eastResult).toBe(MatchResult.WIN)
       expect(firstRow.technique).toBe('hataki-komi') // Technique from east winner
-      expect(firstRow.westResult).toBe('L')
+      expect(firstRow.westResult).toBe(MatchResult.LOSS)
     })
 
     it('should handle matchup with no technique', () => {
@@ -100,11 +101,11 @@ describe('CSV Utilities', () => {
               hiragana: 'りきしA',
             },
             rank: {
-              division: 'Maegashira',
+              division: DivisionNames.MAEGASHIRA,
               position: 15,
             },
             record: { wins: 0, losses: 0 },
-            result: '',
+            result: MatchResult.NO_RESULT,
             technique: undefined,
           },
           west: {
@@ -114,11 +115,11 @@ describe('CSV Utilities', () => {
               hiragana: 'りきしB',
             },
             rank: {
-              division: 'Maegashira',
+              division: DivisionNames.MAEGASHIRA,
               position: 14,
             },
             record: { wins: 0, losses: 0 },
-            result: '',
+            result: MatchResult.NO_RESULT,
             technique: undefined,
           },
         },
@@ -127,9 +128,9 @@ describe('CSV Utilities', () => {
       const csvObjects = matchupDataToCSVObjects(matchups)
       const firstRow = csvObjects[0]
 
-      expect(firstRow.eastResult).toBe('')
+      expect(firstRow.eastResult).toBe(MatchResult.NO_RESULT)
       expect(firstRow.technique).toBe('') // No technique
-      expect(firstRow.westResult).toBe('')
+      expect(firstRow.westResult).toBe(MatchResult.NO_RESULT)
     })
   })
 })

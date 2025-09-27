@@ -1,8 +1,9 @@
 import { type Cheerio, load } from 'cheerio'
 import { type Element } from 'domhandler'
 
+import { Side } from '@/constants'
 import { ranksDictionaryJp } from '@/dict'
-import type { DivisionType, Rikishi, RikishiRank, Side } from '@/types'
+import type { DivisionType, Rikishi, RikishiRank, SideType } from '@/types'
 import { downloadStatsData } from '@/utils/cache-manager'
 import { getDivisionName } from '@/utils/division'
 import { convertDiacriticsToAscii, kanjiToNumber, toRomajiWithMacrons } from '@/utils/japanese'
@@ -56,13 +57,13 @@ export function parseRikishiFromHTML(html: string, division?: DivisionType): Rik
       // Parse left cell if it has div.box (East side)
       const $leftBox = $leftCell.find('div.box')
       if ($leftBox.length > 0) {
-        records.push(parseRecord($leftBox, rankText, division, 'East'))
+        records.push(parseRecord($leftBox, rankText, division, Side.EAST))
       }
 
       // Parse right cell if it has div.box (West side)
       const $rightBox = $rightCell.find('div.box')
       if ($rightBox.length > 0) {
-        records.push(parseRecord($rightBox, rankText, division, 'West'))
+        records.push(parseRecord($rightBox, rankText, division, Side.WEST))
       }
     }
   })
@@ -79,12 +80,7 @@ export function parseRikishiFromHTML(html: string, division?: DivisionType): Rik
  * @param side - Side of the ranking (East or West)
  * @returns Parsed Rikishi object
  */
-function parseRecord(
-  $box: Cheerio<Element>,
-  rankText: string,
-  division?: DivisionType,
-  side?: 'East' | 'West',
-): Rikishi {
+function parseRecord($box: Cheerio<Element>, rankText: string, division?: DivisionType, side?: SideType): Rikishi {
   const href = $box.find('a').attr('href') || ''
   const id = +(href.match(/\d+/)?.[0] || '0')
 
@@ -142,7 +138,7 @@ function parsePosition(positionText: string): number | undefined {
  * @param side - Side of the ranking (East or West)
  * @returns Rank object with division, position, and side
  */
-function parseRank(rankText: string, division?: DivisionType, side?: Side): RikishiRank | undefined {
+function parseRank(rankText: string, division?: DivisionType, side?: SideType): RikishiRank | undefined {
   // Clean the rank text
   const cleanRank = rankText.trim()
 
