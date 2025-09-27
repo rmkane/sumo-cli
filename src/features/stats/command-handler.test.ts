@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import type { StatsCommandContext } from '@/features/stats/command-handler'
+import { handleStatsCommand } from '@/features/stats/command-handler'
 import { processAllDivisions } from '@/services/division-processor'
 import { logDebug, logError } from '@/utils/logger'
-
-import { type StatsCommandContext, handleStatsCommand } from './command-handler'
 
 // Mock dependencies
 vi.mock('@/services/division-processor')

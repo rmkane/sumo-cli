@@ -4,10 +4,10 @@ import { join } from 'node:path'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { DATA_PATHS } from '@/config/data'
+import type { ValidateCommandContext } from '@/features/validate/command-handler'
+import { handleValidateCommand } from '@/features/validate/command-handler'
 import { validateHTMLDate } from '@/services/matchup'
 import { generateMatchupFilename } from '@/utils/filename'
-
-import { type ValidateCommandContext, handleValidateCommand } from './command-handler'
 
 // Mock dependencies
 vi.mock('node:fs')

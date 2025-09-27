@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { formatDivisionJson, formatDivisionList, formatDivisionTable } from '@/cli/formatters'
+import type { DivisionCommandContext } from '@/features/division/command-handler'
+import { handleDivisionCommand } from '@/features/division/command-handler'
 import { listDivisionRikishi } from '@/services/division-service'
 import { getAvailableDivisions, getDivisionNameFromNumber, getDivisionNumberMappings } from '@/utils/division'
-
-import { type DivisionCommandContext, handleDivisionCommand } from './command-handler'
 
 // Mock dependencies
 vi.mock('@/cli/formatters')

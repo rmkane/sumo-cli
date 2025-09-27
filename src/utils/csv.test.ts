@@ -3,7 +3,8 @@ import path from 'node:path'
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
-import { type CSVHeader, writeCSV } from '@/utils/csv'
+import type { CSVHeader } from '@/utils/csv'
+import { writeCSV } from '@/utils/csv'
 
 describe('CSV Utility', () => {
   const testHeaders: CSVHeader[] = [

@@ -9,7 +9,16 @@ When running tests, always use one of these commands:
 - `make test-ui` (runs tests with UI)
 - `make test-coverage` (runs tests with coverage report)
 - `pnpm test --run` (alternative - runs all tests once)
-- `pnpm test <specific-file>` (for individual test files)
+- `pnpm test <specific-file> --run` (for individual test files - ALWAYS use --run flag)
+
+## Single File Testing
+
+- **ALWAYS use `pnpm test <file-path> --run` for single file tests**
+- The `--run` flag ensures tests run once and exit (no watch mode)
+- Examples:
+  - `pnpm test src/cli/index.test.ts --run`
+  - `pnpm test src/features/division/command-handler.test.ts --run`
+  - `pnpm test src/utils/cache.test.ts --run`
 
 ## Test Execution Rules
 

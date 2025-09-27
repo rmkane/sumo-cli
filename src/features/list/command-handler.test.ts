@@ -3,8 +3,8 @@ import path from 'node:path'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { DATA_DIRS, DATA_PATHS } from '@/config/data'
-
-import { type ListCommandContext, handleListCommand } from './command-handler'
+import type { ListCommandContext } from '@/features/list/command-handler'
+import { handleListCommand } from '@/features/list/command-handler'
 
 // Mock console.log
 const mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {})

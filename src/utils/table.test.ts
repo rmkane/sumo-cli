@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import { type TableColumn, formatTable } from './table'
+import type { TableColumn } from '@/utils/table'
+import { formatTable } from '@/utils/table'
 
 describe('Table Utilities', () => {
   const sampleData = [
