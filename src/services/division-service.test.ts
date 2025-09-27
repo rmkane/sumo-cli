@@ -21,26 +21,32 @@ describe('Division Service', () => {
   const mockRikishiData: Rikishi[] = [
     {
       id: 1,
-      kanji: '朝乃山',
-      hiragana: 'あさのやま',
-      romaji: 'Asanoyama',
-      english: 'Asanoyama',
+      name: {
+        kanji: '朝乃山',
+        hiragana: 'あさのやま',
+        romaji: 'Asanoyama',
+        english: 'Asanoyama',
+      },
       rank: { position: 1, division: 'makuuchi' },
     },
     {
       id: 2,
-      kanji: '大関',
-      hiragana: 'おおぜき',
-      romaji: 'Ozeki',
-      english: 'Ozeki',
+      name: {
+        kanji: '大関',
+        hiragana: 'おおぜき',
+        romaji: 'Ozeki',
+        english: 'Ozeki',
+      },
       rank: { position: 2, division: 'makuuchi' },
     },
     {
       id: 3,
-      kanji: '関脇',
-      hiragana: 'せきわけ',
-      romaji: 'Sekiwake',
-      english: 'Sekiwake',
+      name: {
+        kanji: '関脇',
+        hiragana: 'せきわけ',
+        romaji: 'Sekiwake',
+        english: 'Sekiwake',
+      },
       rank: { position: 3, division: 'makuuchi' },
     },
   ]
@@ -68,27 +74,31 @@ describe('Division Service', () => {
       const result = await listDivisionRikishi('makuuchi')
 
       expect(result).toHaveLength(3)
-      expect(result[0].english).toBe('Asanoyama')
-      expect(result[1].english).toBe('Ozeki')
-      expect(result[2].english).toBe('Sekiwake')
+      expect(result[0]?.name.english).toBe('Asanoyama')
+      expect(result[1]?.name.english).toBe('Ozeki')
+      expect(result[2]?.name.english).toBe('Sekiwake')
     })
 
     it('should handle case-insensitive sorting', async () => {
       const mixedCaseData: Rikishi[] = [
         {
           id: 1,
-          kanji: '朝乃山',
-          hiragana: 'あさのやま',
-          romaji: 'Asanoyama',
-          english: 'asanoyama', // lowercase
+          name: {
+            kanji: '朝乃山',
+            hiragana: 'あさのやま',
+            romaji: 'Asanoyama',
+            english: 'asanoyama', // lowercase
+          },
           rank: { position: 1, division: 'makuuchi' },
         },
         {
           id: 2,
-          kanji: '大関',
-          hiragana: 'おおぜき',
-          romaji: 'Ozeki',
-          english: 'OZEKI', // uppercase
+          name: {
+            kanji: '大関',
+            hiragana: 'おおぜき',
+            romaji: 'Ozeki',
+            english: 'OZEKI', // uppercase
+          },
           rank: { position: 2, division: 'makuuchi' },
         },
       ]
@@ -105,8 +115,8 @@ describe('Division Service', () => {
 
       const result = await listDivisionRikishi('makuuchi')
 
-      expect(result[0].english).toBe('asanoyama')
-      expect(result[1].english).toBe('OZEKI')
+      expect(result[0]?.name.english).toBe('asanoyama')
+      expect(result[1]?.name.english).toBe('OZEKI')
     })
 
     it('should throw error for invalid division name', async () => {
