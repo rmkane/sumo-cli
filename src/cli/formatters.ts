@@ -1,6 +1,6 @@
+import type { TableColumn } from '@/core/utils/table.js'
+import { formatTable } from '@/core/utils/table.js'
 import type { Rikishi } from '@/types.js'
-import type { TableColumn } from '@/utils/table.js'
-import { formatTable } from '@/utils/table.js'
 
 /**
  * Formats rikishi data as JSON output

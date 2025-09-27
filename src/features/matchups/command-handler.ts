@@ -1,5 +1,5 @@
+import { logDebug, logError } from '@/core/utils/logger'
 import { processDayMatchups } from '@/features/matchups/processor'
-import { logDebug, logError } from '@/utils/logger'
 
 export interface MatchupsCommandContext {
   day: string

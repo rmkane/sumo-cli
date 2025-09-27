@@ -1,10 +1,10 @@
 import path from 'node:path'
 
 import { DATA_DIRS, DATA_PATHS } from '@/config/data'
+import { ensureDirectory, saveJSON } from '@/core/utils/file'
+import { generateMatchupFilename } from '@/core/utils/filename'
+import { logDebug } from '@/core/utils/logger'
 import type { DivisionType, MatchupData } from '@/types'
-import { ensureDirectory, saveJSON } from '@/utils/file'
-import { generateMatchupFilename } from '@/utils/filename'
-import { logDebug } from '@/utils/logger'
 
 /**
  * Saves matchup data to a JSON file in the config directory

@@ -1,9 +1,9 @@
 import { DATA_PATHS } from '@/config/data'
-import { processDivision } from '@/services/division-processor'
-import { fetchMatchupData, parseMatchupHTML } from '@/services/matchup'
+import { processDivision } from '@/core/services/division-processor'
+import { fetchMatchupData, parseMatchupHTML } from '@/core/services/matchup'
+import { processAllDivisions } from '@/core/utils/division-iterator'
+import { logDebug, logError, logProcessingComplete, logProcessingStart, logWarning } from '@/core/utils/logger'
 import type { DivisionType } from '@/types'
-import { processAllDivisions } from '@/utils/division-iterator'
-import { logDebug, logError, logProcessingComplete, logProcessingStart, logWarning } from '@/utils/logger'
 
 import { saveMatchupCSV } from './csv'
 import { saveMatchupJSON } from './json'

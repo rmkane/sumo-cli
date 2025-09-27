@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { getCurrentTournament } from '@/core/services/tournament'
+import { formatTournamentDate } from '@/core/utils/date-formatter'
 import type { TournamentCommandContext } from '@/features/tournament/command-handler'
 import { handleTournamentCommand } from '@/features/tournament/command-handler'
-import { getCurrentTournament } from '@/services/tournament'
-import { formatTournamentDate } from '@/utils/date-formatter'
 
 // Mock dependencies
-vi.mock('@/services/tournament')
-vi.mock('@/utils/date-formatter')
+vi.mock('@/core/services/tournament')
+vi.mock('@/core/utils/date-formatter')
 
 const mockGetCurrentTournament = vi.mocked(getCurrentTournament)
 const mockFormatTournamentDate = vi.mocked(formatTournamentDate)

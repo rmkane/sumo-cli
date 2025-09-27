@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { logDebug, logError } from '@/core/utils/logger'
 import type { MatchupsCommandContext } from '@/features/matchups/command-handler'
 import { handleMatchupsCommand } from '@/features/matchups/command-handler'
 import { processDayMatchups } from '@/features/matchups/processor'
-import { logDebug, logError } from '@/utils/logger'
 
 // Mock dependencies
+vi.mock('@/core/utils/logger')
 vi.mock('@/features/matchups/processor')
-vi.mock('@/utils/logger')
 
 const mockProcessDayMatchups = vi.mocked(processDayMatchups)
 const mockLogDebug = vi.mocked(logDebug)

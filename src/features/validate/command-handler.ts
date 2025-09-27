@@ -2,8 +2,8 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { DATA_PATHS } from '@/config/data'
-import { validateHTMLDate } from '@/services/matchup'
-import { generateMatchupFilename } from '@/utils/filename'
+import { validateHTMLDate } from '@/core/services/matchup'
+import { generateMatchupFilename } from '@/core/utils/filename'
 
 export interface ValidateCommandContext {
   day: string

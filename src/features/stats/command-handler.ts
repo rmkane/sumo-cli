@@ -1,5 +1,5 @@
-import { processAllDivisions } from '@/services/division-processor'
-import { logDebug, logError } from '@/utils/logger'
+import { processAllDivisions } from '@/core/services/division-processor'
+import { logDebug, logError } from '@/core/utils/logger'
 
 export interface StatsCommandContext {
   forceRefresh: boolean

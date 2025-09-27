@@ -2,23 +2,26 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { DATA_PATHS } from '@/config/data'
 import { MatchResult } from '@/constants'
+import * as divisionProcessor from '@/core/services/division-processor'
+import * as matchupService from '@/core/services/matchup'
+import * as divisionIterator from '@/core/utils/division-iterator'
+import * as logger from '@/core/utils/logger'
+import * as csv from '@/features/matchups/csv'
+import * as json from '@/features/matchups/json'
 import { processDayMatchups, processDivisionMatchups } from '@/features/matchups/processor'
-import * as divisionProcessor from '@/services/division-processor'
-import * as matchupService from '@/services/matchup'
-import * as divisionIterator from '@/utils/division-iterator'
-import * as logger from '@/utils/logger'
-
-import * as csv from './csv'
-import * as json from './json'
 
 // Mock dependencies
-vi.mock('@/services/division-processor')
-vi.mock('@/services/matchup')
-vi.mock('@/utils/division-iterator')
-vi.mock('@/utils/logger')
-vi.mock('./csv')
-vi.mock('./json')
 vi.mock('@/config/data')
+vi.mock('@/core/services/division-processor')
+vi.mock('@/core/services/matchup')
+vi.mock('@/core/utils/division-iterator')
+vi.mock('@/core/utils/logger')
+vi.mock('@/features/matchups/csv', () => ({
+  saveMatchupCSV: vi.fn(),
+}))
+vi.mock('@/features/matchups/json', () => ({
+  saveMatchupJSON: vi.fn(),
+}))
 
 describe('Matchups Processor', () => {
   beforeEach(() => {
@@ -38,13 +41,23 @@ describe('Matchups Processor', () => {
       const mockParsedMatchups = [
         {
           east: {
-            name: { english: 'Hakuho', kanji: '白鵬', hiragana: 'はくほう' },
+            name: {
+              english: 'Hakuho',
+              kanji: '白鵬',
+              hiragana: 'はくほう',
+              romaji: 'Hakuho',
+            },
             rank: { division: 'Yokozuna' },
             record: { wins: 1, losses: 0 },
             result: MatchResult.WIN,
           },
           west: {
-            name: { english: 'Kisenosato', kanji: '稀勢の里', hiragana: 'きせのさと' },
+            name: {
+              english: 'Kisenosato',
+              kanji: '稀勢の里',
+              hiragana: 'きせのさと',
+              romaji: 'Kisenosato',
+            },
             rank: { division: 'Yokozuna' },
             record: { wins: 0, losses: 1 },
             result: MatchResult.LOSS,
@@ -114,13 +127,23 @@ describe('Matchups Processor', () => {
       const mockParsedMatchups = [
         {
           east: {
-            name: { english: 'Hakuho', kanji: '白鵬', hiragana: 'はくほう' },
+            name: {
+              english: 'Hakuho',
+              kanji: '白鵬',
+              hiragana: 'はくほう',
+              romaji: 'Hakuho',
+            },
             rank: { division: 'Yokozuna' },
             record: { wins: 1, losses: 0 },
             result: MatchResult.WIN,
           },
           west: {
-            name: { english: 'Kisenosato', kanji: '稀勢の里', hiragana: 'きせのさと' },
+            name: {
+              english: 'Kisenosato',
+              kanji: '稀勢の里',
+              hiragana: 'きせのさと',
+              romaji: 'Kisenosato',
+            },
             rank: { division: 'Yokozuna' },
             record: { wins: 0, losses: 1 },
             result: MatchResult.LOSS,
@@ -201,13 +224,23 @@ describe('Matchups Processor', () => {
         .mockReturnValueOnce([
           {
             east: {
-              name: { english: 'Test', kanji: 'テスト', hiragana: 'てすと' },
+              name: {
+                english: 'Test',
+                kanji: 'テスト',
+                hiragana: 'てすと',
+                romaji: 'Test',
+              },
               rank: { division: 'Makuuchi' },
               record: { wins: 1, losses: 0 },
               result: MatchResult.WIN,
             },
             west: {
-              name: { english: 'Test2', kanji: 'テスト2', hiragana: 'てすと2' },
+              name: {
+                english: 'Test2',
+                kanji: 'テスト2',
+                hiragana: 'てすと2',
+                romaji: 'Test2',
+              },
               rank: { division: 'Makuuchi' },
               record: { wins: 0, losses: 1 },
               result: MatchResult.LOSS,

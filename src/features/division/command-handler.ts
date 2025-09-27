@@ -1,6 +1,6 @@
 import { formatDivisionJson, formatDivisionList, formatDivisionTable } from '@/cli/formatters'
-import { listDivisionRikishi } from '@/services/division-service'
-import { getAvailableDivisions, getDivisionNameFromNumber, getDivisionNumberMappings } from '@/utils/division'
+import { listDivisionRikishi } from '@/core/services/division-service'
+import { getAvailableDivisions, getDivisionNameFromNumber, getDivisionNumberMappings } from '@/core/utils/division'
 
 export interface DivisionCommandContext {
   division: string

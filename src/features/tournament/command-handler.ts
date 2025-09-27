@@ -1,8 +1,12 @@
-import { getCurrentTournament } from '@/services/tournament'
-import { formatTournamentDate } from '@/utils/date-formatter'
+import { getCurrentTournament } from '@/core/services/tournament'
+import { formatTournamentDate } from '@/core/utils/date-formatter'
 
 export interface TournamentCommandContext {
   date?: string
+}
+
+function isNumber(value: number | undefined): boolean {
+  return value !== undefined && !isNaN(value)
 }
 
 /**
@@ -13,11 +17,11 @@ export async function handleTournamentCommand(context: TournamentCommandContext)
     let checkDate: Date | undefined
     if (context.date !== undefined && context.date !== '') {
       const [year, month, day] = context.date.split('-').map(Number)
-      if (isNaN(year) || isNaN(month) || isNaN(day)) {
+      if (!isNumber(year) || !isNumber(month) || !isNumber(day)) {
         console.error('Error: Date must be in YYYY-MM-DD format')
         process.exit(1)
       }
-      checkDate = new Date(year, month - 1, day)
+      checkDate = new Date(year ?? 0, (month ?? 0) - 1, day ?? 0)
     }
 
     const tournament = getCurrentTournament(checkDate)

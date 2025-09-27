@@ -2,11 +2,11 @@ import path from 'node:path'
 
 import { DATA_PATHS } from '@/config/data'
 import { JapaneseTerms, MatchResult } from '@/constants'
+import type { CSVHeader } from '@/core/utils/csv'
+import { writeCSV } from '@/core/utils/csv'
+import { generateMatchupFilename } from '@/core/utils/filename'
+import { logDebug } from '@/core/utils/logger'
 import type { DivisionType, MatchupData, RikishiRank, RikishiRecord } from '@/types'
-import type { CSVHeader } from '@/utils/csv'
-import { writeCSV } from '@/utils/csv'
-import { generateMatchupFilename } from '@/utils/filename'
-import { logDebug } from '@/utils/logger'
 
 /**
  * CSV headers configuration for matchup data

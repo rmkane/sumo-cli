@@ -4,15 +4,15 @@ import { join } from 'node:path'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { DATA_PATHS } from '@/config/data'
+import { validateHTMLDate } from '@/core/services/matchup'
+import { generateMatchupFilename } from '@/core/utils/filename'
 import type { ValidateCommandContext } from '@/features/validate/command-handler'
 import { handleValidateCommand } from '@/features/validate/command-handler'
-import { validateHTMLDate } from '@/services/matchup'
-import { generateMatchupFilename } from '@/utils/filename'
 
 // Mock dependencies
 vi.mock('node:fs')
-vi.mock('@/services/matchup')
-vi.mock('@/utils/filename')
+vi.mock('@/core/services/matchup')
+vi.mock('@/core/utils/filename')
 
 const mockReadFileSync = vi.mocked(readFileSync)
 const mockValidateHTMLDate = vi.mocked(validateHTMLDate)
@@ -125,8 +125,8 @@ describe('Validate Command Handler', () => {
       const mockHtml = '<html><body>Day 8 content</body></html>'
       const mockValidation = {
         isValid: false,
-        actualDay: null,
-        actualDate: null,
+        actualDay: undefined,
+        actualDate: undefined,
         warnings: ['Unable to parse date', 'Unable to determine day'],
       }
 

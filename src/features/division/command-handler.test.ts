@@ -1,15 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { formatDivisionJson, formatDivisionList, formatDivisionTable } from '@/cli/formatters'
+import { Side } from '@/constants'
+import { listDivisionRikishi } from '@/core/services/division-service'
+import { getAvailableDivisions, getDivisionNameFromNumber, getDivisionNumberMappings } from '@/core/utils/division'
 import type { DivisionCommandContext } from '@/features/division/command-handler'
 import { handleDivisionCommand } from '@/features/division/command-handler'
-import { listDivisionRikishi } from '@/services/division-service'
-import { getAvailableDivisions, getDivisionNameFromNumber, getDivisionNumberMappings } from '@/utils/division'
 
 // Mock dependencies
 vi.mock('@/cli/formatters')
-vi.mock('@/services/division-service')
-vi.mock('@/utils/division')
+vi.mock('@/core/services/division-service')
+vi.mock('@/core/utils/division')
 
 const mockFormatDivisionJson = vi.mocked(formatDivisionJson)
 const mockFormatDivisionList = vi.mocked(formatDivisionList)
@@ -27,23 +28,31 @@ const mockProcessExit = vi.spyOn(process, 'exit').mockImplementation(() => undef
 describe('Division Command Handler', () => {
   const mockRikishi = [
     {
-      english: 'Hakuho',
-      kanji: '白鵬',
-      hiragana: 'はくほう',
+      id: 1,
+      name: {
+        english: 'Hakuho',
+        kanji: '白鵬',
+        hiragana: 'はくほう',
+        romaji: 'Hakuho',
+      },
       rank: {
         division: 'Yokozuna',
-        position: null,
-        side: null,
+        position: undefined,
+        side: undefined,
       },
     },
     {
-      english: 'Kisenosato',
-      kanji: '稀勢の里',
-      hiragana: 'きせのさと',
+      id: 2,
+      name: {
+        english: 'Kisenosato',
+        kanji: '稀勢の里',
+        hiragana: 'きせのさと',
+        romaji: 'Kisenosato',
+      },
       rank: {
         division: 'Maegashira',
         position: 5,
-        side: 'East',
+        side: Side.EAST,
       },
     },
   ]
@@ -122,10 +131,14 @@ describe('Division Command Handler', () => {
 
       const rikishiWithoutRank = [
         {
-          english: 'TestRikishi',
-          kanji: 'テスト',
-          hiragana: 'てすと',
-          rank: null,
+          id: 1,
+          name: {
+            english: 'TestRikishi',
+            kanji: 'テスト',
+            hiragana: 'てすと',
+            romaji: 'TestRikishi',
+          },
+          rank: undefined,
         },
       ]
 
@@ -160,7 +173,7 @@ describe('Division Command Handler', () => {
         format: 'table',
       }
 
-      mockGetDivisionNameFromNumber.mockReturnValue(null)
+      mockGetDivisionNameFromNumber.mockReturnValue(undefined)
       mockListDivisionRikishi.mockRejectedValue(new Error('Invalid division number: 7'))
 
       await handleDivisionCommand(context)
