@@ -4,7 +4,7 @@ import { type Element } from 'domhandler'
 import { lookupKimarite } from '@/dict'
 import { findRikishiAcrossDivisions } from '@/services/rikishi-lookup'
 import { isDayAvailable } from '@/services/tournament'
-import type { BashoRecord, DivisionType, MatchupData, Rank, RikishiName } from '@/types'
+import type { DivisionType, MatchupData, RikishiName, RikishiRank, RikishiRecord } from '@/types'
 import { downloadMatchupData } from '@/utils/cache-manager'
 import { getDivisionByRank } from '@/utils/division'
 import { logDebug, logError, logWarning } from '@/utils/logger'
@@ -288,8 +288,8 @@ function parsePlayer(
   division: DivisionType,
 ): {
   name: RikishiName
-  rank: Rank
-  record: BashoRecord
+  rank: RikishiRank
+  record: RikishiRecord
 } | null {
   try {
     // Extract rank
@@ -338,11 +338,13 @@ function parsePlayer(
  * @param division - Division identifier for context
  * @returns Structured rank information
  */
-export function parseRank(rankText: string, division: DivisionType): Rank {
+export function parseRank(rankText: string, division: DivisionType): RikishiRank {
   const cleanRank = rankText.trim()
 
   // Get division name from division ID
   const divisionName = getDivisionByRank(cleanRank) || division
+
+  // TODO, make this more dyanmic with a pre-existing lookup, constant, or switch?
   const divisionNameStr =
     divisionName === 1
       ? 'Makuuchi'
@@ -380,7 +382,7 @@ export function parseRank(rankText: string, division: DivisionType): Rank {
  * @param recordText - Record text from the HTML
  * @returns Parsed record data or null if parsing fails
  */
-export function parseRecord(recordText: string): BashoRecord {
+export function parseRecord(recordText: string): RikishiRecord {
   if (!recordText) return { wins: 0, losses: 0 }
 
   // Extract wins, losses, and rest days from pattern like "（6勝2敗）" or "（1勝0敗3休）"

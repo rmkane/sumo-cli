@@ -1,7 +1,7 @@
 import path from 'node:path'
 
 import { DATA_PATHS } from '@/config/data'
-import type { BashoRecord, DivisionType, MatchupData, Rank } from '@/types'
+import type { DivisionType, MatchupData, RikishiRank, RikishiRecord } from '@/types'
 import { type CSVHeader, writeCSV } from '@/utils/csv'
 import { generateMatchupFilename } from '@/utils/filename'
 import { logDebug } from '@/utils/logger'
@@ -72,13 +72,13 @@ export function matchupDataToCSVObjects(matchups: MatchupData[]): Record<string,
   })
 }
 
-function formatBashoRecord(record: BashoRecord): string {
+function formatBashoRecord(record: RikishiRecord): string {
   if (!record) return ''
   const { wins, losses, rest } = record
   return `(${[wins, losses, rest].filter((n) => n != undefined).join('-')})`
 }
 
-function formatRank(rank: Rank): string {
+function formatRank(rank: RikishiRank): string {
   if (!rank || !rank.division) return ''
 
   if (rank.position) {

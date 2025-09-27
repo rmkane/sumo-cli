@@ -15,12 +15,13 @@ export type ValueOf<T> = T[KeyOf<T>]
  */
 export type DivisionType = ValueOf<typeof Division>
 
+// TODO: Values should be constants
 export type Side = 'East' | 'West'
 
 /**
  * Interface for sumo rank data
  */
-export interface Rank {
+export interface RikishiRank {
   /** Division name (e.g., "Makuuchi", "Juryo") */
   division: string
   /** Position within the division (1-based) */
@@ -44,10 +45,10 @@ export interface Rikishi {
   /** English name or transliteration */
   english: string
   /** Current rank information (optional) */
-  rank?: Rank
+  rank?: RikishiRank
 }
 
-export interface BashoRecord {
+export interface RikishiRecord {
   wins: number
   losses: number
   rest?: number
@@ -72,9 +73,9 @@ export interface RikishiResult {
   /** Rikishi name information */
   name: RikishiName
   /** Rank information with division, position, and side */
-  rank: Rank
+  rank: RikishiRank
   /** Tournament record (e.g., "(1勝0敗)", "(0勝1敗)") */
-  record: BashoRecord
+  record: RikishiRecord
   /** Match result: 'W' for win, 'L' for loss, '' for no result yet */
   result: string
   /** English kimarite name if there's a recorded win (optional) */

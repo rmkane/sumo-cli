@@ -2,7 +2,7 @@ import { type Cheerio, load } from 'cheerio'
 import { type Element } from 'domhandler'
 
 import { ranksDictionaryJp } from '@/dict'
-import type { DivisionType, Rank, Rikishi, Side } from '@/types'
+import type { DivisionType, Rikishi, RikishiRank, Side } from '@/types'
 import { downloadStatsData } from '@/utils/cache-manager'
 import { getDivisionName } from '@/utils/division'
 import { convertDiacriticsToAscii, kanjiToNumber, toRomajiWithMacrons } from '@/utils/japanese'
@@ -142,7 +142,7 @@ function parsePosition(positionText: string): number | undefined {
  * @param side - Side of the ranking (East or West)
  * @returns Rank object with division, position, and side
  */
-function parseRank(rankText: string, division?: DivisionType, side?: Side): Rank | undefined {
+function parseRank(rankText: string, division?: DivisionType, side?: Side): RikishiRank | undefined {
   // Clean the rank text
   const cleanRank = rankText.trim()
 
