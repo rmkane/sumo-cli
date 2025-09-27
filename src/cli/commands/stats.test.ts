@@ -21,9 +21,5 @@ describe('Stats Command', () => {
       expect(command.name()).toBe('stats')
       expect(command.description()).toBe('Download rikishi statistics for all divisions and save as JSON files')
     })
-
-    // Note: Complex command parsing tests removed - commands should be thin wrappers
-    // that delegate to feature modules. Test the feature modules instead.
-    // The command layer should only marshal arguments and delegate to business logic.
   })
 })

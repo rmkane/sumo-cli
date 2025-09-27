@@ -21,9 +21,5 @@ describe('Tournament Command', () => {
       expect(command.name()).toBe('tournament')
       expect(command.description()).toBe('Get current or next tournament information for a given date (YYYY-MM-DD)')
     })
-
-    // Note: Complex command parsing tests removed - commands should be thin wrappers
-    // that delegate to feature modules. Test the feature modules instead.
-    // The command layer should only marshal arguments and delegate to business logic.
   })
 })
