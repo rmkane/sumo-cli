@@ -26,7 +26,7 @@ describe('getCurrentTournament', () => {
     expect(tournament.startDate.getMonth()).toBe(10) // November (0-indexed)
     expect(tournament.startDate.getDate()).toBe(9) // 2nd Sunday (correct for 2025)
     expect(tournament.isActive).toBe(false)
-    expect(tournament.dayNumber).toBe(null)
+    expect(tournament.dayNumber).toBe(undefined)
     expect(tournament.venue.name).toBe('Kokusai Center')
     expect(tournament.venue.location).toBe('Fukuoka')
   })

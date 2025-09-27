@@ -80,7 +80,7 @@ export function getCurrentTournament(date?: Date): TournamentInfo {
   const isActive = checkDate >= tournamentStart && checkDate <= tournamentEnd
 
   // Calculate current day number if tournament is active
-  let dayNumber: number | null = null
+  let dayNumber: number | undefined = undefined
   if (isActive) {
     dayNumber =
       Math.floor((checkDate.getTime() - tournamentStart.getTime()) / MILLISECONDS_PER_DAY) +

@@ -133,8 +133,8 @@ export interface TournamentInfo {
   startDate: Date
   /** Tournament end date (15 days after start date) */
   endDate: Date
-  /** Current day number (1-15) if tournament is active, null otherwise */
-  dayNumber: number | null
+  /** Current day number (1-15) if tournament is active, undefined otherwise */
+  dayNumber: number | undefined
   /** Whether the tournament is currently active */
   isActive: boolean
   /** Tournament month name (e.g., "January", "March", etc.) */
