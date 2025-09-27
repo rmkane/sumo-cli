@@ -48,12 +48,18 @@ describe('Matchup Service', () => {
       const results = parseMatchupHTML(completedDayHTML, 1)
 
       expect(results).toHaveLength(1)
-      expect(results[0].east.name.kanji).toBe('獅司')
-      expect(results[0].east.result).toBe(MatchResult.LOSS) // Lost
-      expect(results[0].east.technique).toBeUndefined() // No technique for loser
-      expect(results[0].west.name.kanji).toBe('大青山')
-      expect(results[0].west.result).toBe(MatchResult.WIN) // Won
-      expect(results[0].west.technique).toBe('uwate-nage') // Technique should be extracted and translated
+
+      const [result] = results
+      if (result === undefined) {
+        throw new Error('No results')
+      }
+
+      expect(result.east.name.kanji).toBe('獅司')
+      expect(result.east.result).toBe(MatchResult.LOSS) // Lost
+      expect(result.east.technique).toBeUndefined() // No technique for loser
+      expect(result.west.name.kanji).toBe('大青山')
+      expect(result.west.result).toBe(MatchResult.WIN) // Won
+      expect(result.west.technique).toBe('uwate-nage') // Technique should be extracted and translated
     })
 
     it('should parse incomplete day HTML without win/loss indicators', () => {
@@ -99,10 +105,16 @@ describe('Matchup Service', () => {
       const results = parseMatchupHTML(incompleteDayHTML, 1)
 
       expect(results).toHaveLength(1)
-      expect(results[0].east.name.kanji).toBe('獅司')
-      expect(results[0].east.result).toBe(MatchResult.NO_RESULT) // No result yet
-      expect(results[0].west.name.kanji).toBe('大青山')
-      expect(results[0].west.result).toBe(MatchResult.NO_RESULT) // No result yet
+
+      const [result] = results
+      if (result === undefined) {
+        throw new Error('No results')
+      }
+
+      expect(result.east.name.kanji).toBe('獅司')
+      expect(result.east.result).toBe(MatchResult.NO_RESULT) // No result yet
+      expect(result.west.name.kanji).toBe('大青山')
+      expect(result.west.result).toBe(MatchResult.NO_RESULT) // No result yet
     })
 
     it('should handle records with rest days', () => {
@@ -148,10 +160,16 @@ describe('Matchup Service', () => {
       const results = parseMatchupHTML(htmlWithRestDays, 6)
 
       expect(results).toHaveLength(1)
-      expect(results[0].east.name.kanji).toBe('佐田の城')
-      expect(results[0].east.record).toEqual({ wins: 1, losses: 0, rest: 3 })
-      expect(results[0].west.name.kanji).toBe('輝の里')
-      expect(results[0].west.record).toEqual({ wins: 1, losses: 0, rest: 3 })
+
+      const [result] = results
+      if (result === undefined) {
+        throw new Error('No results')
+      }
+
+      expect(result.east.name.kanji).toBe('佐田の城')
+      expect(result.east.record).toEqual({ wins: 1, losses: 0, rest: 3 })
+      expect(result.west.name.kanji).toBe('輝の里')
+      expect(result.west.record).toEqual({ wins: 1, losses: 0, rest: 3 })
     })
 
     it('should handle multiple matchups in one table', () => {
@@ -225,21 +243,26 @@ describe('Matchup Service', () => {
 
       expect(results).toHaveLength(2)
 
+      const [result1, result2] = results
+      if (result1 === undefined || result2 === undefined) {
+        throw new Error('No results')
+      }
+
       // First matchup: 獅司 (L) vs 大青山 (W)
-      expect(results[0].east.name.kanji).toBe('獅司')
-      expect(results[0].east.result).toBe(MatchResult.LOSS)
-      expect(results[0].east.technique).toBeUndefined() // No technique for loser
-      expect(results[0].west.name.kanji).toBe('大青山')
-      expect(results[0].west.result).toBe(MatchResult.WIN)
-      expect(results[0].west.technique).toBe('uwate-nage') // 上手投げ -> uwate-nage
+      expect(result1.east.name.kanji).toBe('獅司')
+      expect(result1.east.result).toBe(MatchResult.LOSS)
+      expect(result1.east.technique).toBeUndefined() // No technique for loser
+      expect(result1.west.name.kanji).toBe('大青山')
+      expect(result1.west.result).toBe(MatchResult.WIN)
+      expect(result1.west.technique).toBe('uwate-nage') // 上手投げ -> uwate-nage
 
       // Second matchup: 竜電 (W) vs 友風 (L)
-      expect(results[1].east.name.kanji).toBe('竜電')
-      expect(results[1].east.result).toBe(MatchResult.LOSS)
-      expect(results[1].east.technique).toBeUndefined() // No technique for loser
-      expect(results[1].west.name.kanji).toBe('友風')
-      expect(results[1].west.result).toBe(MatchResult.WIN)
-      expect(results[1].west.technique).toBe('hataki-komi') // 叩き込み -> hataki-komi
+      expect(result2.east.name.kanji).toBe('竜電')
+      expect(result2.east.result).toBe(MatchResult.LOSS)
+      expect(result2.east.technique).toBeUndefined() // No technique for loser
+      expect(result2.west.name.kanji).toBe('友風')
+      expect(result2.west.result).toBe(MatchResult.WIN)
+      expect(result2.west.technique).toBe('hataki-komi') // 叩き込み -> hataki-komi
     })
 
     it('should handle empty or malformed HTML gracefully', () => {

@@ -22,7 +22,7 @@ export async function saveMatchupJSON(
   outputDir?: string,
 ): Promise<void> {
   // Use JSON directory in user data directory by default
-  const jsonDir = outputDir || path.join(DATA_PATHS.USER_DATA_DIR, DATA_DIRS.JSON)
+  const jsonDir = outputDir ?? path.join(DATA_PATHS.USER_DATA_DIR, DATA_DIRS.JSON)
   await ensureDirectory(jsonDir)
 
   const filename = generateMatchupFilename(day, divisionId, divisionName, 'json')

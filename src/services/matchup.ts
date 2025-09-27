@@ -2,12 +2,13 @@ import { type Cheerio, load } from 'cheerio'
 import { type Element } from 'domhandler'
 
 import { CssClasses, JapaneseTerms, MatchResult } from '@/constants'
-import { lookupKimarite } from '@/dict'
+import { lookupKimarite, ranksDictionaryJp } from '@/dict'
 import { findRikishiAcrossDivisions } from '@/services/rikishi-lookup'
 import { isDayAvailable } from '@/services/tournament'
 import type { DivisionType, MatchResultType, MatchupData, RikishiName, RikishiRank, RikishiRecord } from '@/types'
 import { downloadMatchupData } from '@/utils/cache-manager'
 import { getDivisionByRank, getDivisionName } from '@/utils/division'
+import { kanjiToNumber } from '@/utils/japanese'
 import { logDebug, logError, logWarning } from '@/utils/logger'
 
 /**
@@ -22,8 +23,8 @@ export function validateHTMLDate(
   requestedDay: number,
 ): {
   isValid: boolean
-  actualDay: number | null
-  actualDate: string | null
+  actualDay: number | undefined
+  actualDate: string | undefined
   warnings: string[]
 } {
   const $ = load(html)
@@ -31,14 +32,15 @@ export function validateHTMLDate(
 
   // Extract actual day from hidden form fields
   const actualDayValue = $('#day').val()
-  const actualDay = actualDayValue ? parseInt(actualDayValue.toString(), 10) : null
+  const actualDay = actualDayValue !== undefined ? parseInt(actualDayValue.toString(), 10) : undefined
 
   // Extract date from the day header
   const dayHeaderText = $('#dayHead').text().trim()
   const dateMatch = dayHeaderText.match(/令和(\d+)年(\d+)月(\d+)日/)
+
   const actualDate = dateMatch
-    ? `${dateMatch[1]}-${dateMatch[2].padStart(2, '0')}-${dateMatch[3].padStart(2, '0')}`
-    : null
+    ? [dateMatch[1], dateMatch[2], dateMatch[3]].map((value) => value?.padStart(2, '0')).join('-')
+    : undefined
 
   // Extract tournament day name
   const tournamentDayText = $('.mdDate').text().trim()
@@ -57,7 +59,7 @@ export function validateHTMLDate(
   }
 
   // Validate day name consistency (but be lenient if day number matches)
-  if (dayName && actualDay !== null) {
+  if (dayName !== undefined && actualDay !== undefined) {
     const expectedDayNames: { [key: number]: string } = {
       1: '初日',
       2: '二日目',
@@ -77,7 +79,7 @@ export function validateHTMLDate(
     }
 
     const expectedDayName = expectedDayNames[actualDay]
-    if (expectedDayName && dayName !== expectedDayName) {
+    if (expectedDayName !== undefined && dayName !== expectedDayName) {
       // Only warn if the day number also doesn't match - this could be a website update delay
       if (actualDay !== requestedDay) {
         warnings.push(`Day ${actualDay} should be "${expectedDayName}" but HTML shows "${dayName}"`)
@@ -91,8 +93,8 @@ export function validateHTMLDate(
   const currentMonth = nowJST.getMonth() + 1
   const currentDay = nowJST.getDate()
 
-  if (actualDate) {
-    const [year, month, day] = actualDate.split('-').map(Number)
+  if (actualDate !== undefined) {
+    const [year = 0, month = 0, day = 0] = actualDate?.split('-').map(Number) ?? []
     const htmlDate = new Date(year, month - 1, day)
 
     // Sumo matchups are announced the day before, so allow data up to 1 day in the future
@@ -187,10 +189,10 @@ export function parseMatchupHTML(html: string, division: DivisionType, requested
       logWarning(`HTML date validation failed for day ${requestedDay}:`)
       validation.warnings.forEach((warning) => logWarning(`  - ${warning}`))
 
-      if (validation.actualDay !== null) {
+      if (validation.actualDay !== undefined) {
         logWarning(`  - HTML contains day ${validation.actualDay} data instead of requested day ${requestedDay}`)
       }
-      if (validation.actualDate) {
+      if (validation.actualDate !== undefined) {
         logWarning(`  - HTML date: ${validation.actualDate}`)
       }
 
@@ -306,13 +308,14 @@ function parsePlayer(
     const rankDivision = getDivisionByRank(rankText)
 
     // Look up rikishi data to get hiragana and English name
-    const rikishiData = findRikishiAcrossDivisions(kanji, rankDivision || division)
-    const hiragana = rikishiData?.hiragana || kanji
-    const name = rikishiData?.english || kanji
+    const rikishiData = findRikishiAcrossDivisions(kanji, rankDivision ?? division)
+    const hiragana = rikishiData?.name.hiragana ?? kanji
+    const name = rikishiData?.name.english ?? kanji
+    const romaji = rikishiData?.name.romaji ?? kanji
 
     // Only warn for non-empty names that weren't found
     if (!rikishiData && kanji.trim()) {
-      logWarning(`Rikishi not found in JSON: "${kanji}" (rank: ${rank}, division: ${rankDivision || division})`)
+      logWarning(`Rikishi not found in JSON: "${kanji}" (rank: ${rank}, division: ${rankDivision ?? division})`)
     }
 
     return {
@@ -320,6 +323,7 @@ function parsePlayer(
         english: name,
         kanji,
         hiragana,
+        romaji,
       },
       rank,
       record,
@@ -340,24 +344,75 @@ function parsePlayer(
 export function parseRank(rankText: string, division: DivisionType): RikishiRank {
   const cleanRank = rankText.trim()
 
-  // Get division name from division ID
-  const divisionName = getDivisionByRank(cleanRank) || division
-  const divisionNameStr = getDivisionName(divisionName)
-
   // Handle specific rank formats
   if (cleanRank === JapaneseTerms.HITTOU) {
+    const divisionNameStr = getDivisionName(division)
     return { division: divisionNameStr, position: 1 }
   }
 
-  // Handle ranks with positions (e.g., "前頭十八枚目")
-  const match = cleanRank.match(new RegExp(`^(.+?)(\\d+)${JapaneseTerms.MAIME}$`))
-  if (match) {
-    const position = parseInt(match[2], 10)
-    return { division: divisionNameStr, position }
+  // Handle Japanese rank formats using the ranks dictionary
+  for (const [kanji, english] of Object.entries(ranksDictionaryJp)) {
+    if (cleanRank.startsWith(kanji)) {
+      const divisionName = english.charAt(0).toUpperCase() + english.slice(1)
+
+      // Extract position from remaining text
+      const remainingText = cleanRank.replace(kanji, '').trim()
+
+      // Check if remaining text matches "X枚目" pattern
+      const match = remainingText.match(/^(.+)枚目$/)
+      if (match) {
+        const positionText = match[1]
+        const position = parsePosition(positionText)
+        return position !== undefined ? { division: divisionName, position } : { division: divisionName }
+      }
+
+      // Try to parse remaining text as position
+      const position = parsePosition(remainingText)
+      return position !== undefined ? { division: divisionName, position } : { division: divisionName }
+    }
   }
 
-  // Handle ranks without positions (e.g., "横綱", "大関")
+  // Handle "X枚目" format (e.g., "二枚目", "三枚目") - only if no rank match found
+  const match = cleanRank.match(/^(.+)枚目$/)
+  if (match) {
+    const positionText = match[1]
+    const position = parsePosition(positionText)
+    const divisionNameStr = getDivisionName(division)
+    return position !== undefined ? { division: divisionNameStr, position } : { division: divisionNameStr }
+  }
+
+  // Fallback - use the division parameter
+  const divisionNameStr = getDivisionName(division)
   return { division: divisionNameStr }
+}
+
+/**
+ * Parses a position string from rank text.
+ *
+ * @param positionText - Position text (e.g., "筆頭", "二枚目", "六枚目", etc.)
+ * @returns Position number or undefined if not found
+ */
+function parsePosition(positionText: string | undefined): number | undefined {
+  if (positionText === undefined) {
+    return undefined
+  }
+
+  // Handle special cases
+  if (positionText === '筆頭') {
+    return 1 // "筆頭" means "first" or "top"
+  }
+
+  // Handle "X枚目" format (e.g., "二枚目", "三枚目")
+  const match = positionText.match(/^(.+)枚目$/)
+  if (match) {
+    const numberText = match[1]
+    const result = kanjiToNumber(numberText ?? '')
+    return result > 0 ? result : undefined
+  }
+
+  // Try to parse as a direct number
+  const result = kanjiToNumber(positionText)
+  return result > 0 ? result : undefined
 }
 
 /**
@@ -375,7 +430,7 @@ export function parseRecord(recordText: string): RikishiRecord {
     const wins = matchWithRest[1]
     const losses = matchWithRest[2]
     const rest = matchWithRest[3]
-    return { wins: parseInt(wins, 10), losses: parseInt(losses, 10), rest: parseInt(rest, 10) }
+    return { wins: strictParseInt(wins), losses: strictParseInt(losses), rest: safeParseInt(rest) }
   }
 
   // Extract wins and losses from pattern like "（6勝2敗）"
@@ -383,7 +438,7 @@ export function parseRecord(recordText: string): RikishiRecord {
   if (match) {
     const wins = match[1]
     const losses = match[2]
-    return { wins: parseInt(wins, 10), losses: parseInt(losses, 10) }
+    return { wins: strictParseInt(wins), losses: strictParseInt(losses) }
   }
 
   // Fallback - return original text
@@ -419,4 +474,18 @@ function determineResult($player: Cheerio<Element>): MatchResultType {
 
   // No result yet (incomplete day)
   return MatchResult.NO_RESULT
+}
+
+function safeParseInt(value: string | undefined): number | undefined {
+  if (value === undefined) {
+    return undefined
+  }
+  return parseInt(value, 10)
+}
+
+function strictParseInt(value: string | undefined): number {
+  if (value === undefined) {
+    throw new Error('Value is undefined')
+  }
+  return parseInt(value, 10)
 }

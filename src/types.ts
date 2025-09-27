@@ -28,6 +28,20 @@ export type JapaneseTermType = ValueOf<typeof JapaneseTerms>
 export type TournamentConstantType = ValueOf<typeof TournamentConstants>
 
 /**
+ * Interface for rikishi name information
+ */
+export interface RikishiName {
+  /** English name or transliteration */
+  english: string
+  /** Japanese name in kanji characters */
+  kanji: string
+  /** Japanese name in hiragana characters */
+  hiragana: string
+  /** Japanese name in romanized form */
+  romaji: string
+}
+
+/**
  * Interface for sumo rank data
  */
 export interface RikishiRank {
@@ -45,14 +59,8 @@ export interface RikishiRank {
 export interface Rikishi {
   /** Unique identifier for the rikishi */
   id: number
-  /** Japanese name in kanji characters */
-  kanji: string
-  /** Japanese name in hiragana characters */
-  hiragana: string
-  /** Japanese name in romanized form */
-  romaji: string
-  /** English name or transliteration */
-  english: string
+  /** Rikishi name information */
+  name: RikishiName
   /** Current rank information (optional) */
   rank?: RikishiRank
 }
@@ -61,18 +69,6 @@ export interface RikishiRecord {
   wins: number
   losses: number
   rest?: number
-}
-
-/**
- * Interface for rikishi name information
- */
-export interface RikishiName {
-  /** English name or transliteration */
-  english: string
-  /** Japanese name in kanji characters */
-  kanji: string
-  /** Japanese name in hiragana characters */
-  hiragana: string
 }
 
 /**

@@ -126,10 +126,10 @@ export function getCurrentTournament(date?: Date): TournamentInfo {
  * @param actualDate - The actual date from HTML (format: YYYY-MM-DD)
  * @returns true if the day should be available, false otherwise
  */
-export function isDayAvailable(requestedDay: number, actualDate: string | null): boolean {
+export function isDayAvailable(requestedDay: number, actualDate: string | undefined): boolean {
   if (actualDate === null || actualDate === '') return false
 
-  const [year, month, day] = actualDate.split('-').map(Number)
+  const [year = 0, month = 0, day = 0] = actualDate?.split('-').map(Number) ?? []
   const htmlDate = new Date(year, month - 1, day)
 
   // Calculate tournament start date (2nd Sunday of odd months)

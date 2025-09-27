@@ -80,7 +80,7 @@ export function findRikishiAcrossDivisions(kanji: string, division: DivisionType
 function lookupRikishiByKanji(kanji: string, division: DivisionType): Rikishi | null {
   try {
     const rikishiData = loadRikishiData(division)
-    return rikishiData.find((r) => r.kanji === kanji) ?? null
+    return rikishiData.find((r) => r.name.kanji === kanji) ?? null
   } catch (error) {
     // Log warning but don't throw - let caller decide how to handle
     logWarning(

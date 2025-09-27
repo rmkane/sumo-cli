@@ -3,7 +3,7 @@ import { type Element } from 'domhandler'
 
 import { Side } from '@/constants'
 import { ranksDictionaryJp } from '@/dict'
-import type { DivisionType, Rikishi, RikishiRank, SideType } from '@/types'
+import type { DivisionType, Rikishi, RikishiName, RikishiRank, SideType } from '@/types'
 import { downloadStatsData } from '@/utils/cache-manager'
 import { getDivisionName } from '@/utils/division'
 import { convertDiacriticsToAscii, kanjiToNumber, toRomajiWithMacrons } from '@/utils/japanese'
@@ -84,21 +84,22 @@ function parseRecord($box: Cheerio<Element>, rankText: string, division?: Divisi
   const href = $box.find('a').attr('href') ?? ''
   const id = +(href.match(/\d+/)?.[0] ?? '0')
 
+  const name = parseRikishiName($box)
   const rank = parseRank(rankText, division, side)
 
+  return {
+    id,
+    name,
+    rank,
+  }
+}
+
+function parseRikishiName($box: Cheerio<Element>): RikishiName {
   const kanji = $box.find('a span').text().trim() || $box.find('a').text().trim()
   const hiragana = unwrapText($box.find('.hoshi_br').text())
   const romaji = capitalize(toRomajiWithMacrons(hiragana))
   const english = convertDiacriticsToAscii(romaji)
-
-  return {
-    id,
-    kanji,
-    hiragana,
-    romaji,
-    english,
-    rank,
-  }
+  return { kanji, hiragana, romaji, english }
 }
 
 /**
@@ -121,7 +122,7 @@ function parsePosition(positionText: string): number | undefined {
   const match = positionText.match(/^(.+)枚目$/)
   if (match) {
     const numberText = match[1]
-    const result = kanjiToNumber(numberText)
+    const result = kanjiToNumber(numberText ?? '')
     return result > 0 ? result : undefined
   }
 
@@ -163,7 +164,7 @@ function parseRank(rankText: string, division?: DivisionType, side?: SideType): 
       const match = remainingText.match(/^(.+)枚目$/)
       if (match) {
         const positionText = match[1]
-        const position = parsePosition(positionText)
+        const position = parsePosition(positionText ?? '')
         return position !== undefined ? { division, position, side } : { division, side }
       }
 
@@ -177,7 +178,7 @@ function parseRank(rankText: string, division?: DivisionType, side?: SideType): 
   const match = cleanRank.match(/^(.+)枚目$/)
   if (match) {
     const positionText = match[1]
-    const position = parsePosition(positionText)
+    const position = parsePosition(positionText ?? '')
     // Only include position if it's meaningful (not undefined)
     return position !== undefined
       ? { division: divisionCapitalized, position, side }

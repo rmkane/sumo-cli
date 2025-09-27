@@ -1,34 +1,47 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { formatDivisionJson, formatDivisionList, formatDivisionTable } from '@/cli/formatters'
+import { Side } from '@/constants'
 
 describe('CLI Formatters', () => {
   const mockRikishi = [
     {
-      english: 'Hakuho',
-      kanji: '白鵬',
-      romaji: 'Hakuhō',
+      id: 1,
+      name: {
+        english: 'Hakuho',
+        kanji: '白鵬',
+        hiragana: 'はくほう',
+        romaji: 'Hakuhō',
+      },
       rank: {
         division: 'Yokozuna',
-        position: null,
-        side: null,
+        position: undefined,
+        side: undefined,
       },
     },
     {
-      english: 'Kisenosato',
-      kanji: '稀勢の里',
-      romaji: 'Kisenosato',
+      id: 2,
+      name: {
+        english: 'Kisenosato',
+        kanji: '稀勢の里',
+        hiragana: 'きせのさと',
+        romaji: 'Kisenosato',
+      },
       rank: {
         division: 'Maegashira',
         position: 5,
-        side: 'East',
+        side: Side.EAST,
       },
     },
     {
-      english: 'NoRankRikishi',
-      kanji: '無階級',
-      romaji: 'Mukakyū',
-      rank: null,
+      id: 3,
+      name: {
+        english: 'NoRankRikishi',
+        kanji: '無階級',
+        hiragana: 'むかいきゅう',
+        romaji: 'Mukakyū',
+      },
+      rank: undefined,
     },
   ]
 
@@ -80,13 +93,17 @@ describe('CLI Formatters', () => {
       const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
       const rikishiWithoutPosition = [
         {
-          english: 'TestRikishi',
-          kanji: 'テスト',
-          romaji: 'Test',
+          id: 4,
+          name: {
+            english: 'TestRikishi',
+            kanji: 'テスト',
+            hiragana: 'てすと',
+            romaji: 'Test',
+          },
           rank: {
             division: 'Yokozuna',
-            position: null,
-            side: 'East',
+            position: undefined,
+            side: Side.EAST,
           },
         },
       ]
@@ -107,7 +124,7 @@ describe('CLI Formatters', () => {
       expect(consoleSpy).toHaveBeenCalledTimes(1)
       // The exact table format depends on the formatTable utility
       // We just verify it was called with the expected data structure
-      const callArgs = consoleSpy.mock.calls[0][0]
+      const callArgs = consoleSpy?.mock?.calls?.[0]?.[0] ?? ''
       expect(callArgs).toContain('Yokozuna')
       expect(callArgs).toContain('Hakuho')
       expect(callArgs).toContain('白鵬')
@@ -126,17 +143,21 @@ describe('CLI Formatters', () => {
       const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
       const rikishiWithoutRank = [
         {
-          english: 'NoRankRikishi',
-          kanji: '無階級',
-          romaji: 'Mukakyū',
-          rank: null,
+          id: 5,
+          name: {
+            english: 'NoRankRikishi',
+            kanji: '無階級',
+            hiragana: 'むかいきゅう',
+            romaji: 'Mukakyū',
+          },
+          rank: undefined,
         },
       ]
 
       formatDivisionTable(rikishiWithoutRank)
 
       expect(consoleSpy).toHaveBeenCalledTimes(1)
-      const callArgs = consoleSpy.mock.calls[0][0]
+      const callArgs = consoleSpy?.mock?.calls?.[0]?.[0] ?? ''
       expect(callArgs).toContain('NoRankRikishi')
       expect(callArgs).toContain('無階級')
       expect(callArgs).toContain('Mukakyū')

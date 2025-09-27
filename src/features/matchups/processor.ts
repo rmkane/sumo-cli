@@ -89,7 +89,7 @@ export async function processDayMatchups(
   })
 
   // Return output directory info (use default if not specified)
-  const finalOutputDir = outputDir || DATA_PATHS.OUTPUT_DIR
+  const finalOutputDir = outputDir ?? DATA_PATHS.OUTPUT_DIR
   return {
     outputDir: finalOutputDir,
     filesCreated,

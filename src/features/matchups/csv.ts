@@ -12,38 +12,38 @@ import { logDebug } from '@/utils/logger'
  * CSV headers configuration for matchup data
  */
 const CSV_GROUP_HEADERS: CSVHeader[] = [
-  { id: 'eastHiragana', title: '' },
-  { id: 'eastKanji', title: JapaneseTerms.EAST_JP },
   { id: 'eastRank', title: '' },
   { id: 'eastRecord', title: '' },
+  { id: 'eastKanji', title: JapaneseTerms.EAST_JP },
+  { id: 'eastHiragana', title: '' },
   { id: 'eastName', title: 'East' },
   { id: 'eastResult', title: '' },
   { id: 'technique', title: '' },
   { id: 'westResult', title: '' },
   { id: 'westName', title: 'West' },
+  { id: 'westHiragana', title: '' },
+  { id: 'westKanji', title: JapaneseTerms.WEST_JP },
   { id: 'westRecord', title: '' },
   { id: 'westRank', title: '' },
-  { id: 'westKanji', title: JapaneseTerms.WEST_JP },
-  { id: 'westHiragana', title: '' },
 ]
 
 /**
  * CSV subheaders for matchup data
  */
 const CSV_HEADERS: CSVHeader[] = [
-  { id: 'eastHiragana', title: 'Hiragana' },
-  { id: 'eastKanji', title: 'Kanji' },
   { id: 'eastRank', title: 'Rank' },
   { id: 'eastRecord', title: 'Record' },
+  { id: 'eastKanji', title: 'Kanji' },
+  { id: 'eastHiragana', title: 'Hiragana' },
   { id: 'eastName', title: 'Name' },
   { id: 'eastResult', title: 'Result' },
   { id: 'technique', title: 'Technique' },
   { id: 'westResult', title: 'Result' },
   { id: 'westName', title: 'Name' },
+  { id: 'westHiragana', title: 'Hiragana' },
+  { id: 'westKanji', title: 'Kanji' },
   { id: 'westRecord', title: 'Record' },
   { id: 'westRank', title: 'Rank' },
-  { id: 'westKanji', title: 'Kanji' },
-  { id: 'westHiragana', title: 'Hiragana' },
 ]
 
 /**
@@ -59,28 +59,28 @@ export function matchupDataToCSVObjects(matchups: MatchupData[]): Record<string,
         : matchup.west.result === MatchResult.WIN
           ? matchup.west
           : null
-    const winningTechnique = winner?.technique || ''
+    const winningTechnique = winner?.technique ?? ''
 
     return {
-      eastHiragana: matchup.east.name.hiragana || '',
-      eastKanji: matchup.east.name.kanji || '',
       eastRank: formatRank(matchup.east.rank),
       eastRecord: formatBashoRecord(matchup.east.record),
+      eastKanji: matchup.east.name.kanji || '',
+      eastHiragana: matchup.east.name.hiragana || '',
       eastName: matchup.east.name.english || '',
       eastResult: matchup.east.result || '',
       technique: winningTechnique,
       westResult: matchup.west.result || '',
       westName: matchup.west.name.english || '',
+      westHiragana: matchup.west.name.hiragana || '',
+      westKanji: matchup.west.name.kanji || '',
       westRecord: formatBashoRecord(matchup.west.record),
       westRank: formatRank(matchup.west.rank),
-      westKanji: matchup.west.name.kanji || '',
-      westHiragana: matchup.west.name.hiragana || '',
     }
   })
 }
 
 function formatBashoRecord(record: RikishiRecord): string {
-  if (!record) return ''
+  if (record === undefined) return ''
   const { wins, losses, rest } = record
   return `(${[wins, losses, rest].filter((n) => n != undefined).join('-')})`
 }
@@ -88,7 +88,7 @@ function formatBashoRecord(record: RikishiRecord): string {
 function formatRank(rank: RikishiRank): string {
   if (!rank?.division) return ''
 
-  if (rank.position) {
+  if (rank.position !== undefined) {
     return `${rank.division} #${rank.position}`
   } else {
     return rank.division
@@ -110,7 +110,7 @@ export async function saveMatchupCSV(
   day: number,
   outputDir?: string,
 ): Promise<void> {
-  const csvDir = outputDir || DATA_PATHS.OUTPUT_DIR
+  const csvDir = outputDir ?? DATA_PATHS.OUTPUT_DIR
   const filename = generateMatchupFilename(day, divisionId, divisionName, 'csv')
   const filepath = path.join(csvDir, filename)
 
