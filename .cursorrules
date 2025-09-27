@@ -1,5 +1,15 @@
 # Cursor AI Rules for Sumo CLI Project
 
+## Code Quality (MOST IMPORTANT)
+
+- **ALWAYS run `make format` and `make lint` before committing**
+- Use `make lint-fix` to automatically fix linting issues
+- Never commit code that fails linting checks
+- Fix linting errors before committing changes
+- Use proper TypeScript types and avoid `any` when possible
+- Follow the existing mocking patterns in test files
+- Maintain test coverage and ensure all tests pass
+
 ## Testing Commands
 
 When running tests, always use one of these commands:
@@ -26,6 +36,15 @@ When running tests, always use one of these commands:
 - **Commands**: Minimal testing - just verify argument parsing and delegation
 - **Focus**: Test the feature modules, not the command marshalling layer
 
+## Import Rules
+
+- Always use absolute imports with `@/*` prefix for internal modules
+- Never use relative imports like `../` or `./` for internal modules
+- Example: Use `import { something } from '@/utils/helper'` instead of `import { something } from '../utils/helper'`
+- This ensures consistent import paths and better refactoring support
+- Sort imports alphabetically within each group (external, internal, relative)
+- Use `make lint-fix` to automatically fix import ordering issues
+
 ## Development Commands
 
 - `make dev` - Run development server
@@ -43,25 +62,6 @@ When running tests, always use one of these commands:
 - Use `make` commands for common development tasks
 - Follow existing code patterns and conventions
 - CLI tool for sumo wrestling data processing
-
-## Code Quality
-
-- Maintain test coverage and ensure all tests pass
-- Fix linting errors before committing changes
-- Use proper TypeScript types and avoid `any` when possible
-- Follow the existing mocking patterns in test files
-- **ALWAYS run `make format` and `make lint` before committing**
-- Use `make lint-fix` to automatically fix linting issues
-- Never commit code that fails linting checks
-
-## Import Rules
-
-- Always use absolute imports with `@/*` prefix for internal modules
-- Never use relative imports like `../` or `./` for internal modules
-- Example: Use `import { something } from '@/utils/helper'` instead of `import { something } from '../utils/helper'`
-- This ensures consistent import paths and better refactoring support
-- Sort imports alphabetically within each group (external, internal, relative)
-- Use `make lint-fix` to automatically fix import ordering issues
 
 ## Markdown Formatting
 
