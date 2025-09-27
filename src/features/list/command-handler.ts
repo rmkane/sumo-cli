@@ -11,7 +11,7 @@ export interface ListCommandContext {
  */
 export async function handleListCommand(context: ListCommandContext): Promise<void> {
   const outputDir = context.outputDir || DATA_PATHS.OUTPUT_DIR
-  const isCustom = context.outputDir && context.outputDir !== DATA_PATHS.OUTPUT_DIR
+  const isCustom = context.outputDir !== undefined && context.outputDir !== '' && context.outputDir !== DATA_PATHS.OUTPUT_DIR
 
   console.log('\nData storage locations:')
   console.log(`📁 ${path.resolve(DATA_PATHS.USER_DATA_DIR, DATA_DIRS.JSON)} - Rikishi data by division (cached)`)
@@ -19,5 +19,5 @@ export async function handleListCommand(context: ListCommandContext): Promise<vo
   console.log(`📁 ${path.resolve(DATA_PATHS.USER_DATA_DIR, DATA_DIRS.LOGS)} - Application logs`)
 
   console.log('\nOutput locations:')
-  console.log(`📁 ${path.resolve(outputDir)} - CSV output files (${isCustom ? 'custom' : 'default'})`)
+  console.log(`📁 ${path.resolve(outputDir)} - CSV output files (${isCustom === true ? 'custom' : 'default'})`)
 }

@@ -7,7 +7,7 @@ export function createListCommand(program: Command): Command {
     .command('list')
     .description('List available data files')
     .action((_options, command) => {
-      const parentOptions = command.parent?.opts() || {}
+      const parentOptions = command.parent?.opts() ?? {}
       const context = {
         outputDir: parentOptions.outputDir,
       }

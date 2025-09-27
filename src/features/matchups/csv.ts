@@ -86,7 +86,7 @@ function formatBashoRecord(record: RikishiRecord): string {
 }
 
 function formatRank(rank: RikishiRank): string {
-  if (!rank || !rank.division) return ''
+  if (!rank?.division) return ''
 
   if (rank.position) {
     return `${rank.division} #${rank.position}`

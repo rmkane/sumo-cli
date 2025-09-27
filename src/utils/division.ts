@@ -37,7 +37,7 @@ export function getDivisionByRank(rank: string): DivisionType | undefined {
   }
 
   const [, divisionName] = match
-  if (!divisionName) {
+  if (divisionName === undefined || divisionName === '') {
     return undefined
   }
 
@@ -55,7 +55,7 @@ export function getDivisionByRank(rank: string): DivisionType | undefined {
     Jonokuchi: Division.JONOKUCHI,
   }
 
-  return rankToDivision[divisionName] || undefined
+  return rankToDivision[divisionName] ?? undefined
 }
 
 /**

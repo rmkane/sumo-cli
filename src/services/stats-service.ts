@@ -81,8 +81,8 @@ export function parseRikishiFromHTML(html: string, division?: DivisionType): Rik
  * @returns Parsed Rikishi object
  */
 function parseRecord($box: Cheerio<Element>, rankText: string, division?: DivisionType, side?: SideType): Rikishi {
-  const href = $box.find('a').attr('href') || ''
-  const id = +(href.match(/\d+/)?.[0] || '0')
+  const href = $box.find('a').attr('href') ?? ''
+  const id = +(href.match(/\d+/)?.[0] ?? '0')
 
   const rank = parseRank(rankText, division, side)
 

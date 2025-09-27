@@ -12,12 +12,12 @@ export function translateRank(rankText: string): string {
 
   // Extract the base rank (e.g., "前頭" from "前頭十八枚目")
   const baseRank = extractBaseRank(cleanRank)
-  if (!baseRank) {
+  if (baseRank === null || baseRank === '') {
     return cleanRank
   }
 
   const english = lookupRank(baseRank)
-  if (!english) {
+  if (english === undefined) {
     return cleanRank
   }
 
@@ -50,12 +50,12 @@ export function translateRank(rankText: string): string {
  */
 function extractBaseRank(rankText: string): string | null {
   // Check for exact matches first (for ranks without positions)
-  if (lookupRank(rankText)) {
+  if (lookupRank(rankText) !== undefined) {
     return rankText
   }
 
   // Check for prefixes using dictionary function
   const possibleRanks = getAllJapaneseRanks()
 
-  return possibleRanks.find((rank) => rankText.startsWith(rank)) || null
+  return possibleRanks.find((rank) => rankText.startsWith(rank)) ?? null
 }

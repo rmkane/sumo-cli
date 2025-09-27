@@ -39,7 +39,7 @@ export function getTournamentStartDate(year: number, month: number): Date | null
  * @returns Object containing tournament info
  */
 export function getCurrentTournament(date?: Date): TournamentInfo {
-  const checkDate = date || new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }))
+  const checkDate = date ?? new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }))
   const year = checkDate.getFullYear()
   const month = checkDate.getMonth() + 1
 
@@ -95,7 +95,7 @@ export function getCurrentTournament(date?: Date): TournamentInfo {
     9: 'September', // Tokyo
     11: 'November',
   }
-  const tournamentMonthName = monthNames[tournamentMonth] || 'Unknown'
+  const tournamentMonthName = monthNames[tournamentMonth] ?? 'Unknown'
 
   // Venue information for each tournament month
   const venues: { [key: number]: TournamentVenue } = {
@@ -106,7 +106,7 @@ export function getCurrentTournament(date?: Date): TournamentInfo {
     9: { name: 'Ryōgoku Kokugikan', location: 'Tokyo' },
     11: { name: 'Kokusai Center', location: 'Fukuoka' },
   }
-  const venue = venues[tournamentMonth] || { name: 'Unknown', location: 'Unknown' }
+  const venue = venues[tournamentMonth] ?? { name: 'Unknown', location: 'Unknown' }
 
   return {
     startDate: tournamentStart,
@@ -127,7 +127,7 @@ export function getCurrentTournament(date?: Date): TournamentInfo {
  * @returns true if the day should be available, false otherwise
  */
 export function isDayAvailable(requestedDay: number, actualDate: string | null): boolean {
-  if (!actualDate) return false
+  if (actualDate === null || actualDate === '') return false
 
   const [year, month, day] = actualDate.split('-').map(Number)
   const htmlDate = new Date(year, month - 1, day)

@@ -31,8 +31,8 @@ export async function handleValidateCommand(context: ValidateCommandContext): Pr
 
       console.log(`\nValidation Results for Day ${dayNum}:`)
       console.log(`✅ Valid: ${validation.isValid ? 'Yes' : 'No'}`)
-      console.log(`📅 Actual Day: ${validation.actualDay || 'Unknown'}`)
-      console.log(`📆 Actual Date: ${validation.actualDate || 'Unknown'}`)
+      console.log(`📅 Actual Day: ${validation.actualDay ?? 'Unknown'}`)
+      console.log(`📆 Actual Date: ${validation.actualDate ?? 'Unknown'}`)
 
       if (validation.warnings.length > 0) {
         console.log(`\n⚠️  Warnings:`)

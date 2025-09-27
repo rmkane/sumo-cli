@@ -31,7 +31,7 @@ vi.mock('@/utils/object', () => ({
     // Mock the invertDict function to return the expected structure
     const result: Record<string, string> = {}
     for (const [key, value] of Object.entries(obj)) {
-      const newKey = options?.originalKeyMap ? options.originalKeyMap(key) : key
+      const newKey = options?.originalKeyMap !== undefined ? options.originalKeyMap(key) : key
       result[value as string] = newKey
     }
     return result

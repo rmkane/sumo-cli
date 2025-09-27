@@ -19,7 +19,7 @@ export async function handleDivisionCommand(context: DivisionCommandContext): Pr
     if (!isNaN(divisionNum) && divisionNum >= 1 && divisionNum <= 6) {
       // Convert number to division name using existing utility
       const nameFromNumber = getDivisionNameFromNumber(divisionNum)
-      if (nameFromNumber) {
+      if (nameFromNumber !== undefined && nameFromNumber !== '') {
         divisionName = nameFromNumber
       } else {
         throw new Error(`Invalid division number: ${divisionNum}`)

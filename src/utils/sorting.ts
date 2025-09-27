@@ -18,7 +18,7 @@ const DIVISION_HIERARCHY: Record<string, number> = {
  * Gets the hierarchy order for division sorting (lower number = higher rank)
  */
 export function getDivisionHierarchyOrder(division: string): number {
-  return DIVISION_HIERARCHY[division] || TournamentConstants.FALLBACK_HIERARCHY // Put unknown divisions at the end
+  return DIVISION_HIERARCHY[division] ?? TournamentConstants.FALLBACK_HIERARCHY // Put unknown divisions at the end
 }
 
 /**
@@ -29,8 +29,8 @@ export function getDivisionHierarchyOrder(division: string): number {
  * @returns Comparison result (-1, 0, 1)
  */
 export function sortDivision(a: Rikishi, b: Rikishi): number {
-  const divisionA = a.rank?.division || 'Z' // Put rikishi without rank at the end
-  const divisionB = b.rank?.division || 'Z'
+  const divisionA = a.rank?.division ?? 'Z' // Put rikishi without rank at the end
+  const divisionB = b.rank?.division ?? 'Z'
 
   if (divisionA !== divisionB) {
     return getDivisionHierarchyOrder(divisionA) - getDivisionHierarchyOrder(divisionB)
@@ -61,8 +61,8 @@ export function sortRank(a: Rikishi, b: Rikishi): number {
  * @returns Comparison result (-1, 0, 1)
  */
 export function sortSide(a: Rikishi, b: Rikishi): number {
-  const sideA = a.rank?.side || 'Z' // Put rikishi without side at the end
-  const sideB = b.rank?.side || 'Z'
+  const sideA = a.rank?.side ?? 'Z' // Put rikishi without side at the end
+  const sideB = b.rank?.side ?? 'Z'
 
   if (sideA !== sideB) {
     // East comes before West

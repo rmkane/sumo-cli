@@ -53,7 +53,7 @@ export async function downloadAndCache(
   // Try cache first (unless force refresh)
   if (!forceRefresh) {
     const cached = await readFromCache(cachePath)
-    if (cached) {
+    if (cached !== null && cached !== '') {
       return { content: cached, fromServer: false }
     }
   }
@@ -113,7 +113,7 @@ export async function downloadStatsData(
 function getCachePath(url: string, cacheType: CacheType, customFilename?: string): string {
   const config = CACHE_CONFIG[cacheType]
 
-  if (customFilename) {
+  if (customFilename !== undefined && customFilename !== '') {
     return `${DATA_PATHS.USER_DATA_DIR}/${config.directory}/${customFilename}${config.extension}`
   }
 

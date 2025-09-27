@@ -12,7 +12,7 @@ export function createMatchupsCommand(program: Command): Command {
         const globalOptions = program.opts()
         const context = {
           day,
-          forceRefresh: globalOptions.forceRefresh || false,
+          forceRefresh: globalOptions.forceRefresh ?? false,
           outputDir: globalOptions.outputDir,
         }
         await handleMatchupsCommand(context)

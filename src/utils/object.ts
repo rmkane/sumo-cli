@@ -10,7 +10,7 @@
  * getKeyByValue(obj, 5) // returns 'unknown'
  */
 export function getKeyByValue<T extends Record<string, unknown>>(obj: T, value: T[keyof T]): string {
-  return Object.keys(obj).find((key) => obj[key as keyof T] === value) || 'unknown'
+  return Object.keys(obj).find((key) => obj[key as keyof T] === value) ?? 'unknown'
 }
 
 /**
@@ -42,7 +42,7 @@ export const invertDict = <T extends Record<string, string | number>>(
     originalKeyMap?: OriginalKeyMapFn
     originalValueMap?: OriginalValueMapFn
   },
-) => {
+): Record<string, string> => {
   const result: Record<string, string> = {}
   for (const [key, value] of Object.entries(dict)) {
     const mappedKey = options?.originalKeyMap ? options.originalKeyMap(key) : key

@@ -18,7 +18,7 @@ function loadRikishiData(division: DivisionType): Rikishi[] {
 
   try {
     const data = JSON.parse(fs.readFileSync(filename, 'utf8'))
-    const rikishiData = data.rikishi || []
+    const rikishiData = data.rikishi ?? []
     logDebug(`Loaded ${rikishiData.length} rikishi from ${filename}`)
     return rikishiData
   } catch (error) {

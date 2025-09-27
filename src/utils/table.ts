@@ -71,7 +71,7 @@ export function formatTable(
 
   // Calculate actual column widths based on content
   const actualWidths = columns.map((col) => {
-    const headerText = col.title || capitalizeFirst(col.field)
+    const headerText = col.title ?? capitalizeFirst(col.field)
     const headerWidth = getVisualWidth(headerText)
     const dataWidth = Math.max(
       ...data.map((row) => {
@@ -93,8 +93,8 @@ export function formatTable(
   const headerRow = columns
     .map((col, index) => {
       const width = actualWidths[index]
-      const headerText = col.title || capitalizeFirst(col.field)
-      return padText(headerText, width, col.align || 'left')
+      const headerText = col.title ?? capitalizeFirst(col.field)
+      return padText(headerText, width, col.align ?? 'left')
     })
     .join(showSeparators ? ` ${separatorChar} ` : '  ')
 
@@ -109,7 +109,7 @@ export function formatTable(
       .map((col, index) => {
         const width = actualWidths[index]
         const value = row[col.field]
-        return padText(String(value), width, col.align || 'left')
+        return padText(String(value), width, col.align ?? 'left')
       })
       .join(showSeparators ? ` ${separatorChar} ` : '  ')
   })

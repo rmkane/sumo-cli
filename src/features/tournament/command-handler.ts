@@ -11,7 +11,7 @@ export interface TournamentCommandContext {
 export async function handleTournamentCommand(context: TournamentCommandContext): Promise<void> {
   try {
     let checkDate: Date | undefined
-    if (context.date) {
+    if (context.date !== undefined && context.date !== '') {
       const [year, month, day] = context.date.split('-').map(Number)
       if (isNaN(year) || isNaN(month) || isNaN(day)) {
         console.error('Error: Date must be in YYYY-MM-DD format')
@@ -29,7 +29,7 @@ export async function handleTournamentCommand(context: TournamentCommandContext)
     console.log(`📆 End Date: ${formatTournamentDate(tournament.endDate)}`)
     console.log(`🎯 Status: ${tournament.isActive ? 'Active' : 'Upcoming'}`)
 
-    if (tournament.dayNumber) {
+    if (tournament.dayNumber !== undefined && tournament.dayNumber !== 0) {
       console.log(`📊 Current Day: ${tournament.dayNumber}/15`)
     }
   } catch (error) {

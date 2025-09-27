@@ -74,7 +74,7 @@ const escapeCell = (cell: string, delimiter: string, newline: string): string =>
  * @param filePath - File path - will ensure the parent directory exists
  */
 async function ensureDirectoryExists(filePath: string | undefined): Promise<void> {
-  if (!filePath) return
+  if (filePath === undefined || filePath === '') return
 
   const dirPath = path.dirname(filePath)
   try {
@@ -131,7 +131,7 @@ export async function writeCSV<K extends string = string>({
   let content = [...prefaceRows, headerRow, ...dataRows].join(newline)
   if (ensureTrailingNewline) content += newline
 
-  if (path) {
+  if (path !== undefined && path !== '') {
     await fs.writeFile(path, content, 'utf8')
     return // void
   }

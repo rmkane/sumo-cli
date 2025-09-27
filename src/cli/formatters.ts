@@ -17,7 +17,7 @@ export function formatDivisionJson(rikishiList: Rikishi[]): void {
 export function formatDivisionList(rikishiList: Rikishi[]): void {
   rikishiList.forEach((rikishi, index: number) => {
     const rankInfo = rikishi.rank
-      ? `${rikishi.rank.division}${rikishi.rank.position ? ` #${rikishi.rank.position}` : ''} (${rikishi.rank.side || ''})`
+      ? `${rikishi.rank.division}${rikishi.rank.position !== undefined && rikishi.rank.position !== null && rikishi.rank.position !== 0 ? ` #${rikishi.rank.position}` : ''} (${rikishi.rank.side ?? ''})`
       : 'No rank data'
     console.log(`${index + 1}. ${rikishi.english} (${rikishi.kanji}) - ${rankInfo}`)
   })
@@ -40,7 +40,7 @@ export function formatDivisionTable(rikishiList: Rikishi[]): void {
   const tableData = rikishiList.map((rikishi) => ({
     division: rikishi.rank ? rikishi.rank.division : '-',
     rank: rikishi.rank?.position ?? '-',
-    side: rikishi.rank?.side || '-',
+    side: rikishi.rank?.side ?? '-',
     name: rikishi.english,
     kanji: rikishi.kanji,
     romaji: rikishi.romaji,

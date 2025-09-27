@@ -239,7 +239,7 @@ export function extractLinks(html: string, baseUrl?: string): string[] {
   while ((match = linkRegex.exec(html)) !== null) {
     const href = match[1]
 
-    if (baseUrl && !href.startsWith('http')) {
+    if (baseUrl !== undefined && baseUrl !== '' && !href.startsWith('http')) {
       // Resolve relative URLs
       try {
         const absoluteUrl = new URL(href, baseUrl).href

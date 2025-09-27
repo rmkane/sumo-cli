@@ -10,7 +10,7 @@ export function createDivisionCommand(program: Command): Command {
     .action(async (division, options) => {
       const context = {
         division,
-        format: options.format || 'table',
+        format: options.format ?? 'table',
       }
       await handleDivisionCommand(context)
     })

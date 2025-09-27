@@ -93,7 +93,7 @@ const logger = winston.createLogger({
  * ```
  */
 export function logProcessingStart(operation: string, details?: string): void {
-  const message = details ? `${operation} (${details})` : operation
+  const message = details !== undefined && details !== '' ? `${operation} (${details})` : operation
   logger.info(`Processing ${message}`)
 }
 
@@ -111,7 +111,7 @@ export function logProcessingStart(operation: string, details?: string): void {
  * ```
  */
 export function logProcessingComplete(operation: string, count: number, details?: string): void {
-  const message = details ? `${operation} for ${details}` : operation
+  const message = details !== undefined && details !== '' ? `${operation} for ${details}` : operation
   logger.info(`Processed ${count} ${message}`)
 }
 
@@ -174,7 +174,7 @@ export function logWarning(message: string): void {
  * ```
  */
 export function logDebug(message: string, data?: unknown): void {
-  if (data) {
+  if (data !== undefined && data !== null) {
     logger.debug(`${message}: ${JSON.stringify(data)}`)
   } else {
     logger.debug(message)

@@ -122,8 +122,8 @@ describe('Object Utilities', () => {
     })
 
     it('should handle objects with function values', () => {
-      const func1 = () => 'test1'
-      const func2 = () => 'test2'
+      const func1 = (): string => 'test1'
+      const func2 = (): string => 'test2'
       const obj = { a: func1, b: func2 }
 
       expect(getKeyByValue(obj, func1)).toBe('a')
