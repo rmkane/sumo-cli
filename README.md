@@ -26,6 +26,8 @@ A professional command-line interface for processing sumo rikishi data. Extract,
 - **TypeScript** - Fully typed with modern TypeScript practices
 - **Modern Build** - Built with `tsup` for fast compilation and ES modules
 - **Professional Logging** - Winston-based logging with multiple transports
+- **Clean Architecture** - Separation of concerns with thin CLI wrappers and feature modules
+- **Comprehensive Testing** - Full test coverage with Vitest framework
 
 ## Quick Start
 
@@ -76,16 +78,16 @@ pnpm cli --help  # Development mode
 sumo-cli --help  # If installed globally
 
 # Download rikishi statistics for all divisions (saves as JSON)
-sumo-cli download-stats
+sumo-cli stats
 
 # Download matchup data for specific tournament day (saves as CSV)
-sumo-cli download-matchups 1
+sumo-cli matchups 1
 
 # Use custom output directory
-sumo-cli download-matchups 1 --output-dir ./my-data
+sumo-cli matchups 1 --output-dir ./my-data
 
 # Force refresh cached data
-sumo-cli download-stats --force-refresh --verbose
+sumo-cli stats --force-refresh --verbose
 
 # List data storage locations
 sumo-cli list
@@ -99,18 +101,21 @@ sumo-cli division makuuchi
 ```bash
 # Run in development mode (with tsx)
 pnpm cli --help
-pnpm cli download-stats
-pnpm cli download-matchups 1
+pnpm cli stats
+pnpm cli matchups 1
 
 # Build and watch for changes
 make dev
 
 # Run tests
-pnpm test --run
+make test
+
+# Run tests with coverage
+make test-coverage
 
 # Format and lint
-pnpm format
-pnpm lint
+make format
+make lint
 ```
 
 For complete documentation, see [CLI.md](./CLI.md).

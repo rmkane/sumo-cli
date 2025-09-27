@@ -15,8 +15,8 @@ A professional command-line interface for processing sumo rikishi data.
   - [Argument Parsing Notes](#argument-parsing-notes)
   - [Examples](#examples)
 - [Commands](#commands)
-  - [`download-stats`](#download-stats)
-  - [`download-matchups <day>`](#download-matchups-day)
+  - [`stats`](#stats)
+  - [`matchups <day>`](#matchups-day)
   - [`tournament [date]`](#tournament-date)
   - [`division [options] <division>`](#division-options-division)
   - [`validate <day>`](#validate-day)
@@ -71,10 +71,10 @@ sumo-cli --help
 sumo-cli --version
 
 # Download rikishi statistics for all divisions (saves as JSON)
-sumo-cli download-stats
+sumo-cli stats
 
 # Download matchup data for specific day (1-15) (saves as CSV)
-sumo-cli download-matchups 1
+sumo-cli matchups 1
 
 # List available data
 sumo-cli list
@@ -108,16 +108,16 @@ This is standard Commander.js behavior - short options with space-separated valu
 
 ```bash
 # Download rikishi statistics with force refresh
-sumo-cli download-stats --force-refresh
+sumo-cli stats --force-refresh
 
 # Download matchup data for day 8 with verbose logging
-sumo-cli download-matchups 8 --verbose
+sumo-cli matchups 8 --verbose
 
 # Download matchup data for day 15 with custom output directory
-sumo-cli download-matchups 15 --output-dir ./my-csv-files
+sumo-cli matchups 15 --output-dir ./my-csv-files
 
 # Download matchup data with force refresh, verbose logging, and custom output
-sumo-cli download-matchups 15 --force-refresh --verbose --output-dir ./custom-output
+sumo-cli matchups 15 --force-refresh --verbose --output-dir ./custom-output
 
 # Get tournament information
 sumo-cli tournament
@@ -139,12 +139,12 @@ sumo-cli --interactive
 
 ## Commands
 
-### `download-stats`
+### `stats`
 
 Download rikishi statistics for all divisions and save as JSON files.
 
 ```bash
-sumo-cli download-stats [options]
+sumo-cli stats [options]
 ```
 
 **Options:**
@@ -152,12 +152,12 @@ sumo-cli download-stats [options]
 - `--force-refresh` - Force refresh of cached data
 - `--verbose` - Enable verbose logging
 
-### `download-matchups <day>`
+### `matchups <day>`
 
 Download matchup data for a specific tournament day and save as CSV files.
 
 ```bash
-sumo-cli download-matchups <day> [options]
+sumo-cli matchups <day> [options]
 ```
 
 **Arguments:**
@@ -280,8 +280,8 @@ sumo-cli --interactive
 - `clear` - Clear the screen
 - `exit`, `quit` - Exit interactive mode
 - `list` - List data storage locations
-- `download-stats` - Download rikishi statistics for all divisions
-- `download-matchups <day>` - Download matchup data for specific tournament day (1-15)
+- `stats` - Download rikishi statistics for all divisions
+- `matchups <day>` - Download matchup data for specific tournament day (1-15)
 - `tournament [date]` - Get current or next tournament information
 - `division <division>` - List all rikishi in a division
 - `validate <day>` - Validate HTML metadata for a specific tournament day
@@ -295,8 +295,8 @@ sumo-cli> tournament
 sumo-cli> division makuuchi
 sumo-cli> division 1 --format list
 sumo-cli> validate 1
-sumo-cli> download-matchups 1 --verbose
-sumo-cli> download-stats --force-refresh
+sumo-cli> matchups 1 --verbose
+sumo-cli> stats --force-refresh
 sumo-cli> clear
 sumo-cli> exit
 ```
