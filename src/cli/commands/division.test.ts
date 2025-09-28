@@ -1,25 +1,8 @@
-import { Command } from 'commander'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-
+import { testCommandConfiguration } from '@/cli/commands/__tests__/command-test-utils'
 import { createDivisionCommand } from '@/cli/commands/division'
 
-describe('Division Command', () => {
-  let program: Command
-
-  beforeEach(() => {
-    program = new Command()
-  })
-
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
-
-  describe('createDivisionCommand', () => {
-    it('should create a command with correct configuration', () => {
-      const command = createDivisionCommand(program)
-
-      expect(command.name()).toBe('division')
-      expect(command.description()).toBe('List all rikishi in a division in English alphabetical order')
-    })
-  })
+testCommandConfiguration({
+  name: 'division',
+  description: 'List all rikishi in a division in English alphabetical order',
+  createCommand: createDivisionCommand,
 })
