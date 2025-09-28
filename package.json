@@ -19,7 +19,19 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "docker:build": "docker build -t sumo-cli .",
+    "docker:build:dev": "docker build -f Dockerfile.dev -t sumo-cli:dev .",
+    "docker:run": "docker run --rm -v $(pwd)/output:/app/output -v ~/.sumo-cli:/home/sumo-cli/.sumo-cli sumo-cli",
+    "docker:dev": "docker-compose up sumo-cli-dev",
+    "docker:prod": "docker-compose up sumo-cli",
+    "docker:clean": "docker system prune -f && docker image prune -f",
+    "docker:logs": "docker logs sumo-cli",
+    "docker:shell": "docker run --rm -it -v $(pwd)/output:/app/output -v ~/.sumo-cli:/home/sumo-cli/.sumo-cli sumo-cli sh",
+    "docker:stats": "docker run --rm -v $(pwd)/output:/app/output -v ~/.sumo-cli:/home/sumo-cli/.sumo-cli sumo-cli stats",
+    "docker:matchups": "docker run --rm -v $(pwd)/output:/app/output -v ~/.sumo-cli:/home/sumo-cli/.sumo-cli sumo-cli matchups",
+    "docker:list": "docker run --rm sumo-cli list",
+    "docker:help": "docker run --rm sumo-cli --help"
   },
   "bin": {
     "sumo-cli": "./dist/index.js"

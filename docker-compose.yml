@@ -1,0 +1,35 @@
+services:
+  sumo-cli:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: sumo-cli:latest
+    container_name: sumo-cli
+    volumes:
+      # Mount output directory for CSV files
+      - ./output:/app/output
+      # Mount user data directory for JSON/cache files
+      - ~/.sumo-cli:/home/sumo-cli/.sumo-cli
+    environment:
+      - NODE_ENV=development
+    # Override default command
+    command: ["--help"]
+
+  # Development service with live reload
+  sumo-cli-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: sumo-cli:dev
+    container_name: sumo-cli-dev
+    volumes:
+      # Mount source code for live reload
+      - .:/app
+      - /app/node_modules
+      # Mount output directory
+      - ./output:/app/output
+      # Mount user data directory
+      - ~/.sumo-cli:/home/sumo-cli/.sumo-cli
+    environment:
+      - NODE_ENV=development
+    command: ["pnpm", "run", "dev"]
