@@ -5,7 +5,7 @@ import { parseRank, parseRecord } from '@/core/parsers'
 import { findRikishiAcrossDivisions } from '@/core/services/rikishi-lookup'
 import { getDivisionByRank } from '@/core/utils/division'
 import { logWarning } from '@/core/utils/logger'
-import type { DivisionType, RikishiName, RikishiRank, RikishiRecord } from '@/types'
+import type { DivisionType, RikishiRank, RikishiRecord, RikishiShikona } from '@/types'
 
 /**
  * Parses a single player from the HTML.
@@ -18,7 +18,7 @@ export function parseRikishi(
   $player: Cheerio<Element>,
   division: DivisionType,
 ): {
-  name: RikishiName
+  shikona: RikishiShikona
   rank: RikishiRank
   record: RikishiRecord
 } | null {
@@ -39,9 +39,9 @@ export function parseRikishi(
 
     // Look up rikishi data to get hiragana and English name
     const rikishiData = findRikishiAcrossDivisions(kanji, rankDivision ?? division)
-    const hiragana = rikishiData?.name.hiragana ?? kanji
-    const name = rikishiData?.name.english ?? kanji
-    const romaji = rikishiData?.name.romaji ?? kanji
+    const hiragana = rikishiData?.shikona.hiragana ?? kanji
+    const name = rikishiData?.shikona.english ?? kanji
+    const romaji = rikishiData?.shikona.romaji ?? kanji
 
     // Only warn for non-empty names that weren't found
     if (!rikishiData && kanji.trim()) {
@@ -49,7 +49,7 @@ export function parseRikishi(
     }
 
     return {
-      name: {
+      shikona: {
         english: name,
         kanji,
         hiragana,

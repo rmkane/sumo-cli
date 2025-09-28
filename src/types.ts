@@ -28,9 +28,9 @@ export type JapaneseTermType = ValueOf<typeof JapaneseTerms>
 export type TournamentConstantType = ValueOf<typeof TournamentConstants>
 
 /**
- * Interface for rikishi name information
+ * Interface for rikishi shikona (ring name) information
  */
-export interface RikishiName {
+export interface RikishiShikona {
   /** English name or transliteration */
   english: string
   /** Japanese name in kanji characters */
@@ -59,8 +59,8 @@ export interface RikishiRank {
 export interface Rikishi {
   /** Unique identifier for the rikishi */
   id: number
-  /** Rikishi name information */
-  name: RikishiName
+  /** Rikishi shikona (ring name) information */
+  shikona: RikishiShikona
   /** Current rank information (optional) */
   rank?: RikishiRank
 }
@@ -75,8 +75,8 @@ export interface RikishiRecord {
  * Interface for rikishi match result data
  */
 export interface RikishiResult {
-  /** Rikishi name information */
-  name: RikishiName
+  /** Rikishi shikona (ring name) information */
+  shikona: RikishiShikona
   /** Rank information with division, position, and side */
   rank: RikishiRank
   /** Tournament record (e.g., "(1勝0敗)", "(0勝1敗)") */

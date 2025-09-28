@@ -169,7 +169,7 @@ describe('Stats Service', () => {
       expect(results).toHaveLength(1)
       expect(results[0]).toEqual({
         id: 123,
-        name: {
+        shikona: {
           kanji: '白鵬',
           hiragana: 'はくほう',
           romaji: 'Hakuhō',
@@ -272,7 +272,7 @@ describe('Stats Service', () => {
       // Test Yokozuna (大の里) - should have Yokozuna division with position from rank text, East side
       expect(results[0]).toEqual({
         id: 4227,
-        name: {
+        shikona: {
           kanji: '大の里',
           hiragana: 'おおのさと',
           romaji: 'Ōnosato',
@@ -287,7 +287,7 @@ describe('Stats Service', () => {
       // Test Yokozuna (豊昇龍) - should have Yokozuna division with position from rank text, West side
       expect(results[1]).toEqual({
         id: 3842,
-        name: {
+        shikona: {
           kanji: '豊昇龍',
           hiragana: 'ほうしょうりゅう',
           romaji: 'Hōshōryū',
@@ -302,7 +302,7 @@ describe('Stats Service', () => {
       // Test Maegashira #18 (獅司) - should have Maegashira division with position from rank text, East side
       expect(results[2]).toEqual({
         id: 3990,
-        name: {
+        shikona: {
           kanji: '獅司',
           hiragana: 'しし',
           romaji: 'Shishi',
@@ -318,7 +318,7 @@ describe('Stats Service', () => {
       // Test Maegashira (大青山) - should have Maegashira division with position from rank text, West side
       expect(results[3]).toEqual({
         id: 4116,
-        name: {
+        shikona: {
           kanji: '大青山',
           hiragana: 'だいせいざん',
           romaji: 'Daisēzan',
@@ -380,16 +380,16 @@ describe('Stats Service', () => {
       const results = parseRikishiFromHTML(htmlWithRestDays)
 
       expect(results).toHaveLength(2)
-      expect(results[0]?.name.kanji).toBe('佐田の城')
-      expect(results[0]?.name.hiragana).toBe('さだのじょう')
+      expect(results[0]?.shikona.kanji).toBe('佐田の城')
+      expect(results[0]?.shikona.hiragana).toBe('さだのじょう')
       expect(results[0]?.rank).toEqual({
         division: 'Jonokuchi',
         position: 24,
         side: 'East',
       })
 
-      expect(results[1]?.name.kanji).toBe('輝の里')
-      expect(results[1]?.name.hiragana).toBe('きのさと')
+      expect(results[1]?.shikona.kanji).toBe('輝の里')
+      expect(results[1]?.shikona.hiragana).toBe('きのさと')
       expect(results[1]?.rank).toEqual({
         division: 'Jonokuchi',
         position: 24,

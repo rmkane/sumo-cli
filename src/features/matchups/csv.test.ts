@@ -10,10 +10,11 @@ describe('CSV Utilities', () => {
       const matchups: MatchupData[] = [
         {
           east: {
-            name: {
+            shikona: {
               english: 'Shishi',
               kanji: '獅司',
               hiragana: 'しし',
+              romaji: 'Shishi',
             },
             rank: {
               division: DivisionNames.MAEGASHIRA,
@@ -24,10 +25,11 @@ describe('CSV Utilities', () => {
             technique: undefined,
           },
           west: {
-            name: {
+            shikona: {
               english: 'Oaoyama',
               kanji: '大青山',
               hiragana: 'おおあおやま',
+              romaji: 'Oaoyama',
             },
             rank: {
               division: DivisionNames.JURYO,
@@ -44,19 +46,20 @@ describe('CSV Utilities', () => {
       const firstRow = csvObjects[0]
 
       // Check that the technique comes from the winner (west in this case)
-      expect(firstRow.eastResult).toBe(MatchResult.LOSS)
-      expect(firstRow.technique).toBe('uwate-nage') // Technique from west winner
-      expect(firstRow.westResult).toBe(MatchResult.WIN)
+      expect(firstRow?.eastResult).toBe(MatchResult.LOSS)
+      expect(firstRow?.technique).toBe('uwate-nage') // Technique from west winner
+      expect(firstRow?.westResult).toBe(MatchResult.WIN)
     })
 
     it('should handle matchup with east winner technique', () => {
       const matchups: MatchupData[] = [
         {
           east: {
-            name: {
+            shikona: {
               english: 'Ryuden',
               kanji: '竜電',
               hiragana: 'りゅうでん',
+              romaji: 'Ryuden',
             },
             rank: {
               division: DivisionNames.MAEGASHIRA,
@@ -67,10 +70,11 @@ describe('CSV Utilities', () => {
             technique: 'hataki-komi',
           },
           west: {
-            name: {
+            shikona: {
               english: 'Tomokaze',
               kanji: '友風',
               hiragana: 'ともかぜ',
+              romaji: 'Tomokaze',
             },
             rank: {
               division: DivisionNames.MAEGASHIRA,
@@ -84,21 +88,22 @@ describe('CSV Utilities', () => {
       ]
 
       const csvObjects = matchupDataToCSVObjects(matchups)
-      const firstRow = csvObjects[0]
+      const [firstRow] = csvObjects
 
-      expect(firstRow.eastResult).toBe(MatchResult.WIN)
-      expect(firstRow.technique).toBe('hataki-komi') // Technique from east winner
-      expect(firstRow.westResult).toBe(MatchResult.LOSS)
+      expect(firstRow?.eastResult).toBe(MatchResult.WIN)
+      expect(firstRow?.technique).toBe('hataki-komi') // Technique from east winner
+      expect(firstRow?.westResult).toBe(MatchResult.LOSS)
     })
 
     it('should handle matchup with no technique', () => {
       const matchups: MatchupData[] = [
         {
           east: {
-            name: {
+            shikona: {
               english: 'RikishiA',
               kanji: '力士A',
               hiragana: 'りきしA',
+              romaji: 'RikishiA',
             },
             rank: {
               division: DivisionNames.MAEGASHIRA,
@@ -109,10 +114,11 @@ describe('CSV Utilities', () => {
             technique: undefined,
           },
           west: {
-            name: {
+            shikona: {
               english: 'RikishiB',
               kanji: '力士B',
               hiragana: 'りきしB',
+              romaji: 'RikishiB',
             },
             rank: {
               division: DivisionNames.MAEGASHIRA,
@@ -126,11 +132,11 @@ describe('CSV Utilities', () => {
       ]
 
       const csvObjects = matchupDataToCSVObjects(matchups)
-      const firstRow = csvObjects[0]
+      const [firstRow] = csvObjects
 
-      expect(firstRow.eastResult).toBe(MatchResult.NO_RESULT)
-      expect(firstRow.technique).toBe('') // No technique
-      expect(firstRow.westResult).toBe(MatchResult.NO_RESULT)
+      expect(firstRow?.eastResult).toBe(MatchResult.NO_RESULT)
+      expect(firstRow?.technique).toBe('') // No technique
+      expect(firstRow?.westResult).toBe(MatchResult.NO_RESULT)
     })
   })
 })

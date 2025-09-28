@@ -33,8 +33,8 @@ export function parseMatchupRow($row: Cheerio<Element>, division: DivisionType):
 
     // Only include matchups where both players have valid data
     if (
-      eastPlayer.name.kanji === '' ||
-      westPlayer.name.kanji === '' ||
+      eastPlayer.shikona.kanji === '' ||
+      westPlayer.shikona.kanji === '' ||
       eastPlayer.rank?.division === undefined ||
       westPlayer.rank?.division === undefined
     ) {

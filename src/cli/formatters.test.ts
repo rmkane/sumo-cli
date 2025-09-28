@@ -7,7 +7,7 @@ describe('CLI Formatters', () => {
   const mockRikishi = [
     {
       id: 1,
-      name: {
+      shikona: {
         english: 'Hakuho',
         kanji: '白鵬',
         hiragana: 'はくほう',
@@ -21,7 +21,7 @@ describe('CLI Formatters', () => {
     },
     {
       id: 2,
-      name: {
+      shikona: {
         english: 'Kisenosato',
         kanji: '稀勢の里',
         hiragana: 'きせのさと',
@@ -35,7 +35,7 @@ describe('CLI Formatters', () => {
     },
     {
       id: 3,
-      name: {
+      shikona: {
         english: 'NoRankRikishi',
         kanji: '無階級',
         hiragana: 'むかいきゅう',
@@ -94,7 +94,7 @@ describe('CLI Formatters', () => {
       const rikishiWithoutPosition = [
         {
           id: 4,
-          name: {
+          shikona: {
             english: 'TestRikishi',
             kanji: 'テスト',
             hiragana: 'てすと',
@@ -144,7 +144,7 @@ describe('CLI Formatters', () => {
       const rikishiWithoutRank = [
         {
           id: 5,
-          name: {
+          shikona: {
             english: 'NoRankRikishi',
             kanji: '無階級',
             hiragana: 'むかいきゅう',

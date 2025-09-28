@@ -2,7 +2,7 @@
 export { parseRank } from '@/core/parsers/rank-parser'
 export { parseRecord } from '@/core/parsers/record-parser'
 export { parseResult, parseWinningTechnique } from '@/core/parsers/html/result-parser'
-export { parseRikishiName } from '@/core/parsers/html/name-parser'
+export { parseRikishiShikona } from '@/core/parsers/html/name-parser'
 export { parseRikishi } from '@/core/parsers/html/rikishi-parser'
 export { parseStatsRecord } from '@/core/parsers/html/stats-record-parser'
 export { parseRikishiFromHTML } from '@/core/parsers/html/stats-html-parser'

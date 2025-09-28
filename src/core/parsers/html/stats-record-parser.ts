@@ -1,7 +1,7 @@
 import { type Cheerio } from 'cheerio'
 import { type Element } from 'domhandler'
 
-import { parseRank, parseRikishiName } from '@/core/parsers'
+import { parseRank, parseRikishiShikona } from '@/core/parsers'
 import type { DivisionType, Rikishi, SideType } from '@/types'
 
 /**
@@ -22,12 +22,12 @@ export function parseStatsRecord(
   const href = $box.find('a').attr('href') ?? ''
   const id = +(href.match(/\d+/)?.[0] ?? '0')
 
-  const name = parseRikishiName($box)
+  const shikona = parseRikishiShikona($box)
   const rank = parseRank(rankText, division, side)
 
   return {
     id,
-    name,
+    shikona,
     rank,
   }
 }

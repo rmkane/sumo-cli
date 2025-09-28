@@ -54,10 +54,10 @@ describe('Matchup HTML Parser', () => {
         throw new Error('No results')
       }
 
-      expect(result.east.name.kanji).toBe('獅司')
+      expect(result.east.shikona.kanji).toBe('獅司')
       expect(result.east.result).toBe(MatchResult.LOSS) // Lost
       expect(result.east.technique).toBeUndefined() // No technique for loser
-      expect(result.west.name.kanji).toBe('大青山')
+      expect(result.west.shikona.kanji).toBe('大青山')
       expect(result.west.result).toBe(MatchResult.WIN) // Won
       expect(result.west.technique).toBe('uwate-nage') // Technique should be extracted and translated
     })
@@ -111,9 +111,9 @@ describe('Matchup HTML Parser', () => {
         throw new Error('No results')
       }
 
-      expect(result.east.name.kanji).toBe('獅司')
+      expect(result.east.shikona.kanji).toBe('獅司')
       expect(result.east.result).toBe(MatchResult.NO_RESULT) // No result yet
-      expect(result.west.name.kanji).toBe('大青山')
+      expect(result.west.shikona.kanji).toBe('大青山')
       expect(result.west.result).toBe(MatchResult.NO_RESULT) // No result yet
     })
 
@@ -166,9 +166,9 @@ describe('Matchup HTML Parser', () => {
         throw new Error('No results')
       }
 
-      expect(result.east.name.kanji).toBe('佐田の城')
+      expect(result.east.shikona.kanji).toBe('佐田の城')
       expect(result.east.record).toEqual({ wins: 1, losses: 0, rest: 3 })
-      expect(result.west.name.kanji).toBe('輝の里')
+      expect(result.west.shikona.kanji).toBe('輝の里')
       expect(result.west.record).toEqual({ wins: 1, losses: 0, rest: 3 })
     })
 
@@ -249,18 +249,18 @@ describe('Matchup HTML Parser', () => {
       }
 
       // First matchup: 獅司 (L) vs 大青山 (W)
-      expect(result1.east.name.kanji).toBe('獅司')
+      expect(result1.east.shikona.kanji).toBe('獅司')
       expect(result1.east.result).toBe(MatchResult.LOSS)
       expect(result1.east.technique).toBeUndefined() // No technique for loser
-      expect(result1.west.name.kanji).toBe('大青山')
+      expect(result1.west.shikona.kanji).toBe('大青山')
       expect(result1.west.result).toBe(MatchResult.WIN)
       expect(result1.west.technique).toBe('uwate-nage') // 上手投げ -> uwate-nage
 
       // Second matchup: 竜電 (W) vs 友風 (L)
-      expect(result2.east.name.kanji).toBe('竜電')
+      expect(result2.east.shikona.kanji).toBe('竜電')
       expect(result2.east.result).toBe(MatchResult.LOSS)
       expect(result2.east.technique).toBeUndefined() // No technique for loser
-      expect(result2.west.name.kanji).toBe('友風')
+      expect(result2.west.shikona.kanji).toBe('友風')
       expect(result2.west.result).toBe(MatchResult.WIN)
       expect(result2.west.technique).toBe('hataki-komi') // 叩き込み -> hataki-komi
     })

@@ -45,9 +45,9 @@ function loadRikishiData(division: DivisionType): Rikishi[] {
  *
  * @param kanji - Kanji name to search for
  * @param division - Preferred division to search first
- * @returns Rikishi data or null if not found
+ * @returns Rikishi data or undefined if not found
  */
-export function findRikishiAcrossDivisions(kanji: string, division: DivisionType): Rikishi | null {
+export function findRikishiAcrossDivisions(kanji: string, division: DivisionType): Rikishi | undefined {
   // First try exact match in the current division
   const rikishi = lookupRikishiByKanji(kanji, division)
   if (rikishi) {
@@ -67,7 +67,7 @@ export function findRikishiAcrossDivisions(kanji: string, division: DivisionType
   }
 
   logWarning(`Rikishi not found in any division: ${kanji}`)
-  return null
+  return undefined
 }
 
 /**
@@ -75,17 +75,17 @@ export function findRikishiAcrossDivisions(kanji: string, division: DivisionType
  *
  * @param kanji - Kanji name to search for
  * @param division - Division to search in
- * @returns Rikishi data or null if not found
+ * @returns Rikishi data or undefined if not found
  */
-function lookupRikishiByKanji(kanji: string, division: DivisionType): Rikishi | null {
+function lookupRikishiByKanji(kanji: string, division: DivisionType): Rikishi | undefined {
   try {
     const rikishiData = loadRikishiData(division)
-    return rikishiData.find((r) => r.name.kanji === kanji) ?? null
+    return rikishiData.find((r) => r.shikona.kanji === kanji)
   } catch (error) {
     // Log warning but don't throw - let caller decide how to handle
     logWarning(
       `Failed to load data for division ${division}: ${error instanceof Error ? error.message : String(error)}`,
     )
-    return null
+    return undefined
   }
 }

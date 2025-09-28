@@ -21,7 +21,7 @@ describe('Division Service', () => {
   const mockRikishiData: Rikishi[] = [
     {
       id: 1,
-      name: {
+      shikona: {
         kanji: '朝乃山',
         hiragana: 'あさのやま',
         romaji: 'Asanoyama',
@@ -31,7 +31,7 @@ describe('Division Service', () => {
     },
     {
       id: 2,
-      name: {
+      shikona: {
         kanji: '大関',
         hiragana: 'おおぜき',
         romaji: 'Ozeki',
@@ -41,7 +41,7 @@ describe('Division Service', () => {
     },
     {
       id: 3,
-      name: {
+      shikona: {
         kanji: '関脇',
         hiragana: 'せきわけ',
         romaji: 'Sekiwake',
@@ -74,16 +74,16 @@ describe('Division Service', () => {
       const result = await listDivisionRikishi('makuuchi')
 
       expect(result).toHaveLength(3)
-      expect(result[0]?.name.english).toBe('Asanoyama')
-      expect(result[1]?.name.english).toBe('Ozeki')
-      expect(result[2]?.name.english).toBe('Sekiwake')
+      expect(result[0]?.shikona.english).toBe('Asanoyama')
+      expect(result[1]?.shikona.english).toBe('Ozeki')
+      expect(result[2]?.shikona.english).toBe('Sekiwake')
     })
 
     it('should handle case-insensitive sorting', async () => {
       const mixedCaseData: Rikishi[] = [
         {
           id: 1,
-          name: {
+          shikona: {
             kanji: '朝乃山',
             hiragana: 'あさのやま',
             romaji: 'Asanoyama',
@@ -93,7 +93,7 @@ describe('Division Service', () => {
         },
         {
           id: 2,
-          name: {
+          shikona: {
             kanji: '大関',
             hiragana: 'おおぜき',
             romaji: 'Ozeki',
@@ -115,8 +115,8 @@ describe('Division Service', () => {
 
       const result = await listDivisionRikishi('makuuchi')
 
-      expect(result[0]?.name.english).toBe('asanoyama')
-      expect(result[1]?.name.english).toBe('OZEKI')
+      expect(result[0]?.shikona.english).toBe('asanoyama')
+      expect(result[1]?.shikona.english).toBe('OZEKI')
     })
 
     it('should throw error for invalid division name', async () => {

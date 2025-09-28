@@ -20,7 +20,7 @@ describe('Matchup JSON Utilities', () => {
   const mockMatchups: MatchupData[] = [
     {
       east: {
-        name: {
+        shikona: {
           english: 'East Rikishi',
           kanji: '東力士',
           hiragana: 'ひがしりきし',
@@ -35,7 +35,7 @@ describe('Matchup JSON Utilities', () => {
         technique: 'Oshidashi',
       },
       west: {
-        name: {
+        shikona: {
           english: 'West Rikishi',
           kanji: '西力士',
           hiragana: 'にしりきし',
@@ -157,7 +157,7 @@ describe('Matchup JSON Utilities', () => {
       const complexMatchups: MatchupData[] = [
         {
           east: {
-            name: {
+            shikona: {
               english: 'Terunofuji',
               kanji: '照ノ富士',
               hiragana: 'てるのふじ',
@@ -169,7 +169,7 @@ describe('Matchup JSON Utilities', () => {
             technique: 'Yorikiri',
           },
           west: {
-            name: {
+            shikona: {
               english: 'Takakeisho',
               kanji: '貴景勝',
               hiragana: 'たかけいしょう',
@@ -185,7 +185,7 @@ describe('Matchup JSON Utilities', () => {
         },
         {
           east: {
-            name: {
+            shikona: {
               english: 'Wakatakakage',
               kanji: '若隆景',
               hiragana: 'わかたかかげ',
@@ -196,7 +196,7 @@ describe('Matchup JSON Utilities', () => {
             result: 'L',
           },
           west: {
-            name: {
+            shikona: {
               english: 'Hoshoryu',
               kanji: '豊昇龍',
               hiragana: 'ほうしょうりゅう',
@@ -304,7 +304,7 @@ describe('Matchup JSON Utilities', () => {
     it('should handle large matchup datasets', async () => {
       const largeMatchups: MatchupData[] = Array.from({ length: 100 }, (_, i) => ({
         east: {
-          name: {
+          shikona: {
             english: `East Rikishi ${i}`,
             kanji: `東力士${i}`,
             hiragana: `ひがしりきし${i}`,
@@ -316,7 +316,7 @@ describe('Matchup JSON Utilities', () => {
           technique: i % 2 === 0 ? 'Oshidashi' : undefined,
         },
         west: {
-          name: {
+          shikona: {
             english: `West Rikishi ${i}`,
             kanji: `西力士${i}`,
             hiragana: `にしりきし${i}`,
