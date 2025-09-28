@@ -26,6 +26,7 @@ help: # Show help
 # =============================================================================
 all: # Complete workflow: format, lint, test, and build
 	@echo "🚀 Running complete workflow..."
+	@$(MAKE) install
 	@echo "📝 Formatting code..."
 	@$(MAKE) format
 	@echo "🔍 Linting code..."
