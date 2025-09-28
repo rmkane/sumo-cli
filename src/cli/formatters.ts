@@ -1,5 +1,6 @@
+import type { TableColumn } from '@/core/utils/table.js'
+import { formatTable } from '@/core/utils/table.js'
 import type { Rikishi } from '@/types.js'
-import { type TableColumn, formatTable } from '@/utils/table.js'
 
 /**
  * Formats rikishi data as JSON output
@@ -15,10 +16,8 @@ export function formatDivisionJson(rikishiList: Rikishi[]): void {
  */
 export function formatDivisionList(rikishiList: Rikishi[]): void {
   rikishiList.forEach((rikishi, index: number) => {
-    const rankInfo = rikishi.rank
-      ? `${rikishi.rank.division}${rikishi.rank.position ? ` #${rikishi.rank.position}` : ''} (${rikishi.rank.side || ''})`
-      : 'No rank data'
-    console.log(`${index + 1}. ${rikishi.english} (${rikishi.kanji}) - ${rankInfo}`)
+    const rankInfo = `${rikishi.current.division}${typeof rikishi.current.rank === 'string' ? '' : ` #${rikishi.current.rank.number}`} (${rikishi.current.side})`
+    console.log(`${index + 1}. ${rikishi.shikona.english} (${rikishi.shikona.kanji}) - ${rankInfo}`)
   })
 }
 
@@ -37,12 +36,12 @@ export function formatDivisionTable(rikishiList: Rikishi[]): void {
   ]
 
   const tableData = rikishiList.map((rikishi) => ({
-    division: rikishi.rank ? rikishi.rank.division : '-',
-    rank: rikishi.rank?.position ?? '-',
-    side: rikishi.rank?.side || '-',
-    name: rikishi.english,
-    kanji: rikishi.kanji,
-    romaji: rikishi.romaji,
+    division: rikishi.current.division,
+    rank: typeof rikishi.current.rank === 'string' ? rikishi.current.rank : rikishi.current.rank.number,
+    side: rikishi.current.side,
+    name: rikishi.shikona.english,
+    kanji: rikishi.shikona.kanji,
+    romaji: rikishi.shikona.romaji,
   }))
 
   console.log(formatTable(columns, tableData))

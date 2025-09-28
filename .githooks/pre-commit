@@ -1,0 +1,19 @@
+#!/bin/sh
+# Pre-commit hook to run make all before committing
+
+echo "🔍 Running pre-commit checks..."
+echo ""
+
+# Run the complete workflow
+if ! make all; then
+    echo ""
+    echo "❌ Pre-commit checks failed!"
+    echo "Please fix the issues above before committing."
+    echo ""
+    echo "You can run 'make all' manually to see the full output."
+    exit 1
+fi
+
+echo ""
+echo "✅ Pre-commit checks passed!"
+exit 0

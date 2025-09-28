@@ -2,7 +2,7 @@ import readline from 'node:readline'
 
 import type { Command } from 'commander'
 
-import { centerText, centerTextWithDecorations, createHorizontalLine } from '@/utils/text'
+import { centerText, centerTextWithDecorations, createHorizontalLine } from '@/core/utils/text'
 
 import packageJson from '../../package.json'
 
@@ -38,6 +38,16 @@ function showInteractiveHelp(): void {
 /**
  * Launches interactive REPL mode
  */
+function isFlagWithValue(arg: string | undefined, args: string[], index: number): boolean {
+  return (
+    arg !== undefined &&
+    arg.startsWith('--') &&
+    index + 1 < args.length &&
+    args[index + 1] !== undefined &&
+    args[index + 1]?.startsWith('-') === true
+  )
+}
+
 export function launchInteractiveMode(program: Command): void {
   showBanner()
 
@@ -85,8 +95,8 @@ export function launchInteractiveMode(program: Command): void {
       const parsedArgs = []
 
       for (let i = 0; i < args.length; i++) {
-        const arg = args[i]
-        if (arg.startsWith('--') && i + 1 < args.length && !args[i + 1].startsWith('-')) {
+        const arg = args[i] ?? ''
+        if (isFlagWithValue(arg, args, i)) {
           // This is an option with a value, combine them
           parsedArgs.push(`${arg}=${args[i + 1]}`)
           i++ // Skip the next argument since we combined it

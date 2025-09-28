@@ -6,8 +6,8 @@
 # =============================================================================
 # Phony targets
 # =============================================================================
-.PHONY: dev build clean clean-all format help install install-cli uninstall-cli refresh format-check
-.PHONY: test test-run test-ui test-coverage lint lint-fix
+.PHONY: all build clean clean-all dev format format-check help install install-cli install-hooks lint lint-fix
+.PHONY: refresh test test-coverage test-run test-ui test-watch uninstall-cli
 
 # =============================================================================
 # Help
@@ -22,6 +22,22 @@ help: # Show help
 	}' $(MAKEFILE_LIST) | sort
 
 # =============================================================================
+# Complete Workflow
+# =============================================================================
+all: # Complete workflow: format, lint, test, and build
+	@echo "🚀 Running complete workflow..."
+	@$(MAKE) install
+	@echo "📝 Formatting code..."
+	@$(MAKE) format
+	@echo "🔍 Linting code..."
+	@$(MAKE) lint
+	@echo "🧪 Running tests..."
+	@$(MAKE) test
+	@echo "🏗️  Building project..."
+	@$(MAKE) build
+	@echo "✅ Complete workflow finished successfully!"
+
+# =============================================================================
 # Development
 # =============================================================================
 dev: # Development - run with tsx
@@ -30,11 +46,18 @@ dev: # Development - run with tsx
 build: # Build TypeScript to JavaScript
 	pnpm build
 
-install: # Install dependencies
+install: # Install dependencies and git hooks
 	pnpm install
+	@$(MAKE) install-hooks
 
 install-cli: # Build and link CLI globally
 	pnpm run install-local
+
+install-hooks: # Install git hooks
+	@echo "🔗 Installing git hooks..."
+	@chmod +x .githooks/pre-commit
+	@git config core.hooksPath .githooks
+	@echo "✅ Git hooks installed successfully!"
 
 uninstall-cli: # Unlink CLI globally
 	pnpm run unlink
