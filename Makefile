@@ -6,8 +6,11 @@
 # =============================================================================
 # Phony targets
 # =============================================================================
-.PHONY: all build clean clean-all dev format format-check help install install-cli install-hooks lint lint-fix
+.PHONY: all build clean clean-all dev lint lint-fix format format-check help
+.PHONY: install install-cli install-hooks
 .PHONY: refresh test test-coverage test-run test-ui test-watch uninstall-cli
+.PHONY: docker-build docker-build-dev docker-build-all docker-run docker-clean
+.PHONY: docker-dev docker-shell docker-logs docker-stop
 
 # =============================================================================
 # Help
@@ -109,3 +112,48 @@ clean: # Clean build artifacts and cache
 clean-all: clean # Clean everything including dependencies
 	rm -rf node_modules/
 	rm -f pnpm-lock.yaml
+
+# =============================================================================
+# Docker
+# =============================================================================
+docker-build: # Build production Docker image
+	@echo "🐳 Building production Docker image..."
+	docker build -f Dockerfile -t sumo-cli:latest .
+	@echo "✅ Production Docker image built successfully!"
+
+docker-build-dev: # Build development Docker image
+	@echo "🐳 Building development Docker image..."
+	docker build -f Dockerfile.dev -t sumo-cli:dev .
+	@echo "✅ Development Docker image built successfully!"
+
+docker-build-all: # Build all Docker images
+	@echo "🐳 Building all Docker images..."
+	docker build -f Dockerfile -t sumo-cli:latest .
+	@$(MAKE) docker-build-dev
+	@echo "✅ All Docker images built successfully!"
+
+docker-run: # Run the CLI in production Docker container
+	@echo "🐳 Running sumo-cli in production Docker..."
+	docker run --rm -i sumo-cli:latest
+
+docker-dev: # Run development environment in Docker
+	@echo "🐳 Starting development environment..."
+	docker run --rm -i -v $(PWD)/src:/app/src -p 3001:3000 --user root sumo-cli:dev
+
+docker-shell: # Get shell access to development container
+	@echo "🐳 Opening shell in development Docker container..."
+	docker run --rm -it -v $(PWD)/src:/app/src sumo-cli:dev /bin/sh
+
+docker-logs: # Show logs from running container
+	@echo "🐳 Showing Docker container logs..."
+	docker logs $(shell docker ps -q --filter ancestor=sumo-cli:dev) 2>/dev/null || echo "No running containers found"
+
+docker-stop: # Stop all running sumo-cli containers
+	@echo "🐳 Stopping Docker containers..."
+	docker stop $(shell docker ps -q --filter ancestor=sumo-cli:dev) 2>/dev/null || echo "No running containers found"
+
+docker-clean: # Clean Docker images and containers
+	@echo "🐳 Cleaning Docker artifacts..."
+	docker rmi sumo-cli:latest sumo-cli:dev 2>/dev/null || echo "Images not found"
+	docker container prune -f
+	docker image prune -f

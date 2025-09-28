@@ -12,6 +12,7 @@ A professional command-line interface for processing sumo rikishi data. Extract,
 - [Data Structure](#data-structure)
 - [Usage Examples](#usage-examples)
 - [Development](#development)
+  - [Docker Development](#docker-development)
 - [Resources](#resources)
   - [Official Sumo Sources](#official-sumo-sources)
   - [Third-Party APIs \& Databases](#third-party-apis--databases)
@@ -24,7 +25,7 @@ A professional command-line interface for processing sumo rikishi data. Extract,
 - **Smart Caching** - Intelligent caching system to avoid redundant downloads
 - **CSV Export** - Generate structured CSV files for data analysis
 - **TypeScript** - Fully typed with modern TypeScript practices
-- **Modern Build** - Built with `tsup` for fast compilation and ES modules
+- **Modern Build** - Built with `tsdown` for fast compilation and ES modules
 - **Professional Logging** - Winston-based logging with multiple transports
 - **Clean Architecture** - Separation of concerns with thin CLI wrappers and feature modules
 - **Comprehensive Testing** - Full test coverage with Vitest framework
@@ -118,16 +119,50 @@ make format
 make lint
 ```
 
+### Docker Development
+
+```bash
+# Build development Docker image
+make docker-build-dev
+
+# Run development environment with live reloading
+make docker-dev
+
+# View development logs
+make docker-logs
+
+# Stop development containers
+make docker-stop
+
+# Access development container shell
+make docker-shell
+
+# Build production Docker image
+make docker-build
+
+# Run production CLI in Docker
+make docker-run
+```
+
 For complete documentation, see [CLI.md](./CLI.md).
 
 ## Resources
 
 ### Official Sumo Sources
 
-- **English Tournament Results**: <https://www.sumo.or.jp/EnHonbashoMain/torikumi/1/15/>
-- **Japanese Tournament Results**: <https://www.sumo.or.jp/ResultData/torikumi/1/15/>
-- **Japanese Rankings**: <https://sumo.or.jp/ResultData/hoshitori/1/1/>
-- **Rikishi Search (English)**: <https://www.sumo.or.jp/EnSumoDataRikishi/search/>
+- **Rikishi Search**:
+  - English: <https://www.sumo.or.jp/EnSumoDataRikishi/search/>
+  - Japanese: <https://www.sumo.or.jp/ResultRikishiData/search/>
+- **Banzuke:**
+  - English: <https://www.sumo.or.jp/EnHonbashoBanzuke/index/>
+- **Tournament Results**:
+  - English: <https://www.sumo.or.jp/EnHonbashoMain/torikumi/1/15/>
+  - Japanese: <https://www.sumo.or.jp/ResultData/torikumi/1/15/>
+- **Standings**:
+  - Japanese: <https://sumo.or.jp/ResultData/hoshitori/1/1/>
+- **Bankuke API:**
+  - English: <https://www.sumo.or.jp/EnHonbashoBanzuke/indexAjax/1/15/>
+  - Japanese: <https://www.sumo.or.jp/ResultData/torikumiAjax/1/15/>
 
 ### Third-Party APIs & Databases
 
@@ -139,4 +174,5 @@ For complete documentation, see [CLI.md](./CLI.md).
 - **TypeScript**: <https://www.typescriptlang.org/> - Type-safe JavaScript
 - **Commander.js**: <https://github.com/tj/commander.js> - CLI framework
 - **Winston**: <https://github.com/winstonjs/winston> - Logging library
-- **tsup**: <https://github.com/egoist/tsup> - TypeScript bundler
+- **tsdown**: <https://github.com/rolldown/tsdown> - TypeScript bundler powered by rolldown
+- **Docker**: <https://www.docker.com/> - Containerized development and deployment
