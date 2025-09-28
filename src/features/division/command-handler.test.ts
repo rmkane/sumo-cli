@@ -1,11 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { formatDivisionJson, formatDivisionList, formatDivisionTable } from '@/cli/formatters'
-import { Side } from '@/constants'
+import { DIVISION, SANYAKU, SIDE } from '@/constants'
 import { listDivisionRikishi } from '@/core/services/division-service'
 import { getAvailableDivisions, getDivisionNameFromNumber, getDivisionNumberMappings } from '@/core/utils/division'
 import type { DivisionCommandContext } from '@/features/division/command-handler'
 import { handleDivisionCommand } from '@/features/division/command-handler'
+import { Maegashira } from '@/types'
 
 // Mock dependencies
 vi.mock('@/cli/formatters')
@@ -29,30 +30,30 @@ describe('Division Command Handler', () => {
   const mockRikishi = [
     {
       id: 1,
-      name: {
+      shikona: {
         english: 'Hakuho',
         kanji: '白鵬',
         hiragana: 'はくほう',
         romaji: 'Hakuho',
       },
-      rank: {
-        division: 'Yokozuna',
-        position: undefined,
-        side: undefined,
+      current: {
+        division: DIVISION.MAKUUCHI,
+        side: SIDE.EAST,
+        rank: SANYAKU.YOKOZUNA,
       },
     },
     {
       id: 2,
-      name: {
+      shikona: {
         english: 'Kisenosato',
         kanji: '稀勢の里',
         hiragana: 'きせのさと',
         romaji: 'Kisenosato',
       },
-      rank: {
-        division: 'Maegashira',
-        position: 5,
-        side: Side.EAST,
+      current: {
+        division: DIVISION.MAKUUCHI,
+        side: SIDE.EAST,
+        rank: { kind: 'Maegashira', number: 5 } as Maegashira,
       },
     },
   ]
@@ -132,13 +133,17 @@ describe('Division Command Handler', () => {
       const rikishiWithoutRank = [
         {
           id: 1,
-          name: {
+          shikona: {
             english: 'TestRikishi',
             kanji: 'テスト',
             hiragana: 'てすと',
             romaji: 'TestRikishi',
           },
-          rank: undefined,
+          current: {
+            division: DIVISION.MAKUUCHI,
+            side: SIDE.EAST,
+            rank: { kind: 'Maegashira', number: 1 } as Maegashira,
+          },
         },
       ]
 
@@ -147,8 +152,8 @@ describe('Division Command Handler', () => {
 
       await handleDivisionCommand(context)
 
-      expect(mockConsoleLog).toHaveBeenCalledWith('ℹ️  Note: Rank data not available in current dataset')
-      expect(mockConsoleLog).toHaveBeenCalledWith('')
+      expect(mockConsoleLog).toHaveBeenCalledWith('\n🥋 MAKUUCHI Division - 1 Rikishi')
+      expect(mockConsoleLog).toHaveBeenCalledWith('='.repeat(50))
     })
 
     it('should handle empty rikishi list', async () => {

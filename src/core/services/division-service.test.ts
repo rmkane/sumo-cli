@@ -2,10 +2,10 @@ import fs from 'node:fs'
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { Division } from '@/constants'
+import { DIVISION, SIDE } from '@/constants'
 import { listDivisionRikishi } from '@/core/services/division-service'
 import { getAvailableDivisions } from '@/core/utils/division'
-import type { Rikishi } from '@/types'
+import type { MakuuchiRank, Rikishi } from '@/types'
 
 // Mock fs module
 vi.mock('node:fs')
@@ -27,7 +27,11 @@ describe('Division Service', () => {
         romaji: 'Asanoyama',
         english: 'Asanoyama',
       },
-      rank: { position: 1, division: 'makuuchi' },
+      current: {
+        division: DIVISION.MAKUUCHI,
+        side: SIDE.EAST,
+        rank: { kind: 'Maegashira', number: 1 } as MakuuchiRank,
+      },
     },
     {
       id: 2,
@@ -37,7 +41,11 @@ describe('Division Service', () => {
         romaji: 'Ozeki',
         english: 'Ozeki',
       },
-      rank: { position: 2, division: 'makuuchi' },
+      current: {
+        division: DIVISION.MAKUUCHI,
+        side: SIDE.WEST,
+        rank: 'Ozeki',
+      },
     },
     {
       id: 3,
@@ -47,7 +55,11 @@ describe('Division Service', () => {
         romaji: 'Sekiwake',
         english: 'Sekiwake',
       },
-      rank: { position: 3, division: 'makuuchi' },
+      current: {
+        division: DIVISION.MAKUUCHI,
+        side: SIDE.EAST,
+        rank: 'Sekiwake',
+      },
     },
   ]
 
@@ -63,7 +75,6 @@ describe('Division Service', () => {
     it('should load and sort rikishi data by English name', async () => {
       const mockData = {
         division: 'Makuuchi',
-        divisionId: Division.MAKUUCHI,
         timestamp: '2025-01-01T00:00:00.000Z',
         count: 3,
         rikishi: mockRikishiData,
@@ -74,9 +85,9 @@ describe('Division Service', () => {
       const result = await listDivisionRikishi('makuuchi')
 
       expect(result).toHaveLength(3)
-      expect(result[0]?.shikona.english).toBe('Asanoyama')
-      expect(result[1]?.shikona.english).toBe('Ozeki')
-      expect(result[2]?.shikona.english).toBe('Sekiwake')
+      expect(result[0]?.shikona.english).toBe('Ozeki') // Ozeki comes first (higher rank)
+      expect(result[1]?.shikona.english).toBe('Sekiwake') // Sekiwake comes second
+      expect(result[2]?.shikona.english).toBe('Asanoyama') // Maegashira comes last
     })
 
     it('should handle case-insensitive sorting', async () => {
@@ -89,7 +100,11 @@ describe('Division Service', () => {
             romaji: 'Asanoyama',
             english: 'asanoyama', // lowercase
           },
-          rank: { position: 1, division: 'makuuchi' },
+          current: {
+            division: DIVISION.MAKUUCHI,
+            side: SIDE.EAST,
+            rank: { kind: 'Maegashira', number: 1 } as MakuuchiRank,
+          },
         },
         {
           id: 2,
@@ -99,13 +114,12 @@ describe('Division Service', () => {
             romaji: 'Ozeki',
             english: 'OZEKI', // uppercase
           },
-          rank: { position: 2, division: 'makuuchi' },
+          current: { division: DIVISION.MAKUUCHI, side: SIDE.WEST, rank: 'Ozeki' },
         },
       ]
 
       const mockData = {
         division: 'Makuuchi',
-        divisionId: Division.MAKUUCHI,
         timestamp: '2025-01-01T00:00:00.000Z',
         count: 2,
         rikishi: mixedCaseData,
@@ -115,8 +129,8 @@ describe('Division Service', () => {
 
       const result = await listDivisionRikishi('makuuchi')
 
-      expect(result[0]?.shikona.english).toBe('asanoyama')
-      expect(result[1]?.shikona.english).toBe('OZEKI')
+      expect(result[0]?.shikona.english).toBe('OZEKI') // Ozeki comes first (higher rank)
+      expect(result[1]?.shikona.english).toBe('asanoyama') // Maegashira comes second
     })
 
     it('should throw error for invalid division name', async () => {
@@ -136,7 +150,6 @@ describe('Division Service', () => {
     it('should handle empty rikishi array', async () => {
       const mockData = {
         division: 'Makuuchi',
-        divisionId: Division.MAKUUCHI,
         timestamp: '2025-01-01T00:00:00.000Z',
         count: 0,
         rikishi: [],

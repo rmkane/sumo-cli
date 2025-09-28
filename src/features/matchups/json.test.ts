@@ -3,13 +3,12 @@ import path from 'node:path'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { DATA_DIRS, DATA_PATHS } from '@/config/data'
-import { Division, MatchResult, Side } from '@/constants'
-import { getDivisionName } from '@/core/utils/division'
+import { DIVISION, DIVISION_TO_NUMBER, DIVISION_VALUES, MatchResult, SIDE } from '@/constants'
 import { ensureDirectory, saveJSON } from '@/core/utils/file'
 import { generateMatchupFilename } from '@/core/utils/filename'
 import { logDebug } from '@/core/utils/logger'
 import { saveMatchupJSON } from '@/features/matchups/json'
-import type { DivisionType, MatchupData } from '@/types'
+import type { Division, DivisionNumber, MatchupData } from '@/types'
 
 // Mock dependencies
 vi.mock('@/core/utils/file')
@@ -26,9 +25,10 @@ describe('Matchup JSON Utilities', () => {
           hiragana: 'ひがしりきし',
           romaji: 'Higashi Rikishi',
         },
-        rank: {
+        current: {
           division: 'Makuuchi',
-          side: Side.EAST,
+          side: SIDE.EAST,
+          rank: { kind: 'Maegashira', number: 1 },
         },
         record: { wins: 1, losses: 0 },
         result: MatchResult.WIN,
@@ -41,9 +41,10 @@ describe('Matchup JSON Utilities', () => {
           hiragana: 'にしりきし',
           romaji: 'Nishi Rikishi',
         },
-        rank: {
+        current: {
           division: 'Makuuchi',
-          side: Side.WEST,
+          side: SIDE.WEST,
+          rank: { kind: 'Maegashira', number: 1 },
         },
         record: { wins: 0, losses: 1 },
         result: MatchResult.LOSS,
@@ -52,7 +53,7 @@ describe('Matchup JSON Utilities', () => {
   ]
 
   const mockDivisionName = 'Makuuchi'
-  const mockDivisionId: DivisionType = Division.MAKUUCHI
+  const mockDivisionId: DivisionNumber = 1
   const mockDay = 1
 
   beforeEach(() => {
@@ -73,7 +74,7 @@ describe('Matchup JSON Utilities', () => {
       await saveMatchupJSON(mockMatchups, mockDivisionName, mockDivisionId, mockDay)
 
       expect(ensureDirectory).toHaveBeenCalledWith(expectedDir)
-      expect(generateMatchupFilename).toHaveBeenCalledWith(mockDay, mockDivisionId, mockDivisionName, 'json')
+      expect(generateMatchupFilename).toHaveBeenCalledWith(mockDay, mockDivisionName, mockDivisionId, 'json')
       expect(saveJSON).toHaveBeenCalledWith(expectedFilepath, mockMatchups, 'matchups')
       expect(logDebug).toHaveBeenCalledWith(`Saved matchup JSON: ${expectedFilepath}`)
     })
@@ -91,7 +92,7 @@ describe('Matchup JSON Utilities', () => {
       await saveMatchupJSON(mockMatchups, mockDivisionName, mockDivisionId, mockDay, customOutputDir)
 
       expect(ensureDirectory).toHaveBeenCalledWith(customOutputDir)
-      expect(generateMatchupFilename).toHaveBeenCalledWith(mockDay, mockDivisionId, mockDivisionName, 'json')
+      expect(generateMatchupFilename).toHaveBeenCalledWith(mockDay, mockDivisionName, mockDivisionId, 'json')
       expect(saveJSON).toHaveBeenCalledWith(expectedFilepath, mockMatchups, 'matchups')
       expect(logDebug).toHaveBeenCalledWith(`Saved matchup JSON: ${expectedFilepath}`)
     })
@@ -113,10 +114,8 @@ describe('Matchup JSON Utilities', () => {
     })
 
     it('should handle different division types', async () => {
-      const divisions: DivisionType[] = Object.values(Division)
-
-      for (const division of divisions) {
-        const divisionName = getDivisionName(division)
+      for (const divisionName of DIVISION_VALUES) {
+        const divisionId = DIVISION_TO_NUMBER[divisionName]
         const mockFilename = `day1-${divisionName.toLowerCase()}.json`
         const expectedDir = path.join(DATA_PATHS.USER_DATA_DIR, DATA_DIRS.JSON)
         const expectedFilepath = path.join(expectedDir, mockFilename)
@@ -126,9 +125,9 @@ describe('Matchup JSON Utilities', () => {
         vi.mocked(saveJSON).mockResolvedValue(undefined)
         vi.mocked(logDebug).mockImplementation(() => {})
 
-        await saveMatchupJSON(mockMatchups, divisionName, division, mockDay)
+        await saveMatchupJSON(mockMatchups, divisionName, divisionId, mockDay)
 
-        expect(generateMatchupFilename).toHaveBeenCalledWith(mockDay, division, divisionName, 'json')
+        expect(generateMatchupFilename).toHaveBeenCalledWith(mockDay, divisionName, divisionId, 'json')
         expect(saveJSON).toHaveBeenCalledWith(expectedFilepath, mockMatchups, 'matchups')
       }
     })
@@ -148,7 +147,7 @@ describe('Matchup JSON Utilities', () => {
 
         await saveMatchupJSON(mockMatchups, mockDivisionName, mockDivisionId, day)
 
-        expect(generateMatchupFilename).toHaveBeenCalledWith(day, mockDivisionId, mockDivisionName, 'json')
+        expect(generateMatchupFilename).toHaveBeenCalledWith(day, mockDivisionName, mockDivisionId, 'json')
         expect(saveJSON).toHaveBeenCalledWith(expectedFilepath, mockMatchups, 'matchups')
       }
     })
@@ -163,7 +162,11 @@ describe('Matchup JSON Utilities', () => {
               hiragana: 'てるのふじ',
               romaji: 'Terunofuji',
             },
-            rank: { division: 'Makuuchi', side: Side.EAST },
+            current: {
+              division: DIVISION.MAKUUCHI,
+              side: SIDE.EAST,
+              rank: { kind: 'Maegashira', number: 1 },
+            },
             record: { wins: 1, losses: 0 },
             result: 'W',
             technique: 'Yorikiri',
@@ -175,9 +178,10 @@ describe('Matchup JSON Utilities', () => {
               hiragana: 'たかけいしょう',
               romaji: 'Takakeisho',
             },
-            rank: {
+            current: {
               division: 'Makuuchi',
-              side: Side.WEST,
+              side: SIDE.WEST,
+              rank: { kind: 'Maegashira', number: 1 },
             },
             record: { wins: 0, losses: 1 },
             result: 'L',
@@ -191,7 +195,11 @@ describe('Matchup JSON Utilities', () => {
               hiragana: 'わかたかかげ',
               romaji: 'Wakatakakage',
             },
-            rank: { division: 'Makuuchi', side: Side.EAST },
+            current: {
+              division: DIVISION.MAKUUCHI,
+              side: SIDE.EAST,
+              rank: { kind: 'Maegashira', number: 1 },
+            },
             record: { wins: 0, losses: 1 },
             result: 'L',
           },
@@ -202,7 +210,11 @@ describe('Matchup JSON Utilities', () => {
               hiragana: 'ほうしょうりゅう',
               romaji: 'Hoshoryu',
             },
-            rank: { division: 'Makuuchi', side: Side.WEST },
+            current: {
+              division: DIVISION.MAKUUCHI,
+              side: SIDE.WEST,
+              rank: { kind: 'Maegashira', number: 1 },
+            },
             record: { wins: 1, losses: 0 },
             result: 'W',
             technique: 'Tsukidashi',
@@ -294,9 +306,9 @@ describe('Matchup JSON Utilities', () => {
         vi.mocked(saveJSON).mockResolvedValue(undefined)
         vi.mocked(logDebug).mockImplementation(() => {})
 
-        await saveMatchupJSON(mockMatchups, divisionName, mockDivisionId, mockDay)
+        await saveMatchupJSON(mockMatchups, divisionName as Division, mockDivisionId, mockDay)
 
-        expect(generateMatchupFilename).toHaveBeenCalledWith(mockDay, mockDivisionId, divisionName, 'json')
+        expect(generateMatchupFilename).toHaveBeenCalledWith(mockDay, divisionName, mockDivisionId, 'json')
         expect(saveJSON).toHaveBeenCalledWith(expectedFilepath, mockMatchups, 'matchups')
       }
     })
@@ -310,7 +322,11 @@ describe('Matchup JSON Utilities', () => {
             hiragana: `ひがしりきし${i}`,
             romaji: `Higashi Rikishi ${i}`,
           },
-          rank: { division: 'Makuuchi', side: 'East' },
+          current: {
+            division: DIVISION.MAKUUCHI,
+            side: SIDE.EAST,
+            rank: { kind: 'Maegashira', number: 1 },
+          },
           record: { wins: i % 2, losses: (i + 1) % 2 },
           result: i % 2 === 0 ? MatchResult.WIN : MatchResult.LOSS,
           technique: i % 2 === 0 ? 'Oshidashi' : undefined,
@@ -322,9 +338,10 @@ describe('Matchup JSON Utilities', () => {
             hiragana: `にしりきし${i}`,
             romaji: `Nishi Rikishi ${i}`,
           },
-          rank: {
+          current: {
             division: 'Makuuchi',
-            side: Side.WEST,
+            side: SIDE.WEST,
+            rank: { kind: 'Maegashira', number: 1 },
           },
           record: { wins: (i + 1) % 2, losses: i % 2 },
           result: i % 2 === 0 ? MatchResult.LOSS : MatchResult.WIN,

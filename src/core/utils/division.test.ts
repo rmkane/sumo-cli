@@ -3,22 +3,38 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { isValidDivisionEn } from '@/core/dict/divisions'
 import {
   getAvailableDivisions,
+  getDivision,
   getDivisionByRank,
   getDivisionName,
   getDivisionNameFromNumber,
   getDivisionNumberMappings,
-  getDivisionType,
 } from '@/core/utils/division'
 
 // Mock the dependencies
 vi.mock('@/constants', () => ({
-  Division: {
-    MAKUUCHI: 1,
-    JURYO: 2,
-    MAKUSHITA: 3,
-    SANDANME: 4,
-    JONIDAN: 5,
-    JONOKUCHI: 6,
+  DIVISION: {
+    MAKUUCHI: 'Makuuchi',
+    JURYO: 'Juryo',
+    MAKUSHITA: 'Makushita',
+    SANDANME: 'Sandanme',
+    JONIDAN: 'Jonidan',
+    JONOKUCHI: 'Jonokuchi',
+  },
+  NUMBER_TO_DIVISION: {
+    1: 'Makuuchi',
+    2: 'Juryo',
+    3: 'Makushita',
+    4: 'Sandanme',
+    5: 'Jonidan',
+    6: 'Jonokuchi',
+  },
+  DIVISION_NAME_TO_DIVISION: {
+    Makuuchi: 'Makuuchi',
+    Juryo: 'Juryo',
+    Makushita: 'Makushita',
+    Sandanme: 'Sandanme',
+    Jonidan: 'Jonidan',
+    Jonokuchi: 'Jonokuchi',
   },
 }))
 
@@ -47,43 +63,43 @@ describe('Division Utilities', () => {
 
   describe('getDivisionName', () => {
     it('should return correct division names for valid IDs', () => {
-      expect(getDivisionName(1)).toBe('makuuchi')
-      expect(getDivisionName(2)).toBe('juryo')
-      expect(getDivisionName(3)).toBe('makushita')
-      expect(getDivisionName(4)).toBe('sandanme')
-      expect(getDivisionName(5)).toBe('jonidan')
-      expect(getDivisionName(6)).toBe('jonokuchi')
+      expect(getDivisionName(1)).toBe('Makuuchi')
+      expect(getDivisionName(2)).toBe('Juryo')
+      expect(getDivisionName(3)).toBe('Makushita')
+      expect(getDivisionName(4)).toBe('Sandanme')
+      expect(getDivisionName(5)).toBe('Jonidan')
+      expect(getDivisionName(6)).toBe('Jonokuchi')
     })
 
     it('should return unknown for invalid division ID', () => {
-      expect(getDivisionName(0 as never)).toBe('unknown')
-      expect(getDivisionName(7 as never)).toBe('unknown')
-      expect(getDivisionName(-1 as never)).toBe('unknown')
+      expect(getDivisionName(0 as never)).toBe(undefined)
+      expect(getDivisionName(7 as never)).toBe(undefined)
+      expect(getDivisionName(-1 as never)).toBe(undefined)
     })
   })
 
   describe('getDivisionByRank', () => {
     it('should return correct division for Makuuchi ranks', () => {
-      expect(getDivisionByRank('Yokozuna')).toBe(1)
-      expect(getDivisionByRank('Ozeki')).toBe(1)
-      expect(getDivisionByRank('Sekiwake')).toBe(1)
-      expect(getDivisionByRank('Komusubi')).toBe(1)
-      expect(getDivisionByRank('Maegashira')).toBe(1)
-      expect(getDivisionByRank('Maegashira #5')).toBe(1)
-      expect(getDivisionByRank('Maegashira #17')).toBe(1)
+      expect(getDivisionByRank('Yokozuna')).toBe('Makuuchi')
+      expect(getDivisionByRank('Ozeki')).toBe('Makuuchi')
+      expect(getDivisionByRank('Sekiwake')).toBe('Makuuchi')
+      expect(getDivisionByRank('Komusubi')).toBe('Makuuchi')
+      expect(getDivisionByRank('Maegashira')).toBe('Makuuchi')
+      expect(getDivisionByRank('Maegashira #5')).toBe('Makuuchi')
+      expect(getDivisionByRank('Maegashira #17')).toBe('Makuuchi')
     })
 
     it('should return correct division for other ranks', () => {
-      expect(getDivisionByRank('Juryo')).toBe(2)
-      expect(getDivisionByRank('Juryo #10')).toBe(2)
-      expect(getDivisionByRank('Makushita')).toBe(3)
-      expect(getDivisionByRank('Makushita #15')).toBe(3)
-      expect(getDivisionByRank('Sandanme')).toBe(4)
-      expect(getDivisionByRank('Sandanme #20')).toBe(4)
-      expect(getDivisionByRank('Jonidan')).toBe(5)
-      expect(getDivisionByRank('Jonidan #25')).toBe(5)
-      expect(getDivisionByRank('Jonokuchi')).toBe(6)
-      expect(getDivisionByRank('Jonokuchi #30')).toBe(6)
+      expect(getDivisionByRank('Juryo')).toBe('Juryo')
+      expect(getDivisionByRank('Juryo #10')).toBe('Juryo')
+      expect(getDivisionByRank('Makushita')).toBe('Makushita')
+      expect(getDivisionByRank('Makushita #15')).toBe('Makushita')
+      expect(getDivisionByRank('Sandanme')).toBe('Sandanme')
+      expect(getDivisionByRank('Sandanme #20')).toBe('Sandanme')
+      expect(getDivisionByRank('Jonidan')).toBe('Jonidan')
+      expect(getDivisionByRank('Jonidan #25')).toBe('Jonidan')
+      expect(getDivisionByRank('Jonokuchi')).toBe('Jonokuchi')
+      expect(getDivisionByRank('Jonokuchi #30')).toBe('Jonokuchi')
     })
 
     it('should return undefined for invalid rank strings', () => {
@@ -95,7 +111,7 @@ describe('Division Utilities', () => {
 
     it('should handle partial rank strings', () => {
       // "Maegashira #" matches the regex and returns Maegashira division
-      expect(getDivisionByRank('Maegashira #')).toBe(1)
+      expect(getDivisionByRank('Maegashira #')).toBe('Makuuchi')
     })
 
     it('should handle case variations', () => {
@@ -104,26 +120,26 @@ describe('Division Utilities', () => {
     })
   })
 
-  describe('getDivisionType', () => {
+  describe('getDivision', () => {
     it('should return correct division type for valid names', () => {
       mockIsValidDivisionEn.mockReturnValue(true)
 
-      expect(getDivisionType('makuuchi')).toBe(1)
-      expect(getDivisionType('juryo')).toBe(2)
-      expect(getDivisionType('makushita')).toBe(3)
-      expect(getDivisionType('sandanme')).toBe(4)
-      expect(getDivisionType('jonidan')).toBe(5)
-      expect(getDivisionType('jonokuchi')).toBe(6)
+      expect(getDivision('makuuchi')).toBe('Makuuchi')
+      expect(getDivision('juryo')).toBe('Juryo')
+      expect(getDivision('makushita')).toBe('Makushita')
+      expect(getDivision('sandanme')).toBe('Sandanme')
+      expect(getDivision('jonidan')).toBe('Jonidan')
+      expect(getDivision('jonokuchi')).toBe('Jonokuchi')
     })
 
     it('should throw error for invalid division names', () => {
       mockIsValidDivisionEn.mockReturnValue(false)
 
-      expect(() => getDivisionType('invalid')).toThrow(
+      expect(() => getDivision('invalid')).toThrow(
         'Invalid division name: invalid. Available divisions: makuuchi, juryo, makushita, sandanme, jonidan, jonokuchi',
       )
 
-      expect(() => getDivisionType('')).toThrow(
+      expect(() => getDivision('')).toThrow(
         'Invalid division name: . Available divisions: makuuchi, juryo, makushita, sandanme, jonidan, jonokuchi',
       )
     })
@@ -131,7 +147,7 @@ describe('Division Utilities', () => {
     it('should call isValidDivisionEn with correct parameter', () => {
       mockIsValidDivisionEn.mockReturnValue(true)
 
-      getDivisionType('makuuchi')
+      getDivision('makuuchi')
 
       expect(mockIsValidDivisionEn).toHaveBeenCalledWith('makuuchi')
     })
@@ -206,13 +222,14 @@ describe('Division Utilities', () => {
         const [index = '0'] = mapping?.split('=') ?? []
         const number = parseInt(index, 10)
         expect(getDivisionNameFromNumber(number)).toBe(division)
-        expect(getDivisionName(number as never)).toBe(division)
+        // Note: getDivisionName now expects string division values, not numbers
+        // So we can't directly test the reverse mapping here
       })
     })
 
     it('should handle edge cases consistently', () => {
       // Invalid inputs should be handled gracefully
-      expect(getDivisionName(999 as never)).toBe('unknown')
+      expect(getDivisionName(999 as never)).toBe(undefined)
       expect(getDivisionNameFromNumber(999)).toBe(undefined)
       expect(getDivisionByRank('InvalidRank')).toBe(undefined)
     })

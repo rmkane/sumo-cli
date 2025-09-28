@@ -4,7 +4,7 @@ import { DATA_DIRS, DATA_PATHS } from '@/config/data'
 import { ensureDirectory, saveJSON } from '@/core/utils/file'
 import { generateMatchupFilename } from '@/core/utils/filename'
 import { logDebug } from '@/core/utils/logger'
-import type { DivisionType, MatchupData } from '@/types'
+import type { Division, DivisionNumber, MatchupData } from '@/types'
 
 /**
  * Saves matchup data to a JSON file in the config directory
@@ -16,8 +16,8 @@ import type { DivisionType, MatchupData } from '@/types'
  */
 export async function saveMatchupJSON(
   matchups: MatchupData[],
-  divisionName: string,
-  divisionId: DivisionType,
+  divisionName: Division,
+  divisionId: DivisionNumber,
   day: number,
   outputDir?: string,
 ): Promise<void> {
@@ -25,7 +25,7 @@ export async function saveMatchupJSON(
   const jsonDir = outputDir ?? path.join(DATA_PATHS.USER_DATA_DIR, DATA_DIRS.JSON)
   await ensureDirectory(jsonDir)
 
-  const filename = generateMatchupFilename(day, divisionId, divisionName, 'json')
+  const filename = generateMatchupFilename(day, divisionName, divisionId, 'json')
   const filepath = path.join(jsonDir, filename)
 
   await saveJSON(filepath, matchups, 'matchups')

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { DATA_PATHS } from '@/config/data'
-import { MatchResult } from '@/constants'
+import { DIVISION, MatchResult, SIDE } from '@/constants'
 import { parseMatchupHTML } from '@/core/parsers'
 import * as divisionProcessor from '@/core/services/division-processor'
 import { fetchMatchupData } from '@/core/services/matchup-fetcher'
@@ -10,6 +10,7 @@ import * as logger from '@/core/utils/logger'
 import * as csv from '@/features/matchups/csv'
 import * as json from '@/features/matchups/json'
 import { processDayMatchups, processDivisionMatchups } from '@/features/matchups/processor'
+import { MakuuchiRank } from '@/types'
 
 // Mock dependencies
 vi.mock('@/config/data')
@@ -43,24 +44,32 @@ describe('Matchups Processor', () => {
       const mockParsedMatchups = [
         {
           east: {
-            name: {
+            shikona: {
               english: 'Hakuho',
               kanji: '白鵬',
               hiragana: 'はくほう',
               romaji: 'Hakuho',
             },
-            rank: { division: 'Yokozuna' },
+            current: {
+              division: DIVISION.MAKUUCHI,
+              side: SIDE.EAST,
+              rank: { kind: 'Maegashira', number: 1 } as MakuuchiRank,
+            },
             record: { wins: 1, losses: 0 },
             result: MatchResult.WIN,
           },
           west: {
-            name: {
+            shikona: {
               english: 'Kisenosato',
               kanji: '稀勢の里',
               hiragana: 'きせのさと',
               romaji: 'Kisenosato',
             },
-            rank: { division: 'Yokozuna' },
+            current: {
+              division: DIVISION.MAKUUCHI,
+              side: SIDE.WEST,
+              rank: { kind: 'Maegashira', number: 1 } as MakuuchiRank,
+            },
             record: { wins: 0, losses: 1 },
             result: MatchResult.LOSS,
           },
@@ -74,14 +83,14 @@ describe('Matchups Processor', () => {
       vi.mocked(logger.logProcessingStart).mockImplementation(() => {})
       vi.mocked(logger.logProcessingComplete).mockImplementation(() => {})
 
-      await processDivisionMatchups('makuuchi', 1, 5, false, '/output')
+      await processDivisionMatchups('Makuuchi', 1, 5, false, '/output')
 
-      expect(logger.logProcessingStart).toHaveBeenCalledWith('matchups', 'makuuchi day 5')
-      expect(fetchMatchupData).toHaveBeenCalledWith(1, 5, false)
-      expect(parseMatchupHTML).toHaveBeenCalledWith(mockMatchupData.html, 1, 5)
-      expect(json.saveMatchupJSON).toHaveBeenCalledWith(mockParsedMatchups, 'makuuchi', 1, 5)
-      expect(csv.saveMatchupCSV).toHaveBeenCalledWith(mockParsedMatchups, 'makuuchi', 1, 5, '/output')
-      expect(logger.logProcessingComplete).toHaveBeenCalledWith('matchups', 1, 'makuuchi day 5')
+      expect(logger.logProcessingStart).toHaveBeenCalledWith('matchups', 'Makuuchi day 5')
+      expect(fetchMatchupData).toHaveBeenCalledWith('Makuuchi', 1, 5, false)
+      expect(parseMatchupHTML).toHaveBeenCalledWith(mockMatchupData.html, 'Makuuchi', 5)
+      expect(json.saveMatchupJSON).toHaveBeenCalledWith(mockParsedMatchups, 'Makuuchi', 1, 5)
+      expect(csv.saveMatchupCSV).toHaveBeenCalledWith(mockParsedMatchups, 'Makuuchi', 1, 5, '/output')
+      expect(logger.logProcessingComplete).toHaveBeenCalledWith('matchups', 1, 'Makuuchi day 5')
     })
 
     it('should handle empty matchups gracefully', async () => {
@@ -95,10 +104,10 @@ describe('Matchups Processor', () => {
       vi.mocked(logger.logProcessingStart).mockImplementation(() => {})
       vi.mocked(logger.logWarning).mockImplementation(() => {})
 
-      await processDivisionMatchups('makuuchi', 1, 5, false)
+      await processDivisionMatchups('Makuuchi', 1, 5, false)
 
       expect(logger.logWarning).toHaveBeenCalledWith(
-        'No valid matchups found for makuuchi day 5 - skipping file creation',
+        'No valid matchups found for Makuuchi day 5 - skipping file creation',
       )
       expect(csv.saveMatchupCSV).not.toHaveBeenCalled()
       expect(json.saveMatchupJSON).not.toHaveBeenCalled()
@@ -110,9 +119,9 @@ describe('Matchups Processor', () => {
       vi.mocked(logger.logProcessingStart).mockImplementation(() => {})
       vi.mocked(logger.logError).mockImplementation(() => {})
 
-      await expect(processDivisionMatchups('makuuchi', 1, 5, false)).rejects.toThrow('Fetch error')
+      await expect(processDivisionMatchups('Makuuchi', 1, 5, false)).rejects.toThrow('Fetch error')
 
-      expect(logger.logError).toHaveBeenCalledWith('makuuchi day 5', error)
+      expect(logger.logError).toHaveBeenCalledWith('Makuuchi day 5', error)
     })
   })
 
@@ -129,24 +138,32 @@ describe('Matchups Processor', () => {
       const mockParsedMatchups = [
         {
           east: {
-            name: {
+            shikona: {
               english: 'Hakuho',
               kanji: '白鵬',
               hiragana: 'はくほう',
               romaji: 'Hakuho',
             },
-            rank: { division: 'Yokozuna' },
+            current: {
+              division: DIVISION.MAKUUCHI,
+              side: SIDE.EAST,
+              rank: { kind: 'Maegashira', number: 1 } as MakuuchiRank,
+            },
             record: { wins: 1, losses: 0 },
             result: MatchResult.WIN,
           },
           west: {
-            name: {
+            shikona: {
               english: 'Kisenosato',
               kanji: '稀勢の里',
               hiragana: 'きせのさと',
               romaji: 'Kisenosato',
             },
-            rank: { division: 'Yokozuna' },
+            current: {
+              division: DIVISION.MAKUUCHI,
+              side: SIDE.WEST,
+              rank: { kind: 'Maegashira', number: 1 } as MakuuchiRank,
+            },
             record: { wins: 0, losses: 1 },
             result: MatchResult.LOSS,
           },
@@ -154,8 +171,8 @@ describe('Matchups Processor', () => {
       ]
 
       vi.mocked(divisionIterator.processAllDivisions).mockImplementation(async (processor) => {
-        const result1 = await processor('makuuchi', 1)
-        const result2 = await processor('juryo', 2)
+        const result1 = await processor('Makuuchi', 1)
+        const result2 = await processor('Juryo', 2)
         return [result1, result2]
       })
       vi.mocked(divisionProcessor.processDivision).mockResolvedValue()
@@ -191,7 +208,7 @@ describe('Matchups Processor', () => {
 
     it('should handle divisions with no matchups', async () => {
       vi.mocked(divisionIterator.processAllDivisions).mockImplementation(async (processor) => {
-        const result = await processor('makuuchi', 1)
+        const result = await processor('Makuuchi', 1)
         return [result]
       })
       vi.mocked(divisionProcessor.processDivision).mockResolvedValue()
@@ -207,15 +224,15 @@ describe('Matchups Processor', () => {
       const result = await processDayMatchups(5, false)
 
       expect(logger.logWarning).toHaveBeenCalledWith(
-        'No valid matchups found for makuuchi day 5 - skipping file creation',
+        'No valid matchups found for Makuuchi day 5 - skipping file creation',
       )
       expect(result.filesCreated).toBe(0)
     })
 
     it('should handle mixed results (some divisions with matchups, some without)', async () => {
       vi.mocked(divisionIterator.processAllDivisions).mockImplementation(async (processor) => {
-        const result1 = await processor('makuuchi', 1)
-        const result2 = await processor('juryo', 2)
+        const result1 = await processor('Makuuchi', 1)
+        const result2 = await processor('Juryo', 2)
         return [result1, result2]
       })
       vi.mocked(divisionProcessor.processDivision).mockResolvedValue()
@@ -226,24 +243,32 @@ describe('Matchups Processor', () => {
         .mockReturnValueOnce([
           {
             east: {
-              name: {
+              shikona: {
                 english: 'Test',
                 kanji: 'テスト',
                 hiragana: 'てすと',
                 romaji: 'Test',
               },
-              rank: { division: 'Makuuchi' },
+              current: {
+                division: DIVISION.MAKUUCHI,
+                side: SIDE.EAST,
+                rank: { kind: 'Maegashira', number: 1 } as MakuuchiRank,
+              },
               record: { wins: 1, losses: 0 },
               result: MatchResult.WIN,
             },
             west: {
-              name: {
+              shikona: {
                 english: 'Test2',
                 kanji: 'テスト2',
                 hiragana: 'てすと2',
                 romaji: 'Test2',
               },
-              rank: { division: 'Makuuchi' },
+              current: {
+                division: DIVISION.MAKUUCHI,
+                side: SIDE.WEST,
+                rank: { kind: 'Maegashira', number: 1 } as MakuuchiRank,
+              },
               record: { wins: 0, losses: 1 },
               result: MatchResult.LOSS,
             },
@@ -260,8 +285,8 @@ describe('Matchups Processor', () => {
       const result = await processDayMatchups(5, false)
 
       expect(result.filesCreated).toBe(1)
-      expect(logger.logProcessingComplete).toHaveBeenCalledWith('matchups', 1, 'makuuchi day 5')
-      expect(logger.logWarning).toHaveBeenCalledWith('No valid matchups found for juryo day 5 - skipping file creation')
+      expect(logger.logProcessingComplete).toHaveBeenCalledWith('matchups', 1, 'Makuuchi day 5')
+      expect(logger.logWarning).toHaveBeenCalledWith('No valid matchups found for Juryo day 5 - skipping file creation')
     })
   })
 })

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
+import { DIVISION } from '@/constants'
 import { parseRikishiFromHTML } from '@/core/parsers'
 
 describe('Stats Service', () => {
@@ -50,29 +51,29 @@ describe('Stats Service', () => {
         </html>
       `
 
-      const results = parseRikishiFromHTML(testHTML, 1) // Pass division 1 (Makuuchi)
+      const results = parseRikishiFromHTML(testHTML, DIVISION.MAKUUCHI) // Pass division 1 (Makuuchi)
 
       expect(results).toHaveLength(4)
 
       // Test first rikishi (should have Yokozuna division with no position, East side)
-      expect(results[0]?.rank?.division).toBe('Yokozuna')
-      expect(results[0]?.rank?.position).toBeUndefined()
-      expect(results[0]?.rank?.side).toBe('East')
+      expect(results[0]?.current?.division).toBe('Makuuchi')
+      expect(results[0]?.current?.rank).toBe('Yokozuna')
+      expect(results[0]?.current?.side).toBe('East')
 
       // Test second rikishi (should also have Yokozuna division with no position, West side)
-      expect(results[1]?.rank?.division).toBe('Yokozuna')
-      expect(results[1]?.rank?.position).toBeUndefined()
-      expect(results[1]?.rank?.side).toBe('West')
+      expect(results[1]?.current?.division).toBe('Makuuchi')
+      expect(results[1]?.current?.rank).toBe('Yokozuna')
+      expect(results[1]?.current?.side).toBe('West')
 
       // Test third rikishi (should have Makuuchi division with position from rank text, East side)
-      expect(results[2]?.rank?.division).toBe('Maegashira')
-      expect(results[2]?.rank?.position).toBe(6)
-      expect(results[2]?.rank?.side).toBe('East')
+      expect(results[2]?.current?.division).toBe('Makuuchi')
+      expect(results[2]?.current?.rank).toEqual({ kind: 'Maegashira', number: 6 })
+      expect(results[2]?.current?.side).toBe('East')
 
       // Test fourth rikishi (should also have Makuuchi division with position from rank text, West side)
-      expect(results[3]?.rank?.division).toBe('Maegashira')
-      expect(results[3]?.rank?.position).toBe(6)
-      expect(results[3]?.rank?.side).toBe('West')
+      expect(results[3]?.current?.division).toBe('Makuuchi')
+      expect(results[3]?.current?.rank).toEqual({ kind: 'Maegashira', number: 6 })
+      expect(results[3]?.current?.side).toBe('West')
     })
 
     it('should handle edge cases in rank parsing', () => {
@@ -117,29 +118,29 @@ describe('Stats Service', () => {
         </html>
       `
 
-      const results = parseRikishiFromHTML(testHTML, 1) // Pass division 1 (Makuuchi)
+      const results = parseRikishiFromHTML(testHTML, DIVISION.MAKUUCHI) // Pass division 1 (Makuuchi)
 
       expect(results).toHaveLength(4)
 
       // Test first rikishi (should have Maegashira division with position from rank text, East side)
-      expect(results[0]?.rank?.division).toBe('Maegashira')
-      expect(results[0]?.rank?.position).toBe(1)
-      expect(results[0]?.rank?.side).toBe('East')
+      expect(results[0]?.current?.division).toBe('Makuuchi')
+      expect(results[0]?.current?.rank).toEqual({ kind: 'Maegashira', number: 1 })
+      expect(results[0]?.current?.side).toBe('East')
 
       // Test second rikishi (should also have Maegashira division with position from rank text, West side)
-      expect(results[1]?.rank?.division).toBe('Maegashira')
-      expect(results[1]?.rank?.position).toBe(1)
-      expect(results[1]?.rank?.side).toBe('West')
+      expect(results[1]?.current?.division).toBe('Makuuchi')
+      expect(results[1]?.current?.rank).toEqual({ kind: 'Maegashira', number: 1 })
+      expect(results[1]?.current?.side).toBe('West')
 
       // Test third rikishi (should have Maegashira division with position from rank text, East side)
-      expect(results[2]?.rank?.division).toBe('Maegashira')
-      expect(results[2]?.rank?.position).toBe(10)
-      expect(results[2]?.rank?.side).toBe('East')
+      expect(results[2]?.current?.division).toBe('Makuuchi')
+      expect(results[2]?.current?.rank).toEqual({ kind: 'Maegashira', number: 10 })
+      expect(results[2]?.current?.side).toBe('East')
 
       // Test fourth rikishi (should also have Maegashira division with position from rank text, West side)
-      expect(results[3]?.rank?.division).toBe('Maegashira')
-      expect(results[3]?.rank?.position).toBe(10)
-      expect(results[3]?.rank?.side).toBe('West')
+      expect(results[3]?.current?.division).toBe('Makuuchi')
+      expect(results[3]?.current?.rank).toEqual({ kind: 'Maegashira', number: 10 })
+      expect(results[3]?.current?.side).toBe('West')
     })
 
     it('should parse rikishi data correctly', () => {
@@ -164,7 +165,7 @@ describe('Stats Service', () => {
         </html>
       `
 
-      const results = parseRikishiFromHTML(testHTML, 1) // Pass division 1 (Makuuchi)
+      const results = parseRikishiFromHTML(testHTML, DIVISION.MAKUUCHI) // Pass division 1 (Makuuchi)
 
       expect(results).toHaveLength(1)
       expect(results[0]).toEqual({
@@ -175,8 +176,9 @@ describe('Stats Service', () => {
           romaji: 'Hakuhō',
           english: 'Hakuho',
         },
-        rank: {
-          division: 'Yokozuna',
+        current: {
+          division: 'Makuuchi',
+          rank: 'Yokozuna',
           side: 'East',
         },
       })
@@ -278,8 +280,9 @@ describe('Stats Service', () => {
           romaji: 'Ōnosato',
           english: 'Onosato',
         },
-        rank: {
-          division: 'Yokozuna',
+        current: {
+          division: 'Makuuchi',
+          rank: 'Yokozuna',
           side: 'East',
         },
       })
@@ -293,8 +296,9 @@ describe('Stats Service', () => {
           romaji: 'Hōshōryū',
           english: 'Hoshoryu',
         },
-        rank: {
-          division: 'Yokozuna',
+        current: {
+          division: 'Makuuchi',
+          rank: 'Yokozuna',
           side: 'West',
         },
       })
@@ -308,9 +312,9 @@ describe('Stats Service', () => {
           romaji: 'Shishi',
           english: 'Shishi',
         },
-        rank: {
-          division: 'Maegashira',
-          position: 18,
+        current: {
+          division: 'Makuuchi',
+          rank: { kind: 'Maegashira', number: 18 },
           side: 'East',
         },
       })
@@ -324,9 +328,9 @@ describe('Stats Service', () => {
           romaji: 'Daisēzan',
           english: 'Daisezan',
         },
-        rank: {
-          division: 'Maegashira',
-          position: 18,
+        current: {
+          division: 'Makuuchi',
+          rank: { kind: 'Maegashira', number: 18 },
           side: 'West',
         },
       })
@@ -382,17 +386,17 @@ describe('Stats Service', () => {
       expect(results).toHaveLength(2)
       expect(results[0]?.shikona.kanji).toBe('佐田の城')
       expect(results[0]?.shikona.hiragana).toBe('さだのじょう')
-      expect(results[0]?.rank).toEqual({
+      expect(results[0]?.current).toEqual({
         division: 'Jonokuchi',
-        position: 24,
+        rank: { kind: 'Numbered', number: 24 },
         side: 'East',
       })
 
       expect(results[1]?.shikona.kanji).toBe('輝の里')
       expect(results[1]?.shikona.hiragana).toBe('きのさと')
-      expect(results[1]?.rank).toEqual({
+      expect(results[1]?.current).toEqual({
         division: 'Jonokuchi',
-        position: 24,
+        rank: { kind: 'Numbered', number: 24 },
         side: 'West',
       })
     })

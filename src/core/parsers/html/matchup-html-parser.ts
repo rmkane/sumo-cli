@@ -3,7 +3,7 @@ import { load } from 'cheerio'
 import { parseMatchupRow } from '@/core/parsers'
 import { validateAndLogHTMLDate } from '@/core/services/matchup-validator'
 import { logWarning } from '@/core/utils/logger'
-import type { DivisionType, MatchupData } from '@/types'
+import type { Division, MatchupData } from '@/types'
 
 /**
  * Parses HTML content to extract matchup data from the torikumi table.
@@ -13,7 +13,7 @@ import type { DivisionType, MatchupData } from '@/types'
  * @param requestedDay - Optional day number for validation
  * @returns Array of parsed MatchupData objects
  */
-export function parseMatchupHTML(html: string, division: DivisionType, requestedDay?: number): MatchupData[] {
+export function parseMatchupHTML(html: string, division: Division, requestedDay?: number): MatchupData[] {
   const $ = load(html)
   const matchups: MatchupData[] = []
 

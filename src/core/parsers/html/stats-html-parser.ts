@@ -1,7 +1,7 @@
 import { load } from 'cheerio'
 
-import { Side } from '@/constants'
-import type { DivisionType, Rikishi } from '@/types'
+import { SIDE } from '@/constants'
+import type { Division, Rikishi } from '@/types'
 
 import { parseStatsRecord } from './stats-record-parser'
 
@@ -12,7 +12,7 @@ import { parseStatsRecord } from './stats-record-parser'
  * @param division - Division type for context
  * @returns Array of parsed Rikishi objects
  */
-export function parseRikishiFromHTML(html: string, division?: DivisionType): Rikishi[] {
+export function parseRikishiFromHTML(html: string, division?: Division): Rikishi[] {
   const $ = load(html)
   const records: Rikishi[] = []
 
@@ -32,13 +32,13 @@ export function parseRikishiFromHTML(html: string, division?: DivisionType): Rik
       // Parse left cell if it has div.box (East side)
       const $leftBox = $leftCell.find('div.box')
       if ($leftBox.length > 0) {
-        records.push(parseStatsRecord($leftBox, rankText, division, Side.EAST))
+        records.push(parseStatsRecord($leftBox, rankText, division, SIDE.EAST))
       }
 
       // Parse right cell if it has div.box (West side)
       const $rightBox = $rightCell.find('div.box')
       if ($rightBox.length > 0) {
-        records.push(parseStatsRecord($rightBox, rankText, division, Side.WEST))
+        records.push(parseStatsRecord($rightBox, rankText, division, SIDE.WEST))
       }
     }
   })

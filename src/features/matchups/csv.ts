@@ -6,7 +6,7 @@ import type { CSVHeader } from '@/core/utils/csv'
 import { writeCSV } from '@/core/utils/csv'
 import { generateMatchupFilename } from '@/core/utils/filename'
 import { logDebug } from '@/core/utils/logger'
-import type { DivisionType, MatchupData, RikishiRank, RikishiRecord } from '@/types'
+import type { BanzukeSlot, Division, DivisionNumber, MatchupData, RikishiRecord } from '@/types'
 
 /**
  * CSV headers configuration for matchup data
@@ -62,7 +62,7 @@ export function matchupDataToCSVObjects(matchups: MatchupData[]): Record<string,
     const winningTechnique = winner?.technique ?? ''
 
     return {
-      eastRank: formatRank(matchup.east.rank),
+      eastRank: formatRank(matchup.east.current),
       eastRecord: formatBashoRecord(matchup.east.record),
       eastKanji: matchup.east.shikona.kanji || '',
       eastHiragana: matchup.east.shikona.hiragana || '',
@@ -74,7 +74,7 @@ export function matchupDataToCSVObjects(matchups: MatchupData[]): Record<string,
       westHiragana: matchup.west.shikona.hiragana || '',
       westKanji: matchup.west.shikona.kanji || '',
       westRecord: formatBashoRecord(matchup.west.record),
-      westRank: formatRank(matchup.west.rank),
+      westRank: formatRank(matchup.west.current),
     }
   })
 }
@@ -85,14 +85,21 @@ function formatBashoRecord(record: RikishiRecord): string {
   return `(${[wins, losses, rest].filter((n) => n != undefined).join('-')})`
 }
 
-function formatRank(rank: RikishiRank): string {
-  if (!rank?.division) return ''
+function formatRank(current: BanzukeSlot): string {
+  if (!current?.division) return ''
 
-  if (rank.position !== undefined) {
-    return `${rank.division} #${rank.position}`
-  } else {
-    return rank.division
+  const { division, rank } = current
+
+  if (typeof rank === 'string') {
+    // Sanyaku rank
+    return rank
   }
+
+  if (rank?.kind === 'Maegashira' || rank?.kind === 'Numbered') {
+    return `${division} #${rank?.number}`
+  }
+
+  return division
 }
 
 /**
@@ -105,13 +112,13 @@ function formatRank(rank: RikishiRank): string {
  */
 export async function saveMatchupCSV(
   matchups: MatchupData[],
-  divisionName: string,
-  divisionId: DivisionType,
+  divisionName: Division,
+  divisionId: DivisionNumber,
   day: number,
   outputDir?: string,
 ): Promise<void> {
   const csvDir = outputDir ?? DATA_PATHS.OUTPUT_DIR
-  const filename = generateMatchupFilename(day, divisionId, divisionName, 'csv')
+  const filename = generateMatchupFilename(day, divisionName, divisionId, 'csv')
   const filepath = path.join(csvDir, filename)
 
   // Convert matchup data to CSV objects

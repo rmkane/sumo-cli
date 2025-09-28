@@ -41,13 +41,6 @@ export async function handleDivisionCommand(context: DivisionCommandContext): Pr
     console.log(`\n🥋 ${divisionName.toUpperCase()} Division - ${rikishiList.length} Rikishi`)
     console.log('='.repeat(50))
 
-    // Check if any rikishi have rank data
-    const hasRankData = rikishiList.some((rikishi) => rikishi.rank)
-    if (!hasRankData) {
-      console.log('ℹ️  Note: Rank data not available in current dataset')
-      console.log('')
-    }
-
     // Format output based on requested format
     switch (context.format) {
       case 'json':

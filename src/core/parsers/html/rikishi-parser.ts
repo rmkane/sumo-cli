@@ -1,11 +1,11 @@
 import { type Cheerio } from 'cheerio'
 import { type Element } from 'domhandler'
 
+import { DIVISION, SIDE } from '@/constants'
 import { parseRank, parseRecord } from '@/core/parsers'
 import { findRikishiAcrossDivisions } from '@/core/services/rikishi-lookup'
-import { getDivisionByRank } from '@/core/utils/division'
 import { logWarning } from '@/core/utils/logger'
-import type { DivisionType, RikishiRank, RikishiRecord, RikishiShikona } from '@/types'
+import type { BanzukeSlot, Division, MakuuchiRank, RikishiRecord, RikishiShikona } from '@/types'
 
 /**
  * Parses a single player from the HTML.
@@ -16,16 +16,16 @@ import type { DivisionType, RikishiRank, RikishiRecord, RikishiShikona } from '@
  */
 export function parseRikishi(
   $player: Cheerio<Element>,
-  division: DivisionType,
+  division: Division,
 ): {
   shikona: RikishiShikona
-  rank: RikishiRank
+  current: BanzukeSlot
   record: RikishiRecord
 } | null {
   try {
     // Extract rank
     const rankText = $player.find('.rank').text().trim()
-    const rank = parseRank(rankText, division)
+    const current = parseRank(rankText, division)
 
     // Extract name (kanji) - it's inside a span within an anchor tag
     const kanji = $player.find('.name span').text().trim()
@@ -34,18 +34,18 @@ export function parseRikishi(
     const recordText = $player.find('.perform').text().trim()
     const record = parseRecord(recordText)
 
-    // Determine the correct division based on the rank
-    const rankDivision = getDivisionByRank(rankText)
+    // Prefer the division parsed from rank, fall back to the requested division
+    const lookupDivision = current?.division ?? division
 
     // Look up rikishi data to get hiragana and English name
-    const rikishiData = findRikishiAcrossDivisions(kanji, rankDivision ?? division)
+    const rikishiData = findRikishiAcrossDivisions(kanji, lookupDivision)
     const hiragana = rikishiData?.shikona.hiragana ?? kanji
     const name = rikishiData?.shikona.english ?? kanji
     const romaji = rikishiData?.shikona.romaji ?? kanji
 
     // Only warn for non-empty names that weren't found
     if (!rikishiData && kanji.trim()) {
-      logWarning(`Rikishi not found in JSON: "${kanji}" (rank: ${rank}, division: ${rankDivision ?? division})`)
+      logWarning(`Rikishi not found in JSON: "${kanji}" (division: ${lookupDivision})`)
     }
 
     return {
@@ -55,7 +55,11 @@ export function parseRikishi(
         hiragana,
         romaji,
       },
-      rank: rank ?? { division: '', side: undefined },
+      current: current ?? {
+        division: DIVISION.MAKUUCHI,
+        side: SIDE.EAST,
+        rank: { kind: 'Maegashira', number: 1 } as MakuuchiRank,
+      },
       record,
     }
   } catch (error) {

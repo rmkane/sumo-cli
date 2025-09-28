@@ -4,13 +4,21 @@ import { getAllDivisions, processAllDivisions, processAllDivisionsSequentially }
 
 // Mock the constants module
 vi.mock('@/constants', () => ({
-  Division: {
-    MAKUUCHI: 1,
-    JURYO: 2,
-    MAKUSHITA: 3,
-    SANDANME: 4,
-    JONIDAN: 5,
-    JONOKUCHI: 6,
+  DIVISION: {
+    MAKUUCHI: 'Makuuchi',
+    JURYO: 'Juryo',
+    MAKUSHITA: 'Makushita',
+    SANDANME: 'Sandanme',
+    JONIDAN: 'Jonidan',
+    JONOKUCHI: 'Jonokuchi',
+  },
+  DIVISION_TO_NUMBER: {
+    Makuuchi: 1,
+    Juryo: 2,
+    Makushita: 3,
+    Sandanme: 4,
+    Jonidan: 5,
+    Jonokuchi: 6,
   },
 }))
 
@@ -23,13 +31,13 @@ describe('Division Iterator', () => {
 
       const results = await processAllDivisions(processor)
 
-      expect(results).toEqual(['MAKUUCHI_1', 'JURYO_2', 'MAKUSHITA_3', 'SANDANME_4', 'JONIDAN_5', 'JONOKUCHI_6'])
+      expect(results).toEqual(['Makuuchi_1', 'Juryo_2', 'Makushita_3', 'Sandanme_4', 'Jonidan_5', 'Jonokuchi_6'])
       expect(processor).toHaveBeenCalledTimes(6)
     })
 
     it('should handle processor errors', async () => {
       const processor = vi.fn().mockImplementation(async (divisionName: string, divisionId: number) => {
-        if (divisionName === 'JURYO') {
+        if (divisionName === 'Juryo') {
           throw new Error('Processing error')
         }
         return `${divisionName}_${divisionId}`
@@ -48,14 +56,14 @@ describe('Division Iterator', () => {
       const callOrder: string[] = []
       const processor = vi.fn().mockImplementation(async (divisionName: string, divisionId: number) => {
         callOrder.push(divisionName)
-        if (divisionName === 'JURYO') {
+        if (divisionName === 'Juryo') {
           throw new Error('Sequential processing error')
         }
         return `${divisionName}_${divisionId}`
       })
 
       await expect(processAllDivisionsSequentially(processor)).rejects.toThrow('Sequential processing error')
-      expect(callOrder).toEqual(['MAKUUCHI', 'JURYO'])
+      expect(callOrder).toEqual(['Makuuchi', 'Juryo'])
     })
 
     // Note: Complex sequential processing tests removed due to Division mocking issues
@@ -69,7 +77,7 @@ describe('Division Iterator', () => {
 
       divisions.forEach(([name, id]) => {
         expect(typeof name).toBe('string')
-        expect(typeof id).toBe('number')
+        expect(typeof id).toBe('string')
       })
     })
 

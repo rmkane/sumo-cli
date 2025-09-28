@@ -1,5 +1,5 @@
-import { Division } from '@/constants'
-import type { DivisionType, ProcessorFn } from '@/types'
+import { DIVISION, DIVISION_TO_NUMBER } from '@/constants'
+import type { Division, ProcessorFn } from '@/types'
 
 /**
  * Utility for iterating over all sumo divisions.
@@ -20,9 +20,9 @@ import type { DivisionType, ProcessorFn } from '@/types'
  * ```
  */
 export async function processAllDivisions<T>(processor: ProcessorFn<T>): Promise<T[]> {
-  const divisionPromises = Object.entries(Division).map(([divisionName, divisionId]) =>
-    processor(divisionName, divisionId),
-  )
+  const divisionPromises = Object.entries(DIVISION_TO_NUMBER).map(([divisionName, divisionId]) => {
+    return processor(divisionName as Division, divisionId)
+  })
   return Promise.all(divisionPromises)
 }
 
@@ -39,13 +39,10 @@ export async function processAllDivisions<T>(processor: ProcessorFn<T>): Promise
  * })
  * ```
  */
-export async function processAllDivisionsSequentially<T>(
-  // eslint-disable-next-line no-unused-vars
-  processor: (divisionName: string, divisionId: DivisionType) => Promise<T>,
-): Promise<T[]> {
+export async function processAllDivisionsSequentially<T>(processor: ProcessorFn<T>): Promise<T[]> {
   const results: T[] = []
-  for (const [divisionName, divisionId] of Object.entries(Division)) {
-    const result = await processor(divisionName, divisionId)
+  for (const [divisionName, divisionId] of Object.entries(DIVISION_TO_NUMBER)) {
+    const result = await processor(divisionName as Division, divisionId)
     results.push(result)
   }
   return results
@@ -56,6 +53,6 @@ export async function processAllDivisionsSequentially<T>(
  *
  * @returns Array of [divisionName, divisionId] tuples
  */
-export function getAllDivisions(): Array<[string, DivisionType]> {
-  return Object.entries(Division) as Array<[string, DivisionType]>
+export function getAllDivisions(): Array<[string, Division]> {
+  return Object.entries(DIVISION) as Array<[string, Division]>
 }

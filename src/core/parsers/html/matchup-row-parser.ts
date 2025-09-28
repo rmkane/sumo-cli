@@ -4,7 +4,7 @@ import { type Element } from 'domhandler'
 import { MatchResult } from '@/constants'
 import { parseResult, parseRikishi, parseWinningTechnique } from '@/core/parsers'
 import { logWarning } from '@/core/utils/logger'
-import type { DivisionType, MatchupData } from '@/types'
+import type { Division, MatchupData } from '@/types'
 
 /**
  * Parses a single matchup row from the HTML table.
@@ -13,7 +13,7 @@ import type { DivisionType, MatchupData } from '@/types'
  * @param division - Division identifier for rikishi lookup
  * @returns Parsed MatchupData object or null if parsing fails
  */
-export function parseMatchupRow($row: Cheerio<Element>, division: DivisionType): MatchupData | null {
+export function parseMatchupRow($row: Cheerio<Element>, division: Division): MatchupData | null {
   try {
     // East rikishi is always the first td, west rikishi is always the last td
     const $tds = $row.find('td')
@@ -35,8 +35,8 @@ export function parseMatchupRow($row: Cheerio<Element>, division: DivisionType):
     if (
       eastPlayer.shikona.kanji === '' ||
       westPlayer.shikona.kanji === '' ||
-      eastPlayer.rank?.division === undefined ||
-      westPlayer.rank?.division === undefined
+      eastPlayer.current?.division === undefined ||
+      westPlayer.current?.division === undefined
     ) {
       return null
     }

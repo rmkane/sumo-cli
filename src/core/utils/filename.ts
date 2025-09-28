@@ -1,4 +1,4 @@
-import type { DivisionType } from '@/types'
+import type { Division, DivisionNumber } from '@/types'
 
 /**
  * Standardized filename generation for matchup data
@@ -10,8 +10,8 @@ import type { DivisionType } from '@/types'
  */
 export function generateMatchupFilename(
   day: number,
-  divisionId: DivisionType,
-  divisionName: string,
+  divisionName: Division,
+  divisionId: DivisionNumber,
   extension: string,
 ): string {
   const paddedDay = day.toString().padStart(2, '0')
@@ -25,6 +25,6 @@ export function generateMatchupFilename(
  * @param extension - File extension (without dot)
  * @returns Standardized filename
  */
-export function generateRikishiFilename(divisionId: DivisionType, divisionName: string, extension: string): string {
+export function generateRikishiFilename(divisionName: Division, divisionId: DivisionNumber, extension: string): string {
   return `${divisionId}_${divisionName.toLowerCase()}_rikishi.${extension}`
 }

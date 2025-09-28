@@ -1,17 +1,7 @@
-import { Division } from '@/constants'
+import { DIVISION, DIVISION_NAME_TO_DIVISION, NUMBER_TO_DIVISION } from '@/constants'
 import { isValidDivisionEn } from '@/core/dict/divisions'
-import { invertDict } from '@/core/utils/object'
-import type { DivisionType } from '@/types'
-
-// Division ID to name mapping
-const DIVISION_NAMES = invertDict(Division, {
-  originalKeyMap: (key) => key.toLowerCase(),
-}) as Record<DivisionType, string>
-
-// Inverted mapping for efficient lookup
-const DIVISION_IDS = invertDict(DIVISION_NAMES)
-
-const AVAILABLE_DIVISIONS = Object.values(DIVISION_NAMES)
+import { ranksDictionaryJp } from '@/core/dict/ranks'
+import type { Division, DivisionNumber } from '@/types'
 
 /**
  * Gets the division name from division ID.
@@ -19,8 +9,8 @@ const AVAILABLE_DIVISIONS = Object.values(DIVISION_NAMES)
  * @param division - Division identifier
  * @returns Division name
  */
-export function getDivisionName(division: DivisionType): string {
-  return DIVISION_NAMES[division] || 'unknown'
+export function getDivisionName(divisionId: DivisionNumber): Division | undefined {
+  return NUMBER_TO_DIVISION[divisionId]
 }
 
 /**
@@ -30,48 +20,69 @@ export function getDivisionName(division: DivisionType): string {
  * @param rank - Rank string (e.g., "Maegashira #17", "Juryo #10")
  * @returns Division identifier or undefined if not found
  */
-export function getDivisionByRank(rank: string): DivisionType | undefined {
-  const match = rank.match(/([A-Za-z]+)(?:\s#(\d+))?/)
-  if (!match) {
-    return undefined
+export function getDivisionByRank(rank: string): Division | undefined {
+  const clean = rank.trim()
+
+  // 1) Try English pattern first (e.g., "Maegashira #6", "Juryo #10")
+  const enMatch = clean.match(/([A-Za-z]+)(?:\s#(\d+))?/)
+  if (enMatch) {
+    const [, enName] = enMatch
+    if (enName !== undefined) {
+      const rankToDivision: Record<string, Division> = {
+        Yokozuna: DIVISION.MAKUUCHI,
+        Ozeki: DIVISION.MAKUUCHI,
+        Sekiwake: DIVISION.MAKUUCHI,
+        Komusubi: DIVISION.MAKUUCHI,
+        Maegashira: DIVISION.MAKUUCHI,
+        Juryo: DIVISION.JURYO,
+        Makushita: DIVISION.MAKUSHITA,
+        Sandanme: DIVISION.SANDANME,
+        Jonidan: DIVISION.JONIDAN,
+        Jonokuchi: DIVISION.JONOKUCHI,
+      }
+      const div = rankToDivision[enName]
+      if (div) return div
+    }
   }
 
-  const [, divisionName] = match
-  if (divisionName === undefined || divisionName === '') {
-    return undefined
+  // 2) Fallback: Japanese rank terms (e.g., "横綱", "前頭六枚目", "十両")
+  for (const [jp, enLower] of Object.entries(ranksDictionaryJp)) {
+    if (clean.startsWith(jp)) {
+      // Map english-lower to title case for reuse in same map
+      const enTitle = enLower.charAt(0).toUpperCase() + enLower.slice(1)
+      const rankToDivision: Record<string, Division> = {
+        Yokozuna: DIVISION.MAKUUCHI,
+        Ozeki: DIVISION.MAKUUCHI,
+        Sekiwake: DIVISION.MAKUUCHI,
+        Komusubi: DIVISION.MAKUUCHI,
+        Maegashira: DIVISION.MAKUUCHI,
+        Juryo: DIVISION.JURYO,
+        Makushita: DIVISION.MAKUSHITA,
+        Sandanme: DIVISION.SANDANME,
+        Jonidan: DIVISION.JONIDAN,
+        Jonokuchi: DIVISION.JONOKUCHI,
+      }
+      return rankToDivision[enTitle]
+    }
   }
 
-  // Map rank names to division IDs
-  const rankToDivision: Record<string, DivisionType> = {
-    Yokozuna: Division.MAKUUCHI,
-    Ozeki: Division.MAKUUCHI,
-    Sekiwake: Division.MAKUUCHI,
-    Komusubi: Division.MAKUUCHI,
-    Maegashira: Division.MAKUUCHI,
-    Juryo: Division.JURYO,
-    Makushita: Division.MAKUSHITA,
-    Sandanme: Division.SANDANME,
-    Jonidan: Division.JONIDAN,
-    Jonokuchi: Division.JONOKUCHI,
-  }
-
-  return rankToDivision[divisionName] ?? undefined
+  return undefined
 }
 
 /**
  * Converts English division name to division type
  *
  * @param divisionName - English division name (e.g., 'makuuchi', 'juryo')
- * @returns Division type number
+ * @returns Division type
  */
-export function getDivisionType(divisionName: string): DivisionType {
+export function getDivision(divisionName: string): Division {
   if (!isValidDivisionEn(divisionName)) {
     throw new Error(
       `Invalid division name: ${divisionName}. Available divisions: makuuchi, juryo, makushita, sandanme, jonidan, jonokuchi`,
     )
   }
-
-  return Number(DIVISION_IDS[divisionName]) as DivisionType
+  const value = Object.values(DIVISION).find((d) => d.toLowerCase() === divisionName)
+  return value as Division
 }
 
 /**
@@ -80,7 +91,7 @@ export function getDivisionType(divisionName: string): DivisionType {
  * @returns Array of available division names
  */
 export function getAvailableDivisions(): string[] {
-  return AVAILABLE_DIVISIONS
+  return Object.values(DIVISION_NAME_TO_DIVISION).map((d) => d.toLowerCase())
 }
 
 /**
@@ -90,7 +101,8 @@ export function getAvailableDivisions(): string[] {
  * @returns Division name or undefined if invalid
  */
 export function getDivisionNameFromNumber(divisionNumber: number): string | undefined {
-  return DIVISION_NAMES[divisionNumber as DivisionType] || undefined
+  const division = NUMBER_TO_DIVISION[divisionNumber as DivisionNumber]
+  return division ? division.toLowerCase() : undefined
 }
 
 /**
@@ -99,5 +111,5 @@ export function getDivisionNameFromNumber(divisionNumber: number): string | unde
  * @returns Array of strings showing number=name mappings
  */
 export function getDivisionNumberMappings(): string[] {
-  return Object.entries(DIVISION_NAMES).map(([index, name]) => `${index}=${name}`)
+  return Object.entries(NUMBER_TO_DIVISION).map(([number, division]) => `${number}=${division.toLowerCase()}`)
 }

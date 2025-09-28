@@ -1,10 +1,11 @@
 import fs from 'node:fs'
 
 import { DATA_DIRS, DATA_PATHS } from '@/config/data'
-import { getDivisionName, getDivisionType } from '@/core/utils/division'
+import { DIVISION_TO_NUMBER } from '@/constants'
+import { getDivision, getDivisionName } from '@/core/utils/division'
 import { logDebug, logError } from '@/core/utils/logger'
 import { sortRikishi } from '@/core/utils/sorting'
-import type { DivisionType, Rikishi } from '@/types'
+import type { Division, Rikishi } from '@/types'
 
 /**
  * Loads rikishi data for a specific division from JSON file.
@@ -12,9 +13,10 @@ import type { DivisionType, Rikishi } from '@/types'
  * @param division - Division identifier
  * @returns Array of rikishi data
  */
-function loadRikishiData(division: DivisionType): Rikishi[] {
+function loadRikishiData(division: Division): Rikishi[] {
   const divisionName = getDivisionName(division)
-  const filename = `${DATA_PATHS.USER_DATA_DIR}/${DATA_DIRS.JSON}/${division}_${divisionName}_rikishi.json`
+  const divisionNumber = DIVISION_TO_NUMBER[division]
+  const filename = `${DATA_PATHS.USER_DATA_DIR}/${DATA_DIRS.JSON}/${divisionNumber}_${divisionName}_rikishi.json`
 
   try {
     const data = JSON.parse(fs.readFileSync(filename, 'utf8'))
@@ -23,7 +25,7 @@ function loadRikishiData(division: DivisionType): Rikishi[] {
     return rikishiData
   } catch (error) {
     throw new Error(
-      `Failed to load rikishi data for division ${division} from ${filename}: ${error instanceof Error ? error.message : String(error)}`,
+      `Failed to load rikishi data for division ${divisionNumber} from ${filename}: ${error instanceof Error ? error.message : String(error)}`,
     )
   }
 }
@@ -38,7 +40,7 @@ function loadRikishiData(division: DivisionType): Rikishi[] {
 // eslint-disable-next-line no-unused-vars
 export async function listDivisionRikishi(divisionName: string, _format: string = 'table'): Promise<Rikishi[]> {
   try {
-    const division = getDivisionType(divisionName.toLowerCase())
+    const division = getDivision(divisionName.toLowerCase())
     const rikishiData = loadRikishiData(division)
 
     // Sort by division hierarchy, then rank, then English name alphabetically

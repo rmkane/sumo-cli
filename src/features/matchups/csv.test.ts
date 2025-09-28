@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { DivisionNames, MatchResult } from '@/constants'
+import { DIVISION, MatchResult, SIDE } from '@/constants'
 import { matchupDataToCSVObjects } from '@/features/matchups/csv'
 import type { MatchupData } from '@/types'
 
@@ -16,9 +16,10 @@ describe('CSV Utilities', () => {
               hiragana: 'しし',
               romaji: 'Shishi',
             },
-            rank: {
-              division: DivisionNames.MAEGASHIRA,
-              position: 18,
+            current: {
+              division: DIVISION.MAKUUCHI,
+              side: SIDE.EAST,
+              rank: { kind: 'Maegashira', number: 18 },
             },
             record: { wins: 0, losses: 1 },
             result: MatchResult.LOSS,
@@ -31,9 +32,10 @@ describe('CSV Utilities', () => {
               hiragana: 'おおあおやま',
               romaji: 'Oaoyama',
             },
-            rank: {
-              division: DivisionNames.JURYO,
-              position: 1,
+            current: {
+              division: DIVISION.JURYO,
+              side: SIDE.EAST,
+              rank: { kind: 'Numbered', number: 1 },
             },
             record: { wins: 1, losses: 0 },
             result: MatchResult.WIN,
@@ -61,9 +63,10 @@ describe('CSV Utilities', () => {
               hiragana: 'りゅうでん',
               romaji: 'Ryuden',
             },
-            rank: {
-              division: DivisionNames.MAEGASHIRA,
-              position: 17,
+            current: {
+              division: DIVISION.MAKUUCHI,
+              side: SIDE.EAST,
+              rank: { kind: 'Maegashira', number: 17 },
             },
             record: { wins: 1, losses: 0 },
             result: MatchResult.WIN,
@@ -76,9 +79,10 @@ describe('CSV Utilities', () => {
               hiragana: 'ともかぜ',
               romaji: 'Tomokaze',
             },
-            rank: {
-              division: DivisionNames.MAEGASHIRA,
-              position: 16,
+            current: {
+              division: DIVISION.MAKUUCHI,
+              side: SIDE.WEST,
+              rank: { kind: 'Maegashira', number: 16 },
             },
             record: { wins: 0, losses: 1 },
             result: MatchResult.LOSS,
@@ -105,9 +109,10 @@ describe('CSV Utilities', () => {
               hiragana: 'りきしA',
               romaji: 'RikishiA',
             },
-            rank: {
-              division: DivisionNames.MAEGASHIRA,
-              position: 15,
+            current: {
+              division: DIVISION.MAKUUCHI,
+              side: SIDE.EAST,
+              rank: { kind: 'Maegashira', number: 15 },
             },
             record: { wins: 0, losses: 0 },
             result: MatchResult.NO_RESULT,
@@ -120,9 +125,10 @@ describe('CSV Utilities', () => {
               hiragana: 'りきしB',
               romaji: 'RikishiB',
             },
-            rank: {
-              division: DivisionNames.MAEGASHIRA,
-              position: 14,
+            current: {
+              division: DIVISION.MAKUUCHI,
+              side: SIDE.WEST,
+              rank: { kind: 'Maegashira', number: 14 },
             },
             record: { wins: 0, losses: 0 },
             result: MatchResult.NO_RESULT,

@@ -1,14 +1,14 @@
 import { join } from 'node:path'
 
 import { DATA_PATHS } from '@/config/data'
-import { Division } from '@/constants'
+import { DIVISION_TO_NUMBER } from '@/constants'
 import { fetchResults } from '@/core/services/stats-service'
 import { processAllDivisions as processAllDivisionsUtil } from '@/core/utils/division-iterator'
 import { saveJSON } from '@/core/utils/file'
 import { generateRikishiFilename } from '@/core/utils/filename'
 import { logProcessingComplete, logProcessingStart } from '@/core/utils/logger'
 import { getKeyByValue } from '@/core/utils/object'
-import type { DivisionType, Rikishi } from '@/types'
+import type { Division, DivisionNumber, Rikishi } from '@/types'
 
 /**
  * Processes a single sumo division by fetching, parsing, and saving rikishi data.
@@ -19,13 +19,13 @@ import type { DivisionType, Rikishi } from '@/types'
  * @param forceRefresh - Whether to bypass cache and fetch fresh data
  */
 export async function processDivision(
-  divisionName: string,
-  divisionId: DivisionType,
+  divisionName: Division,
+  divisionId: DivisionNumber,
   forceRefresh: boolean,
 ): Promise<void> {
   logProcessingStart('division processing', `${divisionName} (${divisionId})`)
 
-  const wasFetched = await fetchResults(divisionId, forceRefresh)
+  const wasFetched = await fetchResults(divisionName, divisionId, forceRefresh)
   await saveResults(wasFetched.results, divisionId)
 
   logProcessingComplete('rikishi', wasFetched.results.length, divisionName)
@@ -47,9 +47,9 @@ export async function processAllDivisions(forceRefresh: boolean): Promise<{ data
   }
 }
 
-function generateRikishiFilenameLocal(division: DivisionType): string {
-  const divisionName = getKeyByValue(Division, division)
-  const filename = generateRikishiFilename(division, divisionName, 'json')
+function generateRikishiFilenameLocal(division: DivisionNumber): string {
+  const divisionName = getKeyByValue(DIVISION_TO_NUMBER, division) as Division
+  const filename = generateRikishiFilename(divisionName, division, 'json')
   return join(DATA_PATHS.USER_DATA_DIR, 'json', filename)
 }
 
@@ -59,8 +59,8 @@ function generateRikishiFilenameLocal(division: DivisionType): string {
  * @param results - Array of parsed rikishi data
  * @param division - Division identifier
  */
-async function saveResults(results: Rikishi[], division: DivisionType): Promise<void> {
-  const divisionName = getKeyByValue(Division, division)
+async function saveResults(results: Rikishi[], division: DivisionNumber): Promise<void> {
+  const divisionName = getKeyByValue(DIVISION_TO_NUMBER, division)
   const filename = generateRikishiFilenameLocal(division)
 
   const data = {

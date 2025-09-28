@@ -1,6 +1,6 @@
 import { downloadMatchupData } from '@/core/utils/cache-manager'
 import { logError } from '@/core/utils/logger'
-import type { DivisionType } from '@/types'
+import type { Division, DivisionNumber } from '@/types'
 
 /**
  * Fetches matchup data for a specific division and day, using cache when possible.
@@ -12,15 +12,16 @@ import type { DivisionType } from '@/types'
  * @returns Object containing HTML content and whether data was fetched from server
  */
 export async function fetchMatchupData(
-  division: DivisionType,
+  divisionName: Division,
+  divisionId: DivisionNumber,
   day: number,
   forceRefresh: boolean = false,
 ): Promise<{ html: string; fromServer: boolean }> {
   try {
-    const { content: html, fromServer } = await downloadMatchupData(division, day, forceRefresh)
+    const { content: html, fromServer } = await downloadMatchupData(divisionName, divisionId, day, forceRefresh)
     return { html, fromServer }
   } catch (error) {
-    logError(`fetching matchup data for division ${division} day ${day}`, error)
+    logError(`fetching matchup data for division ${divisionName} day ${day}`, error)
     throw error
   }
 }

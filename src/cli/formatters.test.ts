@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { formatDivisionJson, formatDivisionList, formatDivisionTable } from '@/cli/formatters'
-import { Side } from '@/constants'
+import { DIVISION, SIDE } from '@/constants'
 
 describe('CLI Formatters', () => {
   const mockRikishi = [
@@ -13,10 +13,10 @@ describe('CLI Formatters', () => {
         hiragana: 'はくほう',
         romaji: 'Hakuhō',
       },
-      rank: {
-        division: 'Yokozuna',
-        position: undefined,
-        side: undefined,
+      current: {
+        division: DIVISION.MAKUUCHI,
+        side: SIDE.EAST,
+        rank: 'Yokozuna',
       },
     },
     {
@@ -27,10 +27,10 @@ describe('CLI Formatters', () => {
         hiragana: 'きせのさと',
         romaji: 'Kisenosato',
       },
-      rank: {
-        division: 'Maegashira',
-        position: 5,
-        side: Side.EAST,
+      current: {
+        division: DIVISION.MAKUUCHI,
+        side: SIDE.EAST,
+        rank: { kind: 'Maegashira', number: 5 },
       },
     },
     {
@@ -41,7 +41,11 @@ describe('CLI Formatters', () => {
         hiragana: 'むかいきゅう',
         romaji: 'Mukakyū',
       },
-      rank: undefined,
+      current: {
+        division: DIVISION.MAKUUCHI,
+        side: SIDE.EAST,
+        rank: { kind: 'Maegashira', number: 1 },
+      },
     },
   ]
 
@@ -76,9 +80,9 @@ describe('CLI Formatters', () => {
       formatDivisionList(mockRikishi)
 
       expect(consoleSpy).toHaveBeenCalledTimes(3)
-      expect(consoleSpy).toHaveBeenNthCalledWith(1, '1. Hakuho (白鵬) - Yokozuna ()')
-      expect(consoleSpy).toHaveBeenNthCalledWith(2, '2. Kisenosato (稀勢の里) - Maegashira #5 (East)')
-      expect(consoleSpy).toHaveBeenNthCalledWith(3, '3. NoRankRikishi (無階級) - No rank data')
+      expect(consoleSpy).toHaveBeenNthCalledWith(1, '1. Hakuho (白鵬) - Makuuchi (East)')
+      expect(consoleSpy).toHaveBeenNthCalledWith(2, '2. Kisenosato (稀勢の里) - Makuuchi #5 (East)')
+      expect(consoleSpy).toHaveBeenNthCalledWith(3, '3. NoRankRikishi (無階級) - Makuuchi #1 (East)')
     })
 
     it('should handle empty array', () => {
@@ -100,17 +104,17 @@ describe('CLI Formatters', () => {
             hiragana: 'てすと',
             romaji: 'Test',
           },
-          rank: {
-            division: 'Yokozuna',
-            position: undefined,
-            side: Side.EAST,
+          current: {
+            division: DIVISION.MAKUUCHI,
+            side: SIDE.EAST,
+            rank: 'Yokozuna',
           },
         },
       ]
 
       formatDivisionList(rikishiWithoutPosition)
 
-      expect(consoleSpy).toHaveBeenCalledWith('1. TestRikishi (テスト) - Yokozuna (East)')
+      expect(consoleSpy).toHaveBeenCalledWith('1. TestRikishi (テスト) - Makuuchi (East)')
       consoleSpy.mockRestore()
     })
   })
@@ -150,7 +154,11 @@ describe('CLI Formatters', () => {
             hiragana: 'むかいきゅう',
             romaji: 'Mukakyū',
           },
-          rank: undefined,
+          current: {
+            division: DIVISION.MAKUUCHI,
+            side: SIDE.EAST,
+            rank: { kind: 'Maegashira', number: 1 },
+          },
         },
       ]
 

@@ -1,6 +1,6 @@
 // Parser modules for data processing
-export { parseRank } from '@/core/parsers/rank-parser'
 export { parseRecord } from '@/core/parsers/record-parser'
+export { parseRank } from '@/core/parsers/html/rank-parser'
 export { parseResult, parseWinningTechnique } from '@/core/parsers/html/result-parser'
 export { parseRikishiShikona } from '@/core/parsers/html/name-parser'
 export { parseRikishi } from '@/core/parsers/html/rikishi-parser'

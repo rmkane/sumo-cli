@@ -4,7 +4,7 @@ import { processDivision } from '@/core/services/division-processor'
 import { fetchMatchupData } from '@/core/services/matchup-fetcher'
 import { processAllDivisions } from '@/core/utils/division-iterator'
 import { logDebug, logError, logProcessingComplete, logProcessingStart, logWarning } from '@/core/utils/logger'
-import type { DivisionType } from '@/types'
+import type { Division, DivisionNumber } from '@/types'
 
 import { saveMatchupCSV } from './csv'
 import { saveMatchupJSON } from './json'
@@ -19,8 +19,8 @@ import { saveMatchupJSON } from './json'
  * @param outputDir - Custom output directory for CSV files
  */
 export async function processDivisionMatchups(
-  divisionName: string,
-  divisionId: DivisionType,
+  divisionName: Division,
+  divisionId: DivisionNumber,
   day: number,
   forceRefresh: boolean,
   outputDir?: string,
@@ -28,8 +28,8 @@ export async function processDivisionMatchups(
   logProcessingStart('matchups', `${divisionName} day ${day}`)
 
   try {
-    const matchupData = await fetchMatchupData(divisionId, day, forceRefresh)
-    const parsedMatchups = parseMatchupHTML(matchupData.html, divisionId, day)
+    const matchupData = await fetchMatchupData(divisionName, divisionId, day, forceRefresh)
+    const parsedMatchups = parseMatchupHTML(matchupData.html, divisionName, day)
 
     // Only save files if we have valid matchups
     if (parsedMatchups.length > 0) {
@@ -72,8 +72,8 @@ export async function processDayMatchups(
   logDebug('Fetching matchup data...')
   let filesCreated = 0
   await processAllDivisions(async (divisionName, divisionId) => {
-    const matchupData = await fetchMatchupData(divisionId, day, forceRefresh)
-    const parsedMatchups = parseMatchupHTML(matchupData.html, divisionId, day)
+    const matchupData = await fetchMatchupData(divisionName, divisionId, day, forceRefresh)
+    const parsedMatchups = parseMatchupHTML(matchupData.html, divisionName, day)
 
     if (parsedMatchups.length > 0) {
       // Save JSON data to config directory

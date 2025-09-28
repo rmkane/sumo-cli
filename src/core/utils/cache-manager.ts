@@ -4,10 +4,9 @@ import path from 'node:path'
 import { DATA_PATHS } from '@/config/data'
 import { RATE_LIMITS } from '@/config/urls'
 import { RateLimitedQueue } from '@/core/classes/queue'
-import { getDivisionName } from '@/core/utils/division'
 import { fetchHTML } from '@/core/utils/html'
 import { logDebug } from '@/core/utils/logger'
-import type { DivisionType } from '@/types'
+import type { Division, DivisionNumber } from '@/types'
 
 // Global queue for rate-limited downloads
 const downloadQueue = new RateLimitedQueue(RATE_LIMITS.DOWNLOAD_DELAY_MS)
@@ -74,13 +73,14 @@ export async function downloadAndCache(
  * @returns Object containing HTML content and whether it was fetched from server
  */
 export async function downloadMatchupData(
-  division: DivisionType,
+  divisionName: Division,
+  divisionId: DivisionNumber,
   day: number,
   forceRefresh: boolean = false,
 ): Promise<{ content: string; fromServer: boolean }> {
-  const url = `https://www.sumo.or.jp/ResultData/torikumi/${division}/${day}/`
+  const url = `https://www.sumo.or.jp/ResultData/torikumi/${divisionId}/${day}/`
   const paddedDay = day.toString().padStart(2, '0')
-  const customFilename = `day_${paddedDay}_${division}_${getDivisionName(division)}`
+  const customFilename = `day_${paddedDay}_${divisionId}_${divisionName.toLowerCase()}`
 
   return downloadAndCache(url, 'html', customFilename, forceRefresh)
 }
@@ -88,16 +88,17 @@ export async function downloadMatchupData(
 /**
  * Downloads stats data for a specific division with proper naming.
  *
- * @param division - Division identifier
+ * @param division - Division identifiers
  * @param forceRefresh - Whether to bypass cache
  * @returns Object containing HTML content and whether it was fetched from server
  */
 export async function downloadStatsData(
-  division: DivisionType,
+  divisionName: Division,
+  divisionId: DivisionNumber,
   forceRefresh: boolean = false,
 ): Promise<{ content: string; fromServer: boolean }> {
-  const url = `https://sumo.or.jp/ResultData/hoshitori/${division}/1/`
-  const customFilename = `stats_${division}_${getDivisionName(division)}`
+  const url = `https://sumo.or.jp/ResultData/hoshitori/${divisionId}/1/`
+  const customFilename = `stats_${divisionId}_${divisionName.toLowerCase()}`
 
   return downloadAndCache(url, 'html', customFilename, forceRefresh)
 }
